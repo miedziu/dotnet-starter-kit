@@ -1,4 +1,4 @@
-﻿using Mediator;
+using Mediator;
 using System.Text.Json.Serialization;
 
 namespace FSH.Modules.Identity.Contracts.v1.Users.RegisterUser;
@@ -15,4 +15,7 @@ public class RegisterUserCommand : ICommand<RegisterUserResponse>
 
     [JsonIgnore]
     public string? Origin { get; set; }
+
+    [JsonIgnore]
+    public string? ReferralCode { get; set; }
 }

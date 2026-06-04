@@ -30,6 +30,7 @@ function lazyNamed<T extends Record<string, unknown>, K extends keyof T>(
 
 const LoginPage = lazyNamed(() => import("@/pages/login"), "LoginPage");
 const RegisterPage = lazyNamed(() => import("@/pages/register"), "RegisterPage");
+const ReferralRedirectPage = lazyNamed(() => import("@/pages/referral-redirect"), "ReferralRedirectPage");
 const ForgotPasswordPage = lazyNamed(
   () => import("@/pages/auth/forgot-password"),
   "ForgotPasswordPage",
@@ -147,6 +148,11 @@ export const router = createBrowserRouter([
   {
     path: "/register",
     element: withSuspense(<RegisterPage />),
+    errorElement: <RouteError />,
+  },
+  {
+    path: "/ref",
+    element: withSuspense(<ReferralRedirectPage />),
     errorElement: <RouteError />,
   },
   {

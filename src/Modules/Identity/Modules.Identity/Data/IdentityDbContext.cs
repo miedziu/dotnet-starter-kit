@@ -41,6 +41,7 @@ public class IdentityDbContext : MultiTenantIdentityDbContext<FshUser,
     public DbSet<UserGroup> UserGroups => Set<UserGroup>();
 
     public DbSet<ImpersonationGrant> ImpersonationGrants => Set<ImpersonationGrant>();
+    public DbSet<Referral> Referrals => Set<Referral>();
 
     public IdentityDbContext(
         IMultiTenantContextAccessor<AppTenantInfo> multiTenantContextAccessor,

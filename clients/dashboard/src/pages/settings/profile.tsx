@@ -1,14 +1,16 @@
-import { useEffect, useRef, useState, type FormEvent } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Camera, Fingerprint, UserCircle2 } from "lucide-react";
+import { Camera, Fingerprint, UserCircle2, Copy, Share2 } from "lucide-react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { toast } from "sonner";
+import { getMyProfile, setProfileImage, updateMyProfile, getReferralLink } from "@/api/identity";
 import { useAuth } from "@/auth/use-auth";
-import { getMyProfile, setProfileImage, updateMyProfile } from "@/api/identity";
-import { ApiRequestError } from "@/lib/api-client";
+import { useReferralHighlight } from "@/auth/use-auth";
+import { ImageInput } from "@/components/file/image-input";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ImageInput } from "@/components/file/image-input";
+import { getReferralCodes } from "@/hooks/use-referral";
+import { ApiRequestError } from "@/lib/api-client";
 import { SettingsSection } from "@/pages/settings/settings-layout";
 
 const PROFILE_KEY = ["identity", "me"] as const;
@@ -206,7 +208,101 @@ export function ProfileSettings() {
           {profile?.id ?? user?.id ?? "—"}
         </code>
       </SettingsSection>
+
+      <ReferralSection />
     </form>
+  );
+}
+
+// ─── Referral Section ────────────────────────────────────────────────────────
+
+function ReferralSection() {
+  const hasReferralHighlight = useReferralHighlight();
+  const { data: referralData, isLoading} = useQuery({
+    queryKey: ["referral-link"],
+    queryFn: getReferralLink,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+
+  // Show highlight toast when redirected after registration
+  useEffect(() => {
+    if (hasReferralHighlight) {
+      const codes = getReferralCodes();
+      toast.success(`You were referred by ${codes.length} user${codes.length !== 1 ? 's' : ''}! Welcome!`);
+    }
+  }, [hasReferralHighlight]);
+
+  const onCopy = async () => {
+    if (referralData?.link) {
+      const fullUrl = `${window.location.origin}${referralData.link}`;
+      await navigator.clipboard.writeText(fullUrl);
+      toast.success("Referral link copied to clipboard");
+    }
+  };
+
+  const onShare = async () => {
+    if (referralData?.link) {
+      const fullUrl = `${window.location.origin}${referralData.link}`;
+      if (navigator.share) {
+        try {
+          await navigator.share({
+            title: "Join me on this platform",
+            text: "Use my referral link to sign up!",
+            url: fullUrl,
+          });
+        } catch {
+          // User cancelled or share failed, fallback to copy
+          await onCopy();
+        }
+      } else {
+        await onCopy();
+      }
+    }
+  };
+
+  return (
+    <SettingsSection
+      title="Referral"
+      icon={Share2}
+      description="Share your referral link to invite others. You'll earn rewards when they join."
+    >
+      {isLoading ? (
+        <p className="text-sm text-[var(--color-muted-foreground)]">Loading your referral link…</p>
+      ) : (
+        <div className="space-y-3">
+          <div className="flex items-center gap-2">
+            <code className="flex-1 overflow-x-auto rounded-lg border border-[var(--color-border)] bg-[var(--color-muted)] px-3 py-2 font-mono text-xs">
+              {referralData?.link ?? "—"}
+            </code>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={onCopy}
+              disabled={!referralData?.link}
+              className="h-9 rounded-lg px-3 text-[13px]"
+            >
+              <Copy className="size-3.5" />
+              Copy
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={onShare}
+              disabled={!referralData?.link}
+              className="h-9 rounded-lg px-3 text-[13px]"
+            >
+              <Share2 className="size-3.5" />
+              Share
+            </Button>
+          </div>
+          <p className="text-[11px] text-[var(--color-muted-foreground)]">
+            Your unique referral code: <span className="font-mono">{referralData?.code ?? "—"}</span>
+          </p>
+        </div>
+      )}
+    </SettingsSection>
   );
 }
 

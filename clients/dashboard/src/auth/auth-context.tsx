@@ -1,10 +1,11 @@
-import { createContext, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { tokenStore } from "@/auth/token-store";
-import { decodeJwt, isTokenExpired, type JwtClaims } from "@/auth/jwt";
-import { issueToken } from "@/auth/api";
-import { refreshAccessToken } from "@/lib/api-client";
+import { createContext, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { endImpersonation, getMyPermissions, startImpersonation } from "@/api/identity";
+import { issueToken } from "@/auth/api";
+import { decodeJwt, isTokenExpired, type JwtClaims } from "@/auth/jwt";
+import { tokenStore } from "@/auth/token-store";
+import { checkAndClearPendingReferralHighlight } from "@/hooks/use-referral";
+import { refreshAccessToken } from "@/lib/api-client";
 
 export type AuthUser = {
   id: string;
@@ -12,6 +13,7 @@ export type AuthUser = {
   name?: string;
   tenant?: string;
   permissions: string[];
+  hasReferralHighlight?: boolean;
 };
 
 export type ImpersonationInfo = {
@@ -66,7 +68,7 @@ export const AuthContext = createContext<AuthContextValue | null>(null);
 // Permissions are NOT in the JWT (it carries only role names). They're fetched
 // from /api/v1/identity/permissions and cached in the token store; this builds
 // the user from the token's identity claims + that separately-hydrated list.
-function claimsToUser(claims: JwtClaims | null, permissions: string[]): AuthUser | null {
+function claimsToUser(claims: JwtClaims | null, permissions: string[], hasReferralHighlight: boolean = false): AuthUser | null {
   if (!claims?.sub) return null;
   // `name` is the standard short claim; `unique_name` is what
   // JwtSecurityTokenHandler emits for ClaimTypes.Name. Treat empty
@@ -80,6 +82,7 @@ function claimsToUser(claims: JwtClaims | null, permissions: string[]): AuthUser
     name,
     tenant: claims.tenant,
     permissions,
+    hasReferralHighlight,
   };
 }
 
@@ -189,7 +192,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const refresh = () => {
       const claims = decodeJwt(tokenStore.getAccessToken());
-      setUser(claimsToUser(claims, tokenStore.getPermissions()));
+      const hasReferralHighlight = checkAndClearPendingReferralHighlight();
+      setUser(claimsToUser(claims, tokenStore.getPermissions(), hasReferralHighlight));
       setImpersonation(claimsToImpersonation(claims));
     };
     const unsubscribe = tokenStore.subscribe(refresh);

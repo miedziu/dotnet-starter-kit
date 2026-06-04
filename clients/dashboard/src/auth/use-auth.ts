@@ -8,3 +8,11 @@ export function useAuth() {
   }
   return ctx;
 }
+
+export function useReferralHighlight() {
+  const ctx = useContext(AuthContext);
+  if (!ctx) {
+    throw new Error("useReferralHighlight must be used within AuthProvider");
+  }
+  return ctx.user?.hasReferralHighlight ?? false;
+}

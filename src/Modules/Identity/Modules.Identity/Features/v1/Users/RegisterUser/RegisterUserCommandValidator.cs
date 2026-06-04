@@ -35,5 +35,9 @@ public sealed class RegisterUserCommandValidator : AbstractValidator<RegisterUse
         RuleFor(x => x.PhoneNumber)
             .MaximumLength(20).WithMessage("Phone number must not exceed 20 characters.")
             .When(x => x.PhoneNumber is not null);
+
+        RuleFor(x => x.ReferralCode)
+            .MaximumLength(16).WithMessage("Referral code must not exceed 16 characters.")
+            .When(x => x.ReferralCode is not null);
     }
 }

@@ -4,20 +4,15 @@ using Mediator;
 
 namespace FSH.Modules.Identity.Features.v1.Users.RegisterUser;
 
-public sealed class RegisterUserCommandHandler : ICommandHandler<RegisterUserCommand, RegisterUserResponse>
+public sealed class RegisterUserCommandHandler(
+    IUserRegistrationService registrationService,
+    IReferralService referralService) : ICommandHandler<RegisterUserCommand, RegisterUserResponse>
 {
-    private readonly IUserService _userService;
-
-    public RegisterUserCommandHandler(IUserService userService)
-    {
-        _userService = userService;
-    }
-
     public async ValueTask<RegisterUserResponse> Handle(RegisterUserCommand command, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(command);
 
-        string userId = await _userService.RegisterAsync(
+        string userId = await registrationService.RegisterAsync(
             command.FirstName,
             command.LastName,
             command.Email,
@@ -27,6 +22,12 @@ public sealed class RegisterUserCommandHandler : ICommandHandler<RegisterUserCom
             command.PhoneNumber ?? string.Empty,
             command.Origin ?? string.Empty,
             cancellationToken).ConfigureAwait(false);
+
+        // Record referral if provided
+        if (!string.IsNullOrWhiteSpace(command.ReferralCode))
+        {
+            await referralService.RecordReferralAsync(command.ReferralCode, userId, cancellationToken).ConfigureAwait(false);
+        }
 
         return new RegisterUserResponse(userId);
     }

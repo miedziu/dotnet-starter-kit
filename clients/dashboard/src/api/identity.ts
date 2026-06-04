@@ -1,5 +1,5 @@
-import { apiFetch } from "@/lib/api-client";
 import type { PagedResponse } from "@/api/catalog";
+import { apiFetch } from "@/lib/api-client";
 
 // -----------------------------
 // Types
@@ -50,6 +50,12 @@ export type RegisterUserInput = {
   password: string;
   confirmPassword: string;
   phoneNumber?: string;
+  referralCode?: string;
+};
+
+export type ReferralLinkResponse = {
+  code: string;
+  link: string;
 };
 
 export type RegisterUserResponse = {
@@ -536,4 +542,12 @@ export async function disableTwoFactor(currentPassword: string): Promise<{ succe
     method: "POST",
     body: JSON.stringify({ currentPassword }),
   });
+}
+
+// -----------------------------
+// Referral
+// -----------------------------
+
+export async function getReferralLink(): Promise<ReferralLinkResponse> {
+  return apiFetch<ReferralLinkResponse>("/api/v1/identity/referral-link");
 }

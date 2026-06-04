@@ -19,6 +19,7 @@ import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuItem, DropdownMenuContent } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { setPendingReferralHighlight } from "@/hooks/use-referral";
 import { ApiRequestError } from "@/lib/api-client";
 import { cn } from "@/lib/cn";
 
@@ -90,6 +91,20 @@ export function RegisterPage() {
   const strength = useMemo(() => scorePassword(password), [password]);
   const passwordsMatch = password.length > 0 && password === confirmPassword;
   const selectedTenant = tenants.find((t) => t.id === tenant);
+  // Get referral code from localStorage (persistent) or URL params
+  const [referralCode, setReferralCode] = useState<string>("");
+  const [storedReferralCodes, setStoredReferralCodes] = useState<string[]>([]);
+
+  useEffect(() => {
+    const stored = localStorage.getItem("fsh.dashboard.referralCodes");
+    const codes = stored ? JSON.parse(stored) as string[] : [];
+    setStoredReferralCodes(Array.isArray(codes) ? codes : []);
+    // Use the first referral code if available
+    if (codes.length > 0 && !referralCode) {
+      setReferralCode(codes[0]);
+    }
+  }, []);
+
   const mutation = useMutation({
     mutationFn: () =>
       registerUser({
@@ -100,9 +115,14 @@ export function RegisterPage() {
         password,
         confirmPassword,
         phoneNumber: "",
+        referralCode: referralCode || undefined,
       }),
     onSuccess: () => {
       setSubmitted(true);
+      // Set pending highlight for post-registration navigation
+      if (storedReferralCodes.length > 0) {
+        setPendingReferralHighlight(true);
+      }
     },
     onError: (err: unknown) => {
       const detail =
