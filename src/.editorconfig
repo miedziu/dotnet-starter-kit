@@ -7,9 +7,9 @@ root = true
 #### Core EditorConfig Options ####
 
 # Indentation and spacing
-indent_size = 4
+indent_size = 2
 indent_style = space
-tab_width = 4
+tab_width = 2
 
 # New line preferences
 end_of_line = crlf
@@ -223,26 +223,26 @@ dotnet_naming_rule.non_field_members_should_be_pascal_case.style = pascal_case
 
 dotnet_naming_symbols.interface.applicable_kinds = interface
 dotnet_naming_symbols.interface.applicable_accessibilities = public, internal, private, protected, protected_internal, private_protected
-dotnet_naming_symbols.interface.required_modifiers = 
+dotnet_naming_symbols.interface.required_modifiers =
 
 dotnet_naming_symbols.types.applicable_kinds = class, struct, interface, enum
 dotnet_naming_symbols.types.applicable_accessibilities = public, internal, private, protected, protected_internal, private_protected
-dotnet_naming_symbols.types.required_modifiers = 
+dotnet_naming_symbols.types.required_modifiers =
 
 dotnet_naming_symbols.non_field_members.applicable_kinds = property, event, method
 dotnet_naming_symbols.non_field_members.applicable_accessibilities = public, internal, private, protected, protected_internal, private_protected
-dotnet_naming_symbols.non_field_members.required_modifiers = 
+dotnet_naming_symbols.non_field_members.required_modifiers =
 
 # Naming styles
 
-dotnet_naming_style.pascal_case.required_prefix = 
-dotnet_naming_style.pascal_case.required_suffix = 
-dotnet_naming_style.pascal_case.word_separator = 
+dotnet_naming_style.pascal_case.required_prefix =
+dotnet_naming_style.pascal_case.required_suffix =
+dotnet_naming_style.pascal_case.word_separator =
 dotnet_naming_style.pascal_case.capitalization = pascal_case
 
 dotnet_naming_style.begins_with_i.required_prefix = I
-dotnet_naming_style.begins_with_i.required_suffix = 
-dotnet_naming_style.begins_with_i.word_separator = 
+dotnet_naming_style.begins_with_i.required_suffix =
+dotnet_naming_style.begins_with_i.word_separator =
 dotnet_naming_style.begins_with_i.capitalization = pascal_case
 
 # Namespace Preferences
@@ -269,3 +269,29 @@ dotnet_diagnostic.MSG0005.severity = none
 [**/Migrations.PostgreSQL/**/*.cs]
 dotnet_diagnostic.CA1062.severity = none
 dotnet_diagnostic.CA1861.severity = none
+
+
+
+
+# AM: Added manually
+
+[*.cs]
+# Core Ordering rules
+dotnet_diagnostic.SA1201.severity = warning # Elements must appear in correct order
+dotnet_diagnostic.SA1202.severity = warning # Elements must be ordered by access
+dotnet_diagnostic.SA1203.severity = warning # Constants must appear before fields
+dotnet_diagnostic.SA1204.severity = warning # Static elements must appear before instance elements
+
+# Using directives organization
+dotnet_diagnostic.SA1208.severity = warning # System namespaces must be placed first
+dotnet_diagnostic.SA1210.severity = warning # Using directives must be sorted alphabetically
+
+
+# Default severity for all analyzer diagnostics
+#dotnet_analyzer_diagnostic.severity = suggestion
+
+# S125: Sections of code should not be commented out
+dotnet_diagnostic.S125.severity = silent
+
+
+dotnet_diagnostic.S1135.severity = suggestion

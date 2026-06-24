@@ -12,6 +12,7 @@
 		<ContainerUser>1654</ContainerUser>
 		<ContainerFamily>noble</ContainerFamily>
 		<ContainerRepository>fsh-api</ContainerRepository>
+		<UserSecretsId>fde33270-f828-41af-878c-55a96e37120f</UserSecretsId>
 	</PropertyGroup>
 
 	<ItemGroup>
