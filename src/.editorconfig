@@ -10,9 +10,10 @@ root = true
 indent_size = 2
 indent_style = space
 tab_width = 2
+trim_trailing_whitespace = true
 
 # New line preferences
-end_of_line = crlf
+end_of_line = lf
 insert_final_newline = false
 
 #### .NET Code Actions ####
@@ -254,7 +255,7 @@ dotnet_diagnostic.S3358.severity = error
 dotnet_style_operator_placement_when_wrapping = beginning_of_line
 tab_width = 4
 indent_size = 4
-end_of_line = crlf
+end_of_line = lf
 dotnet_style_predefined_type_for_locals_parameters_members = true:silent
 dotnet_diagnostic.CA2007.severity = none
 dotnet_diagnostic.CA1034.severity = none

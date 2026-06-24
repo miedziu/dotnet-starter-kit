@@ -2,6 +2,7 @@ import globals from 'globals';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
 import jsxA11y from 'eslint-plugin-jsx-a11y';
+import importPlugin from 'eslint-plugin-import';
 import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
@@ -17,6 +18,7 @@ export default tseslint.config(
       'react-hooks': reactHooks,
       'react-refresh': reactRefresh,
       'jsx-a11y': jsxA11y,
+      'import': importPlugin,
     },
     rules: {
       ...reactHooks.configs.recommended.rules,
@@ -47,6 +49,20 @@ export default tseslint.config(
       'jsx-a11y/no-noninteractive-element-to-interactive-role': 'error',
       'jsx-a11y/no-aria-hidden-on-focusable': 'error',
       'jsx-a11y/anchor-has-content': 'error',
+      'import/order': ['error', {
+        'groups': [
+          'builtin',
+          'external',
+          'internal',
+          'parent',
+          'sibling',
+          'index'
+        ],
+        'pathGroups': [
+          { pattern: 'react', group: 'builtin', position: 'before' }
+        ],
+        'alphabetize': { order: 'asc' }
+      }]
     },
   },
 );
