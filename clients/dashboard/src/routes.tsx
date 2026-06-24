@@ -1,7 +1,7 @@
 import { lazy, Suspense, type ComponentType } from "react";
 import { createBrowserRouter, Navigate } from "react-router-dom";
-import { AppShell } from "@/components/layout/app-shell";
 import { ProtectedRoute } from "@/auth/protected-route";
+import { AppShell } from "@/components/layout/app-shell";
 import { RouteError } from "@/components/route-error";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/cn";
@@ -29,6 +29,7 @@ function lazyNamed<T extends Record<string, unknown>, K extends keyof T>(
 }
 
 const LoginPage = lazyNamed(() => import("@/pages/login"), "LoginPage");
+const RegisterPage = lazyNamed(() => import("@/pages/register"), "RegisterPage");
 const ForgotPasswordPage = lazyNamed(
   () => import("@/pages/auth/forgot-password"),
   "ForgotPasswordPage",
@@ -60,14 +61,6 @@ const ProductDetailPage = lazyNamed(
   "ProductDetailPage",
 );
 const NotFoundPage = lazyNamed(() => import("@/pages/not-found"), "NotFoundPage");
-const TenantDeactivatedPage = lazyNamed(
-  () => import("@/pages/tenant-deactivated"),
-  "TenantDeactivatedPage",
-);
-const ImpersonationEndedPage = lazyNamed(
-  () => import("@/pages/impersonation-ended"),
-  "ImpersonationEndedPage",
-);
 const SettingsLayout = lazyNamed(
   () => import("@/pages/settings/settings-layout"),
   "SettingsLayout",
@@ -152,6 +145,11 @@ export const router = createBrowserRouter([
     errorElement: <RouteError />,
   },
   {
+    path: "/register",
+    element: withSuspense(<RegisterPage />),
+    errorElement: <RouteError />,
+  },
+  {
     path: "/forgot-password",
     element: withSuspense(<ForgotPasswordPage />),
     errorElement: <RouteError />,
@@ -164,25 +162,6 @@ export const router = createBrowserRouter([
   {
     path: "/confirm-email",
     element: withSuspense(<ConfirmEmailPage />),
-    errorElement: <RouteError />,
-  },
-  {
-    // Terminal state when the signed-in user's tenant is deactivated mid-session.
-    // Top-level (outside ProtectedRoute/AppShell) — the token is still valid but
-    // every request 403s, so there is no shell to render. query-client.ts routes
-    // here on detecting the deactivated-tenant 403.
-    path: "/tenant-deactivated",
-    element: withSuspense(<TenantDeactivatedPage />),
-    errorElement: <RouteError />,
-  },
-  {
-    // Terminal state when an operator's impersonation grant is revoked (or its
-    // short-lived token expires) mid-session. Top-level (outside
-    // ProtectedRoute/AppShell) — the token still decodes but every request
-    // 401s, so there is no shell to render. query-client.ts routes here on
-    // detecting the impersonation-revoked 401.
-    path: "/impersonation-ended",
-    element: withSuspense(<ImpersonationEndedPage />),
     errorElement: <RouteError />,
   },
   {

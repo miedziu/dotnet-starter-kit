@@ -1,16 +1,16 @@
+import { AlertCircle, ArrowRight, Eye, EyeOff, Loader2, Sparkles, TimerOff } from "lucide-react";
 import { useEffect, useState, type FormEvent } from "react";
 import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
-import { AlertCircle, ArrowRight, Eye, EyeOff, Loader2, Sparkles, TimerOff } from "lucide-react";
-import { useAuth } from "@/auth/use-auth";
 import { consumeSignedOutReason } from "@/auth/inactivity";
+import { useAuth } from "@/auth/use-auth";
+import { AuthShell } from "@/components/auth/auth-shell";
+import { DemoAccountsDialog } from "@/components/auth/demo-accounts-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { AuthShell } from "@/components/auth/auth-shell";
-import { DemoAccountsDialog } from "@/components/auth/demo-accounts-dialog";
+import { env } from "@/env";
 import { ApiRequestError } from "@/lib/api-client";
 import { cn } from "@/lib/cn";
-import { env } from "@/env";
 import type { DemoAccount } from "@/pages/login.demo-accounts";
 
 type LocationState = { from?: { pathname: string } };
@@ -85,7 +85,19 @@ export function LoginPage() {
 
   return (
     <>
-      <AuthShell>
+      <AuthShell
+        footer={
+          <span>
+            Don't have an account?{" "}
+            <Link
+              to="/register"
+              className="text-[var(--color-foreground)] underline-offset-4 hover:underline"
+            >
+              Create one
+            </Link>
+          </span>
+        }
+      >
         <div className="mb-6 sm:mb-8">
           <h1 className="mb-1.5 font-display text-[22px] font-semibold tracking-tight text-[var(--color-foreground)]">
             Welcome back
