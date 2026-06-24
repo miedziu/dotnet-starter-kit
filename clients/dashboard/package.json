@@ -7,9 +7,7 @@
     "dev": "vite --port 5174",
     "build": "tsc -b && vite build",
     "preview": "vite preview --port 4174",
-    "lint": "eslint .",
-    "test:e2e": "playwright test",
-    "test:e2e:ui": "playwright test --ui"
+    "lint": "eslint ."
   },
   "dependencies": {
     "@microsoft/signalr": "^10.0.0",

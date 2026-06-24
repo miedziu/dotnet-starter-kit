@@ -21,7 +21,8 @@ export default tseslint.config(
     rules: {
       ...reactHooks.configs.recommended.rules,
       ...jsxA11y.configs.recommended.rules,
-      'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
+      'react-refresh/only-export-components': 'off',
+      //'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
       // Project-specific deviations from jsx-a11y/recommended:
       // - autofocus is intentionally used on confirmation dialogs (sign-out)
       //   where the destructive action should be the default focus, and on

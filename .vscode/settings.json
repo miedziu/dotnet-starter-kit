@@ -5,6 +5,37 @@
     "editor.formatOnSave": true,
     "files.exclude": {
         "**/bin": true,
-        "**/obj": true
-    }
+        "**/obj": true,
+        "**/node_modules": true,
+        "**/.git": true,
+        ".gitignore": true,
+        ".vscode/e*": true,
+        ".vscode/l*": true,
+        ".vscode/t*": true,
+        //".vscode/*": true,
+        ".github": true,
+        "**/*.md": true, //
+        "**/*.min.*": true,
+        ".agents": true
+    },
+    "diffEditor.renderGutterMenu": false,
+    "diffEditor.renderIndicators": true,
+    "diffEditor.renderMarginRevertIcon": true,
+    "diffEditor.renderSideBySide": true,
+    "diffEditor.useInlineViewWhenSpaceIsLimited": true,
+    "diffEditor.wordWrap": "inherit",
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": "explicit",
+    },
+    "editor.defaultFormatter": "ms-dotnettools.csharp",
+    "editor.formatOnSaveMode": "modifications",
+    "editor.formatOnType": true,
+    "editor.formatOnPaste": true,
+    "gitlens.hovers.changesDiff": "line",
+    "gitlens.views.openChangesInMultiDiffEditor": true,
+    "mergeEditor.diffAlgorithm": "advanced",
+    "scm.diffDecorations": "all",
+    "[typescript]": {
+        "editor.defaultFormatter": "vscode.typescript-language-features"
+    },
 }

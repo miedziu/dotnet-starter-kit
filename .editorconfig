@@ -1,0 +1,24 @@
+root = true
+
+[*.{cs,vb}]
+indent_size = 4
+indent_style = space
+end_of_line = lf
+
+# PowerShell scripts
+[*.ps1]
+indent_size = 4
+indent_style = space
+end_of_line = lf
+
+# Shell scripts
+[*.sh]
+indent_size = 2
+indent_style = space
+end_of_line = lf
+
+# Markdown
+[*.md]
+trim_trailing_whitespace = true
+insert_final_newline = true
+end_of_line = lf
