@@ -29,8 +29,8 @@ public sealed class Invoice : AggregateRoot<Guid>
 
     /// <summary>End of the billed term (subscription invoices only).</summary>
     public DateTime? PeriodEndUtc { get; private set; }
-    public string Currency { get; private set; } = "USD";
-    public decimal SubtotalAmount { get; private set; }
+    public Money SubtotalAmount { get; private set; } = default!;
+    public string Currency => SubtotalAmount.Currency;
     public InvoiceStatus Status { get; private set; }
     public DateTime CreatedAtUtc { get; private set; }
     public DateTime? IssuedAtUtc { get; private set; }
@@ -84,16 +84,36 @@ public sealed class Invoice : AggregateRoot<Guid>
             Purpose = purpose,
             PeriodStartUtc = periodStartUtc is { } s ? DateTime.SpecifyKind(s, DateTimeKind.Utc) : null,
             PeriodEndUtc = periodEndUtc is { } e ? DateTime.SpecifyKind(e, DateTimeKind.Utc) : null,
-            Currency = currency.ToUpperInvariant(),
+            SubtotalAmount = Money.Zero(currency.ToUpperInvariant()),
             Status = InvoiceStatus.Draft,
             CreatedAtUtc = DateTime.UtcNow
         };
     }
 
+    /// <summary>
+    /// Convenience factory for top-up invoices: creates a Draft with <c>InvoicePurpose.Topup</c>
+    /// and immediately adds a single <see cref="InvoiceLineItemKind.Adjustment"/> line item so that
+    /// <see cref="SubtotalAmount"/> is set before the invoice is issued.
+    /// </summary>
+    public static Invoice CreateTopupDraft(
+        string tenantId,
+        string invoiceNumber,
+        int periodYear,
+        int periodMonth,
+        string currency,
+        decimal amount,
+        string lineItemDescription)
+    {
+        var invoice = CreateDraft(tenantId, invoiceNumber, periodYear, periodMonth, currency,
+            InvoicePurpose.Topup, periodStartUtc: null, periodEndUtc: null);
+        invoice.AddLineItem(InvoiceLineItemKind.Adjustment, lineItemDescription, 1m, amount);
+        return invoice;
+    }
+
     public InvoiceLineItem AddLineItem(InvoiceLineItemKind kind, string description, decimal quantity, decimal unitPrice)
     {
         RequireStatus(InvoiceStatus.Draft);
-        var line = InvoiceLineItem.Create(Id, kind, description, quantity, unitPrice);
+        var line = InvoiceLineItem.Create(Id, kind, description, quantity, unitPrice, Currency);
         _lineItems.Add(line);
         RecalculateTotals();
         return line;
@@ -157,6 +177,8 @@ public sealed class Invoice : AggregateRoot<Guid>
 
     private void RecalculateTotals()
     {
-        SubtotalAmount = _lineItems.Sum(l => l.Amount);
+        SubtotalAmount = _lineItems.Aggregate(
+            Money.Zero(SubtotalAmount.Currency),
+            (acc, l) => acc.Add(l.Amount));
     }
 }

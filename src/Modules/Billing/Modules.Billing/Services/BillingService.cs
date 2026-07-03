@@ -109,7 +109,7 @@ public sealed class BillingService : IBillingService
         if (_logger.IsEnabled(LogLevel.Information))
         {
             _logger.LogInformation("[Billing] generated draft invoice {InvoiceNumber} for tenant {TenantId} period {Year}-{Month:00} total={Total} {Currency}",
-                invoice.InvoiceNumber, tenantId, periodYear, periodMonth, invoice.SubtotalAmount, invoice.Currency);
+                invoice.InvoiceNumber, tenantId, periodYear, periodMonth, invoice.SubtotalAmount.Amount, invoice.Currency);
         }
         return invoice;
     }
@@ -164,10 +164,108 @@ public sealed class BillingService : IBillingService
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
     }
 
+    public async Task<Wallet> GetOrCreateWalletAsync(string tenantId, string currency, CancellationToken cancellationToken = default)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(tenantId);
+        var wallet = await _db.Wallets
+            .Include(w => w.Transactions)
+            .FirstOrDefaultAsync(w => w.TenantId == tenantId, cancellationToken)
+            .ConfigureAwait(false);
+        if (wallet is null)
+        {
+            wallet = Wallet.Create(tenantId, currency);
+            _db.Wallets.Add(wallet);
+            await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        }
+        return wallet;
+    }
+
+    public async Task<Invoice> CreateTopupInvoiceAsync(string tenantId, Guid topupRequestId, CancellationToken cancellationToken = default)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(tenantId);
+
+        var request = await _db.TopupRequests
+            .FirstOrDefaultAsync(r => r.Id == topupRequestId && r.TenantId == tenantId && r.Status == TopupRequestStatus.Pending, cancellationToken)
+            .ConfigureAwait(false)
+            ?? throw new NotFoundException($"Top-up request {topupRequestId} not found or not pending.");
+
+        var now = _timeProvider.GetUtcNow().UtcDateTime;
+        var invoiceNumber = BuildTopupInvoiceNumber(tenantId, now, topupRequestId);
+
+        var invoice = Invoice.CreateTopupDraft(
+            tenantId,
+            invoiceNumber,
+            now.Year,
+            now.Month,
+            request.Amount.Currency,
+            request.Amount.Amount,
+            $"WhatsApp wallet top-up ({request.Amount.Amount:0.##} {request.Amount.Currency})");
+
+        invoice.Issue();
+        _db.Invoices.Add(invoice);
+        request.MarkInvoiced(invoice.Id, request.Note);
+
+        await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+
+        if (_logger.IsEnabled(LogLevel.Information))
+        {
+            _logger.LogInformation(
+                "[Billing] issued top-up invoice {InvoiceNumber} for tenant {TenantId} amount={Amount} {Currency}",
+                invoice.InvoiceNumber, tenantId, invoice.SubtotalAmount.Amount, invoice.Currency);
+        }
+
+        await _eventBus.PublishAsync(new InvoiceIssuedIntegrationEvent(
+            Id: Guid.NewGuid(),
+            OccurredOnUtc: now,
+            TenantId: tenantId,
+            CorrelationId: Guid.NewGuid().ToString(),
+            Source: "Billing",
+            InvoiceId: invoice.Id,
+            InvoiceNumber: invoice.InvoiceNumber,
+            Amount: invoice.SubtotalAmount.Amount,
+            Currency: invoice.Currency,
+            DueAtUtc: invoice.DueAtUtc,
+            PeriodYear: invoice.PeriodYear,
+            PeriodMonth: invoice.PeriodMonth), cancellationToken).ConfigureAwait(false);
+
+        return invoice;
+    }
+
     public async Task MarkInvoicePaidAsync(Guid invoiceId, CancellationToken cancellationToken = default)
     {
         var invoice = await LoadInvoiceAsync(invoiceId, cancellationToken).ConfigureAwait(false);
         invoice.MarkPaid();
+
+        // When a top-up invoice is paid, credit the tenant's wallet and complete the request —
+        // all in the same SaveChanges so the credit + status flip are atomic.
+        if (invoice.Purpose == InvoicePurpose.Topup)
+        {
+            var topupRequest = await _db.TopupRequests
+                .FirstOrDefaultAsync(r => r.InvoiceId == invoice.Id, cancellationToken)
+                .ConfigureAwait(false);
+
+            if (topupRequest is { Status: TopupRequestStatus.Invoiced })
+            {
+                var wallet = await _db.Wallets
+                    .FirstOrDefaultAsync(w => w.TenantId == invoice.TenantId, cancellationToken)
+                    .ConfigureAwait(false);
+
+                if (wallet is null)
+                {
+                    wallet = Wallet.Create(invoice.TenantId, invoice.Currency);
+                    _db.Wallets.Add(wallet);
+                }
+
+                wallet.Credit(
+                    invoice.SubtotalAmount.Amount,
+                    WalletTransactionKind.Topup,
+                    "WhatsApp wallet top-up",
+                    topupRequest.Id.ToString());
+
+                topupRequest.MarkCompleted();
+            }
+        }
+
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
     }
 
@@ -205,7 +303,7 @@ public sealed class BillingService : IBillingService
             ?? throw new NotFoundException($"Plan {planId} not found for tenant {tenantId}.");
 
         var termPrice = plan.TermPrice;
-        if (termPrice <= 0)
+        if (termPrice.Amount <= 0m)
         {
             // Free / trial plan — validity is still set, but there is nothing to bill.
             if (_logger.IsEnabled(LogLevel.Information))
@@ -234,7 +332,7 @@ public sealed class BillingService : IBillingService
             InvoiceLineItemKind.BaseFee,
             $"{plan.Name} — {plan.Interval} subscription ({periodStart:yyyy-MM-dd} to {periodEnd:yyyy-MM-dd})",
             1m,
-            termPrice);
+            termPrice.Amount);
         invoice.Issue();
 
         _db.Invoices.Add(invoice);
@@ -242,7 +340,7 @@ public sealed class BillingService : IBillingService
         if (_logger.IsEnabled(LogLevel.Information))
         {
             _logger.LogInformation("[Billing] issued subscription invoice {InvoiceNumber} for tenant {TenantId} total={Total} {Currency}",
-                invoice.InvoiceNumber, tenantId, invoice.SubtotalAmount, invoice.Currency);
+                invoice.InvoiceNumber, tenantId, invoice.SubtotalAmount.Amount, invoice.Currency);
         }
 
         // Notify (e.g. email the tenant) that a real bill was issued. Only fires for newly-created
@@ -255,7 +353,7 @@ public sealed class BillingService : IBillingService
             Source: "Billing",
             InvoiceId: invoice.Id,
             InvoiceNumber: invoice.InvoiceNumber,
-            Amount: invoice.SubtotalAmount,
+            Amount: invoice.SubtotalAmount.Amount,
             Currency: invoice.Currency,
             DueAtUtc: invoice.DueAtUtc,
             PeriodYear: invoice.PeriodYear,
@@ -269,6 +367,19 @@ public sealed class BillingService : IBillingService
 
     private static string BuildSubscriptionInvoiceNumber(string tenantId, DateTime periodStartUtc) =>
         $"SUB-{periodStartUtc:yyyyMM}-{TenantToken(tenantId)}";
+
+    /// <summary>
+    /// Generates a collision-safe invoice number for a top-up.
+    /// Format: <c>TOP-{yyyyMM}-{tenantToken}-{requestSuffix}</c>
+    /// where <c>requestSuffix</c> is 8 hex chars from the last 4 bytes of <paramref name="topupRequestId"/>.
+    /// Each <see cref="TopupRequest"/> has a unique <see cref="Guid"/>, so two top-ups for the same
+    /// tenant in the same month produce distinct numbers and never collide on the unique InvoiceNumber index.
+    /// </summary>
+    private static string BuildTopupInvoiceNumber(string tenantId, DateTime now, Guid topupRequestId)
+    {
+        var suffix = Convert.ToHexString(topupRequestId.ToByteArray(), 12, 4);
+        return $"TOP-{now:yyyyMM}-{TenantToken(tenantId)}-{suffix}";
+    }
 
     // Stable, collision-resistant token from the full tenant id; a naive prefix truncation would
     // collide for shared-prefix tenants and clash on the unique InvoiceNumber index.

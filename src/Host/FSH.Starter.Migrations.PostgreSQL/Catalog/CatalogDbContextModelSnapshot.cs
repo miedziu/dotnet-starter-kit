@@ -260,7 +260,7 @@ namespace FSH.Starter.Migrations.PostgreSQL.Catalog
 
             modelBuilder.Entity("FSH.Modules.Catalog.Domain.Product", b =>
                 {
-                    b.OwnsOne("FSH.Modules.Catalog.Domain.Money", "Price", b1 =>
+                    b.OwnsOne("FSH.Framework.Core.Domain.Money", "Price", b1 =>
                         {
                             b1.Property<Guid>("ProductId")
                                 .HasColumnType("uuid");
