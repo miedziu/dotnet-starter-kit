@@ -1,27 +1,20 @@
-import { AlertCircle, ArrowRight, Eye, EyeOff, Loader2, Sparkles, TimerOff } from "lucide-react";
+import { AlertCircle, ArrowRight, Eye, EyeOff, Loader2, TimerOff } from "lucide-react";
 import { useEffect, useState, type FormEvent } from "react";
 import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { consumeSignedOutReason } from "@/auth/inactivity";
 import { useAuth } from "@/auth/use-auth";
 import { AuthShell } from "@/components/auth/auth-shell";
-import { DemoAccountsDialog } from "@/components/auth/demo-accounts-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { env } from "@/env";
 import { ApiRequestError } from "@/lib/api-client";
 import { cn } from "@/lib/cn";
-import type { DemoAccount } from "@/pages/login.demo-accounts";
 
 type LocationState = { from?: { pathname: string } };
 
 // ────────────────────────────────────────────────────────────────────────
 // Login — dentalOS "welcome back" card on rose+saffron atmospheric orbs
 // (chrome supplied by AuthShell, shared with the rest of the auth flow).
-// FSH stays multi-tenant, so the Tenant field leads the form; Email +
-// Password follow. The demo picker ("Step into any role") signs in
-// instantly and is gated on the runtime demoMode flag — on in staging,
-// off in production.
 // ────────────────────────────────────────────────────────────────────────
 
 export function LoginPage() {
@@ -32,10 +25,8 @@ export function LoginPage() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [tenant, setTenant] = useState(env.defaultTenant);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [demoOpen, setDemoOpen] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
 
@@ -50,7 +41,7 @@ export function LoginPage() {
     return <Navigate to={from} replace />;
   }
 
-  const performLogin = async (creds: { email: string; password: string; tenant: string }) => {
+  const performLogin = async (creds: { email: string; password: string }) => {
     setError(null);
     setSubmitting(true);
     try {
@@ -71,16 +62,7 @@ export function LoginPage() {
 
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    await performLogin({ email, password, tenant });
-  };
-
-  // Demo picker → reflect the chosen creds in the form, then sign in
-  // instantly. Each demo account carries its own tenant + password.
-  const onPickDemo = (account: DemoAccount) => {
-    setEmail(account.email);
-    setPassword(account.password);
-    setTenant(account.tenant);
-    void performLogin({ email: account.email, password: account.password, tenant: account.tenant });
+    await performLogin({ email, password });
   };
 
   return (
@@ -123,26 +105,6 @@ export function LoginPage() {
           noValidate
           aria-describedby={error ? "login-error" : undefined}
         >
-          {/* Tenant — FSH stays multi-tenant, so this leads the form. */}
-          <div className="space-y-1.5">
-            <Label
-              htmlFor="tenant"
-              className="block text-[11.5px] font-semibold uppercase tracking-wider text-[var(--color-muted-foreground)]"
-            >
-              Tenant
-            </Label>
-            <Input
-              id="tenant"
-              value={tenant}
-              onChange={(e) => setTenant(e.target.value)}
-              placeholder="root"
-              autoComplete="organization"
-              required
-              aria-invalid={error ? true : undefined}
-              className="h-11 text-[14px]"
-            />
-          </div>
-
           <div className="space-y-1.5">
             <Label
               htmlFor="email"
@@ -220,7 +182,7 @@ export function LoginPage() {
           <div className="pt-1.5">
             <Button
               type="submit"
-              disabled={submitting || !email || !password || !tenant}
+              disabled={submitting || !email || !password}
               className="group h-11 w-full text-[14px] font-semibold"
             >
               {submitting ? (
@@ -237,25 +199,7 @@ export function LoginPage() {
             </Button>
           </div>
         </form>
-
-        {/* Demo accounts — runtime-gated (staging on, prod off). */}
-        {env.demoMode && (
-          <div className="mt-7">
-            <button
-              type="button"
-              onClick={() => setDemoOpen(true)}
-              className="flex h-10 w-full cursor-pointer items-center justify-center gap-2 rounded-lg border border-dashed border-primary/25 bg-transparent text-[12.5px] font-medium text-primary/70 transition-all duration-150 hover:border-primary/40 hover:bg-primary/[0.04] hover:text-primary"
-            >
-              <Sparkles className="size-[13px]" />
-              <span>Sign in with a demo account</span>
-            </button>
-          </div>
-        )}
       </AuthShell>
-
-      {env.demoMode && (
-        <DemoAccountsDialog open={demoOpen} onOpenChange={setDemoOpen} onPick={onPickDemo} />
-      )}
     </>
   );
 }

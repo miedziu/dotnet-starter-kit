@@ -12,6 +12,9 @@ import { env } from "@/env";
 import { tokenStore } from "@/auth/token-store";
 import { issueSseToken } from "@/sse/sse-api";
 
+// Constant tenant for the tenantless UI
+const CONSTANT_TENANT = "root";
+
 export type SseStatus = "idle" | "connecting" | "connected" | "reconnecting" | "error";
 
 export type SseEvent = {
@@ -145,14 +148,13 @@ export function SseProvider({ children }: { children: ReactNode }) {
           const controller = new AbortController();
           abortRef.current = controller;
 
-          const tenant = tokenStore.getTenant() ?? env.defaultTenant;
           const url = `${env.apiBase}/api/v1/sse/stream?token=${encodeURIComponent(token)}`;
 
           const response = await fetch(url, {
             method: "GET",
             headers: {
               Accept: "text/event-stream",
-              ...(tenant ? { tenant } : {}),
+              tenant: CONSTANT_TENANT,
             },
             signal: controller.signal,
           });

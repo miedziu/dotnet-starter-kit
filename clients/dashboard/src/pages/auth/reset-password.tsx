@@ -24,9 +24,9 @@ import { cn } from "@/lib/cn";
  * Reset-password — step 2 of the reset flow. The user lands here from a
  * link emailed by the forgot-password endpoint:
  *
- *   /reset-password?token=<urlencoded>&email=<urlencoded>&tenant=<id>
+ *   /reset-password?token=<urlencoded>&email=<urlencoded>
  *
- * Token + email + tenant come from URL; password comes from the form.
+ * Token + email come from URL; password comes from the form.
  * On success we toast and redirect to /login (existing JWTs stay valid
  * until natural expiry — a fresh sign-in under the new password is the
  * cleanest UX).
@@ -73,12 +73,11 @@ export function ResetPasswordPage() {
   const navigate = useNavigate();
   const [params] = useSearchParams();
 
-  // All three are required for the server call. We treat the page as
+  // Both are required for the server call. We treat the page as
   // "malformed link" if any are missing rather than letting the user
   // submit a doomed request.
   const token = params.get("token") ?? "";
   const email = params.get("email") ?? "";
-  const tenant = params.get("tenant") ?? "";
 
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
@@ -90,7 +89,7 @@ export function ResetPasswordPage() {
   const matches = password.length > 0 && password === confirm;
 
   const mutation = useMutation({
-    mutationFn: () => resetPassword({ email, password, token, tenant }),
+    mutationFn: () => resetPassword({ email, password, token }),
     onSuccess: () => {
       toast.success("Password updated", {
         description: "Sign in with your new password to continue.",
@@ -116,7 +115,7 @@ export function ResetPasswordPage() {
     return <Navigate to="/" replace />;
   }
 
-  const malformed = !token || !email || !tenant;
+  const malformed = !token || !email;
 
   const onSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -151,9 +150,8 @@ export function ResetPasswordPage() {
             <AuthHeadline lead="This link is" accent="incomplete" />
             <p className="text-[13px] leading-relaxed text-[var(--color-muted-foreground)]">
               The reset link is missing one of{" "}
-              <span className="text-[var(--color-foreground)]">token</span>,{" "}
-              <span className="text-[var(--color-foreground)]">email</span>, or{" "}
-              <span className="text-[var(--color-foreground)]">tenant</span>.
+              <span className="text-[var(--color-foreground)]">token</span>, or{" "}
+              <span className="text-[var(--color-foreground)]">email</span>.
               Some email clients clip long URLs — try copy-pasting the full
               link from the original email into your browser's address bar.
             </p>
@@ -177,8 +175,7 @@ export function ResetPasswordPage() {
             <AuthHeadline lead="Set a new" accent="password" />
             <p className="text-[13px] text-[var(--color-muted-foreground)]">
               Resetting password for{" "}
-              <span className="text-[var(--color-foreground)]">{email}</span> on{" "}
-              <span className="text-[var(--color-foreground)]">{tenant}</span>.
+              <span className="text-[var(--color-foreground)]">{email}</span>.
             </p>
           </div>
 

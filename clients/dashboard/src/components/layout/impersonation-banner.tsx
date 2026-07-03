@@ -1,8 +1,8 @@
+import { useMutation } from "@tanstack/react-query";
+import { LogOut, ShieldAlert, UserCog } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { ArrowRight, LogOut, ShieldAlert, UserCog } from "lucide-react";
 import { useAuth } from "@/auth/use-auth";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/cn";
@@ -61,18 +61,12 @@ export function ImpersonationBanner() {
   if (!impersonation) return null;
 
   const subjectLabel = user?.name ?? user?.email ?? "Unknown";
-  const tenantLabel = user?.tenant ?? "—";
   const actorLabel = impersonation.actorName ?? impersonation.actorUserId.slice(0, 8) + "…";
-  const actorTenantLabel = impersonation.actorTenant ?? "—";
-  const isCrossTenant =
-    impersonation.actorTenant !== undefined && impersonation.actorTenant !== user?.tenant;
 
   // One CSS variable drives every tone-derived color in the bar so we can
   // flip between warning / destructive without scattering conditionals.
-  const tone = isCrossTenant ? "var(--color-destructive)" : "var(--color-warning)";
-  const metaLabel = isCrossTenant
-    ? "Cross-tenant impersonation"
-    : "Impersonating";
+  const tone = "var(--color-warning)";
+  const metaLabel = "Impersonating";
 
   return (
     <div
@@ -87,16 +81,6 @@ export function ImpersonationBanner() {
         backgroundColor: "var(--color-muted)",
       }}
     >
-      {/* Left ribbon — 2px tone strip only for cross-tenant. Subtle but
-          scannable for an operator skimming the chrome. */}
-      {isCrossTenant && (
-        <span
-          aria-hidden
-          className="pointer-events-none absolute inset-y-0 left-0 w-[2px]"
-          style={{ backgroundColor: tone }}
-        />
-      )}
-
       <div className="flex min-w-0 flex-wrap items-center gap-3">
         {/* Gradient-ring icon square — matches the SetupTile / topbar icon
             treatment elsewhere in the dashboard. */}
@@ -130,23 +114,6 @@ export function ImpersonationBanner() {
             {subjectLabel}
           </span>
 
-          {/* Tenant flow — for cross-tenant we show actorTenant → tenant
-              so the cross-boundary jump is the most obvious shape in the
-              bar. For same-tenant just the one chip. */}
-          <div className="flex items-center gap-1.5">
-            {isCrossTenant && (
-              <>
-                <TenantChip label={actorTenantLabel} tone={tone} />
-                <ArrowRight
-                  className="h-3 w-3 shrink-0 opacity-70"
-                  style={{ color: tone }}
-                  aria-hidden
-                />
-              </>
-            )}
-            <TenantChip label={tenantLabel} tone={tone} emphasis={isCrossTenant} />
-          </div>
-
           {/* Operator attribution — hidden on small screens to keep the
               bar to one line on mobile. The `acting as` phrasing covers
               both variants. */}
@@ -175,36 +142,5 @@ export function ImpersonationBanner() {
         {pending ? "Ending…" : "End impersonation"}
       </Button>
     </div>
-  );
-}
-
-/**
- * Tenant identifier chip — small code-style pill in the bar's tone color.
- * `emphasis` bolds the target tenant in cross-tenant mode so the
- * destination of the boundary jump reads first.
- */
-function TenantChip({
-  label,
-  tone,
-  emphasis,
-}: {
-  label: string;
-  tone: string;
-  emphasis?: boolean;
-}) {
-  return (
-    <code
-      className={cn(
-        "rounded-md px-1.5 py-0.5 font-mono text-[11px] leading-tight",
-        emphasis ? "font-semibold" : "font-medium",
-      )}
-      style={{
-        backgroundColor: `oklch(from ${tone} l c h / 0.12)`,
-        color: tone,
-        boxShadow: `inset 0 0 0 1px oklch(from ${tone} l c h / 0.22)`,
-      }}
-    >
-      {label}
-    </code>
   );
 }

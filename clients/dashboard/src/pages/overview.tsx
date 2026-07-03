@@ -1,5 +1,3 @@
-import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import {
   Activity,
@@ -21,6 +19,16 @@ import {
   X,
   Zap,
 } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
+import {
+  AuditEventType,
+  AuditSeverity,
+  AUDIT_EVENT_TYPE_LABELS,
+  severityRank,
+  listAudits,
+  type AuditSummaryDto,
+} from "@/api/audits";
 import {
   getMyStatus,
   getMySubscription,
@@ -30,21 +38,13 @@ import {
   type TenantStatusDto,
   type UsageSnapshotDto,
 } from "@/api/billing";
-import {
-  AuditEventType,
-  AuditSeverity,
-  AUDIT_EVENT_TYPE_LABELS,
-  severityRank,
-  listAudits,
-  type AuditSummaryDto,
-} from "@/api/audits";
+import { useAuth } from "@/auth/use-auth";
+import { EntityDetailSection } from "@/components/list";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { EntityDetailSection } from "@/components/list";
-import { useAuth } from "@/auth/use-auth";
-import { useSseEvents, useSseStatus, type SseEvent, type SseStatus } from "@/sse/sse-context";
 import { cn } from "@/lib/cn";
+import { useSseEvents, useSseStatus, type SseEvent, type SseStatus } from "@/sse/sse-context";
 
 // ────────────────────────────────────────────────────────────────────────
 // Shaping helpers — pure, tested via memoization at the call sites.
@@ -768,28 +768,24 @@ function LiveFeedBody({ events }: { events: SseEvent[] }) {
 // ────────────────────────────────────────────────────────────────────────
 // First-run setup card — shown when the tenant has no active subscription
 // and the user hasn't dismissed it. Auto-hides as soon as the tenant
-// picks a plan; users can also opt out per-tenant via localStorage.
+// picks a plan; users can also opt out via localStorage.
 // ────────────────────────────────────────────────────────────────────────
 
 const FIRST_RUN_DISMISSED_KEY = "fsh.firstrun.dismissed";
 
-function dismissedKeyFor(tenantId: string | undefined): string {
-  return `${FIRST_RUN_DISMISSED_KEY}:${tenantId ?? "_default"}`;
-}
-
-function readDismissed(tenantId: string | undefined): boolean {
+function readDismissed(): boolean {
   if (typeof window === "undefined") return false;
   try {
-    return window.localStorage.getItem(dismissedKeyFor(tenantId)) === "true";
+    return window.localStorage.getItem(FIRST_RUN_DISMISSED_KEY) === "true";
   } catch {
     return false;
   }
 }
 
-function writeDismissed(tenantId: string | undefined, value: boolean): void {
+function writeDismissed(value: boolean): void {
   if (typeof window === "undefined") return;
   try {
-    window.localStorage.setItem(dismissedKeyFor(tenantId), String(value));
+    window.localStorage.setItem(FIRST_RUN_DISMISSED_KEY, String(value));
   } catch {
     /* storage unavailable */
   }
@@ -840,12 +836,8 @@ const SETUP_TILES: SetupTileSpec[] = [
 ];
 
 function FirstRunPanel({
-  tenantName,
-  tenantId,
   onDismiss,
 }: {
-  tenantName: string;
-  tenantId: string | undefined;
   onDismiss: () => void;
 }) {
   return (
@@ -856,7 +848,7 @@ function FirstRunPanel({
       <button
         type="button"
         onClick={() => {
-          writeDismissed(tenantId, true);
+          writeDismissed(true);
           onDismiss();
         }}
         aria-label="Dismiss setup checklist"
@@ -871,10 +863,10 @@ function FirstRunPanel({
           id="firstrun-heading"
           className="font-display text-[20px] font-bold tracking-tight text-foreground sm:text-[22px]"
         >
-          Welcome to {tenantName}
+          Welcome to the platform
         </h2>
         <p className="mt-1 max-w-xl text-[12.5px] leading-relaxed text-muted-foreground">
-          Your tenant is provisioned and ready. Here's where most teams start.
+          Your account is ready. Here's where most teams start.
         </p>
 
         <ul className="mt-5 grid grid-cols-1 gap-2.5 sm:grid-cols-2 xl:grid-cols-4">
@@ -966,16 +958,14 @@ export function OverviewPage() {
     staleTime: 60_000,
   });
 
-  // First-run state — show only when the tenant has no active subscription
-  // and the user hasn't dismissed it for this tenant. Gated on `!isError` so
+  // First-run state — show only when there is no active subscription
+  // and the user hasn't dismissed it. Gated on `!isError` so
   // an API failure surfaces an error branch instead of masquerading as a
-  // first-run (no-plan) tenant. Re-checks on tenant change so switching
-  // tenants restores the panel.
-  const tenantId = user?.tenant;
-  const [dismissed, setDismissed] = useState<boolean>(() => readDismissed(tenantId));
+  // first-run (no-plan) tenant.
+  const [dismissed, setDismissed] = useState<boolean>(() => readDismissed());
   useEffect(() => {
-    setDismissed(readDismissed(tenantId));
-  }, [tenantId]);
+    setDismissed(readDismissed());
+  }, []);
   const showFirstRun =
     !dismissed &&
     !subscription.isLoading &&
@@ -1015,7 +1005,6 @@ export function OverviewPage() {
   const firstName = (user?.name ?? user?.email?.split("@")[0] ?? "operator")
     .toString()
     .split(" ")[0];
-  const tenantLabel = user?.tenant ?? "your tenant";
 
   // ── Stat values ───────────────────────────────────────────────────────
   const planValue = subscription.isLoading ? (
@@ -1099,19 +1088,17 @@ export function OverviewPage() {
     <div className="space-y-5">
       {showFirstRun && (
         <FirstRunPanel
-          tenantName={tenantLabel}
-          tenantId={tenantId}
           onDismiss={() => setDismissed(true)}
         />
       )}
 
       {/* ── Editorial greeting header ───────────────────────────────────
-          Direct text — no card chrome. Small caption above (date + tenant),
+          Direct text — no card chrome. Small caption above (date),
           big greeting below, action buttons on the right. */}
       <header className="fsh-enter flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
         <div className="min-w-0">
           <p className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
-            {dateCaption} · {tenantLabel}
+            {dateCaption}
           </p>
           <h1 className="mt-1 font-display text-display-page font-bold leading-tight tracking-tight text-foreground">
             {greeting}, {firstName}

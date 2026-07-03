@@ -271,15 +271,17 @@ export function Topbar() {
           >
             {/* Rose-tinted square avatar tile — photo if set, else initials. */}
             <SquareUserAvatar src={avatarUrl} name={user?.name ?? user?.email} />
-            {/* Name + role caption — desktop only */}
-            <div className="hidden min-w-0 text-left md:block">
-              <p className="truncate text-[12px] font-medium leading-none text-[var(--color-foreground)]">
-                {user?.name ?? user?.email ?? "Unknown"}
-              </p>
-              <p className="mt-1 truncate text-[10px] leading-none text-[var(--color-muted-foreground)]">
-                {user?.tenant ?? "—"}
-              </p>
-            </div>
+             {/* Name + email caption — desktop only */}
+             <div className="hidden min-w-0 text-left md:block">
+               <p className="truncate text-[12px] font-medium leading-none text-[var(--color-foreground)]">
+                 {user?.name ?? user?.email ?? "Unknown"}
+               </p>
+               {user?.email && (
+                 <p className="mt-1 truncate text-[10px] leading-none text-[var(--color-muted-foreground)]">
+                   {user.email}
+                 </p>
+               )}
+             </div>
             <ChevronsUpDown
               className={cn(
                 "size-3.5 shrink-0 text-[oklch(from_var(--color-muted-foreground)_l_c_h_/_0.5)]",
@@ -366,10 +368,10 @@ export function Topbar() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Sign out of fullstackhero?</DialogTitle>
-            <DialogDescription>
-              You'll need to sign in again to access this tenant. Any unsaved
-              work in this session will be lost.
-            </DialogDescription>
+          <DialogDescription>
+            You'll need to sign in again to access your account. Any unsaved
+            work in this session will be lost.
+          </DialogDescription>
           </DialogHeader>
           <DialogBody>
             <div className="flex items-center gap-3 rounded-md border border-[var(--color-border)] bg-[var(--color-muted)] px-3 py-2.5">
@@ -378,15 +380,12 @@ export function Topbar() {
                 <div className="truncate text-sm font-medium tracking-tight">
                   {user?.name ?? user?.email ?? "Unknown"}
                 </div>
-                {user?.email && user.name && (
+                {user?.email && (
                   <div className="truncate text-xs text-[var(--color-muted-foreground)]">
                     {user.email}
                   </div>
                 )}
               </div>
-              <code className="rounded bg-[var(--color-muted)] px-1.5 py-0.5 font-mono text-[11px]">
-                {user?.tenant ?? "—"}
-              </code>
             </div>
           </DialogBody>
           <DialogFooter>

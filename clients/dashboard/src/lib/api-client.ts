@@ -1,6 +1,9 @@
-import { env } from "@/env";
-import { tokenStore } from "@/auth/token-store";
 import { decodeJwt } from "@/auth/jwt";
+import { tokenStore } from "@/auth/token-store";
+import { env } from "@/env";
+
+// Constant tenant for the tenantless UI
+const CONSTANT_TENANT = "acme";
 
 export type ApiError = {
   status: number;
@@ -113,12 +116,11 @@ export async function refreshAccessToken() {
   // Server's RefreshTokenCommand requires both `token` (the existing, possibly expired
   // access token, used to cross-check the subject) and `refreshToken`. Sending only one
   // of them fails FluentValidation and surfaces as 500.
-  const tenant = tokenStore.getTenant() ?? env.defaultTenant;
   const response = await fetch(`${env.apiBase}/api/v1/identity/token/refresh`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      ...(tenant ? { tenant } : {}),
+      tenant: CONSTANT_TENANT,
     },
     body: JSON.stringify({ token: accessToken, refreshToken }),
     // A stalled refresh would otherwise hang forever and block every queued
@@ -181,10 +183,8 @@ export async function apiFetch<T = unknown>(
     }
   }
 
-  const tenant = tokenStore.getTenant() ?? env.defaultTenant;
-  if (tenant && !mergedHeaders.has("tenant")) {
-    mergedHeaders.set("tenant", tenant);
-  }
+  // Always use the constant tenant for the tenantless UI
+  mergedHeaders.set("tenant", CONSTANT_TENANT);
 
   const url = path.startsWith("http") ? path : `${env.apiBase}${path}`;
   const initialTimer = withTimeout({ ...rest, headers: mergedHeaders }, timeoutMs, signal);

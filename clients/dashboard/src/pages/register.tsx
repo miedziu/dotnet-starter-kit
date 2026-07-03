@@ -1,9 +1,8 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import {
   AlertCircle,
   ArrowRight,
   Check,
-  ChevronDown,
   Eye,
   EyeOff,
   Loader2,
@@ -12,11 +11,9 @@ import {
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { Link, Navigate } from "react-router-dom";
 import { registerUser } from "@/api/identity";
-import { listTenantsPublic } from "@/api/tenants";
 import { useAuth } from "@/auth/use-auth";
 import { AuthHeadline, AuthShell } from "@/components/auth/auth-shell";
 import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuItem, DropdownMenuContent } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { setPendingReferralHighlight } from "@/hooks/use-referral";
@@ -74,8 +71,6 @@ export function RegisterPage() {
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [userName, setUserName] = useState("");
-  const [tenant, setTenant] = useState("");
-  const [tenantSearch, setTenantSearch] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -83,14 +78,9 @@ export function RegisterPage() {
   const [showConfirm, setShowConfirm] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
-  const { data: tenants = [], isLoading: loadingTenants } = useQuery({
-    queryKey: ["tenants"],
-    queryFn: listTenantsPublic,
-    staleTime: 5 * 60 * 1000, // 5 minutes
-  });
   const strength = useMemo(() => scorePassword(password), [password]);
   const passwordsMatch = password.length > 0 && password === confirmPassword;
-  const selectedTenant = tenants.find((t) => t.id === tenant);
+
   // Get referral code from localStorage (persistent) or URL params
   const [referralCode, setReferralCode] = useState<string>("");
   const [storedReferralCodes, setStoredReferralCodes] = useState<string[]>([]);
@@ -136,7 +126,7 @@ export function RegisterPage() {
   // Clear error when form fields change
   useEffect(() => {
     setError(null);
-  }, [firstName, lastName, email, userName, tenant, password, confirmPassword]);
+  }, [firstName, lastName, email, userName, password, confirmPassword]);
 
   if (isAuthenticated) {
     return <Navigate to="/" replace />;
@@ -152,17 +142,8 @@ export function RegisterPage() {
       setError("Use at least 8 characters.");
       return;
     }
-    if (!tenant) {
-      setError("Please select a tenant.");
-      return;
-    }
     mutation.mutate();
   };
-
-  // Filter tenants based on search input
-  const filteredTenants = tenantSearch
-    ? tenants.filter((t) => t.id.toLowerCase().includes(tenantSearch.toLowerCase()) || t.name?.toLowerCase().includes(tenantSearch.toLowerCase()))
-    : tenants;
 
   return (
     <AuthShell
@@ -191,7 +172,7 @@ export function RegisterPage() {
           <div>
             <AuthHeadline lead="Check your" accent="email" />
             <p className="text-[13px] leading-relaxed text-[var(--color-muted-foreground)]">
-              If the tenant <span className="text-[var(--color-foreground)]">{selectedTenant?.name ?? tenant}</span> exists and registrations are enabled, you'll receive a confirmation link shortly.
+              If an account with this email exists and registrations are enabled, you'll receive a confirmation link shortly.
             </p>
           </div>
           <ul className="space-y-1.5 text-left text-[12.5px] text-[var(--color-muted-foreground)]">
@@ -222,54 +203,6 @@ export function RegisterPage() {
           </div>
 
           <form onSubmit={onSubmit} className="space-y-5" noValidate aria-describedby={error ? "register-error" : undefined}>
-            {/* Tenant Combobox */}
-            <div className="space-y-1.5">
-              <Label
-                htmlFor="tenant"
-                className="block text-[11.5px] font-semibold uppercase tracking-wider text-[var(--color-muted-foreground)]"
-              >
-                Tenant
-              </Label>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <div className="relative">
-                    <Input
-                      id="tenant"
-                      value={tenantSearch}
-                      onChange={(e) => setTenantSearch(e.target.value)}
-                      placeholder={loadingTenants ? "Loading tenants..." : "Select or type tenant..."}
-                      autoComplete="organization"
-                      required
-                      aria-invalid={error ? true : undefined}
-                      aria-describedby={error ? "register-error" : undefined}
-                      className="h-11 pr-11 text-[14px]"
-                      disabled={loadingTenants}
-                    />
-                    <ChevronDown className="pointer-events-none absolute right-3.5 top-1/2 size-4 -translate-y-1/2 text-[var(--color-muted-foreground)]" />
-                  </div>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="max-h-60 w-[var(--radix-dropdown-menu-trigger-width)]" align="start">
-                  {filteredTenants.length === 0 ? (
-                    <div className="px-3 py-2 text-[11.5px] text-[var(--color-muted-foreground)]">
-                      No tenants found
-                    </div>
-                  ) : (
-                    filteredTenants.map((t) => (
-                      <DropdownMenuItem
-                        key={t.id}
-                        onSelect={() => {
-                          setTenant(t.id);
-                          setTenantSearch(t.id);
-                        }}
-                      >
-                        {t.id} {t.name && <span className="text-[var(--color-muted-foreground)]">- {t.name}</span>}
-                      </DropdownMenuItem>
-                    ))
-                  )}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-
             {/* First Name */}
             <div className="space-y-1.5">
               <Label
@@ -473,7 +406,7 @@ export function RegisterPage() {
             <div className="pt-1.5">
               <Button
                 type="submit"
-                disabled={mutation.isPending || !firstName || !lastName || !email || !userName || !tenant || !passwordsMatch || password.length < 8}
+                disabled={mutation.isPending || !firstName || !lastName || !email || !userName || !passwordsMatch || password.length < 8}
                 className="group h-11 w-full text-[14px] font-semibold"
               >
                 {mutation.isPending ? (
