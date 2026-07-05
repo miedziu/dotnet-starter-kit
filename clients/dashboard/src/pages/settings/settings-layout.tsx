@@ -1,4 +1,3 @@
-import { NavLink, Outlet, useLocation } from "react-router-dom";
 import {
   Bell,
   ChevronRight,
@@ -9,6 +8,8 @@ import {
   UserRound,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
+import React from "react";
+import { NavLink, Outlet, useLocation } from "react-router-dom";
 import { EntityPageHeader } from "@/components/list";
 import { cn } from "@/lib/cn";
 
@@ -191,23 +192,20 @@ export function SettingsLayout() {
 //  and footer bar. Drop-in for the per-tab section groupings.
 // ───────────────────────────────────────────────────────────────────────
 
-export function SettingsSection({
-  title,
-  icon: Icon,
-  description,
-  footer,
-  className,
-  children,
-}: {
-  title?: string;
-  icon?: LucideIcon;
-  description?: React.ReactNode;
-  footer?: React.ReactNode;
-  className?: string;
-  children: React.ReactNode;
-}) {
+export const SettingsSection = React.forwardRef<
+  HTMLElement,
+  {
+    title?: string;
+    icon?: LucideIcon;
+    description?: React.ReactNode;
+    footer?: React.ReactNode;
+    className?: string;
+    children: React.ReactNode;
+  }
+>(({ title, icon: Icon, description, footer, className, children }, ref) => {
   return (
     <section
+      ref={ref}
       className={cn(
         "overflow-hidden rounded-xl border border-[var(--color-border)] bg-[var(--color-card)]",
         "shadow-xs",
@@ -237,4 +235,4 @@ export function SettingsSection({
       )}
     </section>
   );
-}
+});

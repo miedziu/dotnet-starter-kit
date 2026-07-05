@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { env } from "@/env";
+import { checkReferralHighlight } from "@/hooks/use-referral";
 import { ApiRequestError } from "@/lib/api-client";
 import { cn } from "@/lib/cn";
 
@@ -46,12 +47,18 @@ export function LoginPage() {
     setError(null);
     setSubmitting(true);
     try {
-      const hasReferralHighlight = await login({
+       await login({
         email: creds.email,
         password: creds.password,
         tenant: env.defaultTenant,
       });
+      // Wait for React to process the authentication state update
+      // before navigating. This ensures isAuthenticated is true
+      // when we navigate to protected routes like /settings/profile.
+      await new Promise((resolve) => setTimeout(resolve, 1));
+
       // Redirect to profile if user has a pending referral highlight
+      const hasReferralHighlight = checkReferralHighlight();
       if (hasReferralHighlight) {
         navigate("/settings/profile", { replace: true });
       } else {
@@ -62,8 +69,8 @@ export function LoginPage() {
         err instanceof ApiRequestError
           ? err.problem?.detail ?? err.problem?.title ?? err.message
           : err instanceof Error
-            ? err.message
-            : "Login failed";
+          ? err.message
+          : "Login failed";
       setError(message);
     } finally {
       setSubmitting(false);

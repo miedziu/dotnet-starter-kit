@@ -4,12 +4,11 @@ import { useEffect, useRef, useState, type FormEvent } from "react";
 import { toast } from "sonner";
 import { getMyProfile, setProfileImage, updateMyProfile } from "@/api/identity";
 import { useAuth } from "@/auth/use-auth";
-import { useReferralHighlight } from "@/auth/use-auth";
 import { ImageInput } from "@/components/file/image-input";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { getReferralUsernames } from "@/hooks/use-referral";
+import { checkReferralHighlight, getReferralUsernames } from "@/hooks/use-referral";
 import { ApiRequestError } from "@/lib/api-client";
 import { SettingsSection } from "@/pages/settings/settings-layout";
 
@@ -220,13 +219,24 @@ export function ProfileSettings() {
 // ─── Referral Section ────────────────────────────────────────────────────────
 
 function ReferralSection({ referralLink }: { referralLink: string | null }) {
-  const hasReferralHighlight = useReferralHighlight();
-
   // Show highlight toast when redirected after registration
+  const hasReferralHighlight = checkReferralHighlight();
+  const sectionRef = useRef<HTMLElement>(null);
+  const [highlighted, setHighlighted] = useState(false);
+  // Track if toast has been shown to prevent multiple toasts in dev mode
+  const toastShownRef = useRef(false);
+
   useEffect(() => {
-    if (hasReferralHighlight) {
+    if (hasReferralHighlight && !toastShownRef.current) {
+      toastShownRef.current = true;
       const usernames = getReferralUsernames();
-      toast.success(`You were referred by ${usernames.length} user${usernames.length !== 1 ? 's' : ''}! Welcome!`);
+      toast.success(`You were referred by ${usernames[usernames.length - 1]}! Welcome!`);
+      sectionRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      setHighlighted(true);
+      const timer = setTimeout(() => setHighlighted(false), 5000);
+      const currentCount = parseInt(localStorage.getItem("fsh.dashboard.pendingReferralHighlight") ?? "0", 10);
+      localStorage.setItem("fsh.dashboard.pendingReferralHighlight", String(Math.max(0, currentCount - 1)));
+      return () => clearTimeout(timer);
     }
   }, [hasReferralHighlight]);
 
@@ -260,32 +270,42 @@ function ReferralSection({ referralLink }: { referralLink: string | null }) {
 
   return (
     <SettingsSection
+      ref={sectionRef}
       title="Referral"
       icon={Share2}
       description="Share your referral link to invite others. You'll earn rewards when they join."
+      className={highlighted ? "ring-2 ring-primary" : ""}
     >
       {referralLink ? (
         <div className="space-y-3">
           <div className="flex items-center gap-2">
-            <code className="flex-1 overflow-x-auto rounded-lg border border-[var(--color-border)] bg-[var(--color-muted)] px-3 py-2 font-mono text-xs">
+            <code
+              className={`flex-1 overflow-x-auto rounded-lg border px-3 py-2 font-mono text-xs ${
+                highlighted ? "border-primary bg-primary/10" : "border-[var(--color-border)] bg-[var(--color-muted)]"
+              }`}
+            >
               {referralLink}
             </code>
             <Button
               type="button"
-              variant="outline"
+              variant={highlighted ? "default" : "outline"}
               size="sm"
               onClick={onCopy}
-              className="h-9 rounded-lg px-3 text-[13px]"
+              className={`h-9 rounded-lg px-3 text-[13px] ${
+                highlighted ? "bg-primary text-primary-foreground" : ""
+              }`}
             >
               <Copy className="size-3.5" />
               Copy
             </Button>
             <Button
               type="button"
-              variant="outline"
+              variant={highlighted ? "default" : "outline"}
               size="sm"
               onClick={onShare}
-              className="h-9 rounded-lg px-3 text-[13px]"
+              className={`h-9 rounded-lg px-3 text-[13px] ${
+                highlighted ? "bg-primary text-primary-foreground" : ""
+              }`}
             >
               <Share2 className="size-3.5" />
               Share

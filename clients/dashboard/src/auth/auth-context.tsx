@@ -4,7 +4,6 @@ import { endImpersonation, getMyPermissions, startImpersonation } from "@/api/id
 import { issueToken } from "@/auth/api";
 import { decodeJwt, isTokenExpired, type JwtClaims } from "@/auth/jwt";
 import { tokenStore } from "@/auth/token-store";
-import { checkAndClearPendingReferralHighlight } from "@/hooks/use-referral";
 import { refreshAccessToken } from "@/lib/api-client";
 
 export type AuthUser = {
@@ -13,7 +12,6 @@ export type AuthUser = {
   name?: string;
   tenant?: string;
   permissions: string[];
-  hasReferralHighlight?: boolean;
 };
 
 export type ImpersonationInfo = {
@@ -43,7 +41,7 @@ export type AuthContextValue = {
   permissionsHydrated: boolean;
   /** Truthy iff the current access token carries act_sub (impersonation mode). */
   impersonation: ImpersonationInfo | null;
-  login: (input: { email: string; password: string; tenant: string }) => Promise<boolean>;
+  login: (input: { email: string; password: string; tenant: string }) => Promise<void>;
   logout: () => void;
   /** Re-fetch the permission set for the signed-in user (e.g. after a role change). */
   refreshPermissions: () => Promise<void>;
@@ -82,7 +80,6 @@ function claimsToUser(claims: JwtClaims | null, permissions: string[], hasReferr
     name,
     tenant: claims.tenant,
     permissions,
-    hasReferralHighlight,
   };
 }
 
@@ -195,10 +192,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // Only check referral highlight when we have a valid token.
       // Prevents clearing the flag prematurely during login flow
       // when setTenant()/setPermissions() emit events before tokens are set.
-      const hasReferralHighlight = claims !== null && !isTokenExpired(claims)
-        ? checkAndClearPendingReferralHighlight()
-        : false;
-      setUser(claimsToUser(claims, tokenStore.getPermissions(), hasReferralHighlight));
+      setUser(claimsToUser(claims, tokenStore.getPermissions()));
       setImpersonation(claimsToImpersonation(claims));
     };
     const unsubscribe = tokenStore.subscribe(refresh);
@@ -226,10 +220,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = useCallback(
     async (input: { email: string; password: string; tenant: string }) => {
-      // Check for pending referral highlight BEFORE setting tenant/permissions.
-      // These calls emit events that would clear the pending flag prematurely.
-      const hasReferralHighlight = checkAndClearPendingReferralHighlight();
-
       // Stale permissions from a previous user must not leak into the new
       // session — clear before issuing the token so the hydration effect
       // re-fetches from scratch.
@@ -259,8 +249,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // the next page — react-query's retry config blocks auto-retries
       // for 401, so the stale error would never refetch on its own.
       queryClient.clear();
-
-      return hasReferralHighlight;
     },
     [queryClient],
   );

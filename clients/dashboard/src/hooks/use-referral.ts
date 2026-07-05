@@ -33,17 +33,14 @@ export function addReferralUsername(username: string): void {
 // Set pending highlight flag for post-registration navigation
 export function setPendingReferralHighlight(hasUsernames: boolean): void {
   if (hasUsernames) {
-    localStorage.setItem(PENDING_HIGHLIGHT_KEY, "true");
+    localStorage.setItem(PENDING_HIGHLIGHT_KEY, "5");
   } else {
     localStorage.removeItem(PENDING_HIGHLIGHT_KEY);
   }
 }
 
 // Check and clear pending highlight flag
-export function checkAndClearPendingReferralHighlight(): boolean {
-  const hasHighlight = localStorage.getItem(PENDING_HIGHLIGHT_KEY) === "true";
-  if (hasHighlight) {
-    localStorage.removeItem(PENDING_HIGHLIGHT_KEY);
-  }
-  return hasHighlight;
+export function checkReferralHighlight(): boolean {
+  const count = parseInt(localStorage.getItem(PENDING_HIGHLIGHT_KEY) ?? "0", 10);
+  return count > 0;
 }
