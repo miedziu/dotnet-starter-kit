@@ -31,7 +31,14 @@ export function decodeJwt(token: string | null | undefined): JwtClaims | null {
   try {
     const payload = parts[1].replace(/-/g, "+").replace(/_/g, "/");
     const padded = payload + "=".repeat((4 - (payload.length % 4)) % 4);
-    const json = atob(padded);
+    const binaryString = atob(padded);
+    // Convert binary string to UTF-8 properly to handle non-ASCII characters
+    // (e.g., polish characters like ą, ć, ę, ł, ń, ó, ś, ź, ż)
+    const bytes = new Uint8Array(binaryString.length);
+    for (let i = 0; i < binaryString.length; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
+    }
+    const json = new TextDecoder("utf-8").decode(bytes);
     return JSON.parse(json) as JwtClaims;
   } catch {
     return null;
