@@ -53,6 +53,34 @@
             "group": "none"
         },
         {
+            "label": "npm: install (dashboard)",
+            "command": "npm",
+            "type": "process",
+            "args": [
+                "install"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/clients/dashboard"
+            },
+            "problemMatcher": [],
+            "group": "none"
+        },
+        {
+            "label": "npm: dev (dashboard)",
+            "command": "npm",
+            "type": "process",
+            "args": [
+                "run",
+                "dev"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/clients/dashboard"
+            },
+            "problemMatcher": [],
+            "group": "none",
+            "isBackground": true
+        },
+        {
             "label": "clean",
             "command": "dotnet",
             "type": "process",

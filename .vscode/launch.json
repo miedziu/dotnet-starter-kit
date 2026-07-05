@@ -2,6 +2,54 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Launch Dashboard Frontend",
+            "type": "pwa-chrome",
+            "request": "launch",
+            "url": "http://localhost:5174",
+            "webRoot": "${workspaceFolder}/clients/dashboard",
+            "breakOnLoad": true,
+            "sourceMapPathOverrides": {
+                "webpack:///src/*": "${webRoot}/src/*",
+                "vite/src/*": "${webRoot}/src/*",
+                "*src/*": "${webRoot}/src/*"
+            },
+            "runtimeArgs": [
+                "--remote-debugging-port=9229"
+            ],
+            "env": {
+                "VITE_API_BASE_URL": "http://localhost:5030"
+            }
+        },
+        {
+            "name": "Attach to Dashboard",
+            "type": "pwa-chrome",
+            "request": "attach",
+            "port": 9229,
+            "url": "http://localhost:5174",
+            "webRoot": "${workspaceFolder}/clients/dashboard",
+            "sourceMapPathOverrides": {
+                "webpack:///src/*": "${webRoot}/src/*",
+                "vite/src/*": "${webRoot}/src/*",
+                "*src/*": "${webRoot}/src/*"
+            }
+        },
+        {
+            "name": "Chrome",
+            "request": "launch",
+            "type": "chrome",
+            "url": "http://localhost:5174",
+            "webRoot": "${workspaceFolder}"
+        },
+        {
+            "name": "Attach Chrome",
+            "type": "chrome",
+            "request": "attach",
+            "port": 9222, // "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe" --user-data-dir=remote-debug-profile --remote-debugging-port=9222
+            "webRoot": "${workspaceFolder}",
+            "url": "http://localhost:5174",
+            "trace": true
+        },
+        {
             "name": "Launch API",
             "type": "coreclr",
             "request": "launch",

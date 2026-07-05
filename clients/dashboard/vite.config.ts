@@ -45,9 +45,15 @@ export default defineConfig(({ mode }) => {
         "@": path.resolve(__dirname, "./src"),
       },
     },
+    // Enable source maps for debugging
+    build: {
+      sourcemap: true,
+    },
     server: {
       port: 5174,
       strictPort: true,
+      // Enable source maps in dev server for debugging
+      sourcemap: true,
       proxy: {
         // ws: true forwards the WebSocket upgrade used by SignalR's hub
         // transport at /api/v1/realtime/hub. Without it the negotiate
