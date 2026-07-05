@@ -14,9 +14,29 @@ import { cn } from "@/lib/cn";
 
 type LocationState = { from?: { pathname: string } };
 
+// Field-level errors from FluentValidation are keyed by property name
+type FieldErrors = Record<string, string[] | undefined>;
+
+// Extract field errors from ApiRequestError (FluentValidation ValidationException)
+function extractFieldErrors(err: unknown): FieldErrors | undefined {
+  if (err instanceof ApiRequestError && err.problem?.errors) {
+    return err.problem.errors as FieldErrors;
+  }
+  return undefined;
+}
+
+// Get the first error message for a field (for inline display)
+function getFieldError(errors: FieldErrors | null, field: string): string | undefined {
+  return errors?.[field]?.[0];
+}
+
 // ────────────────────────────────────────────────────────────────────────
 // Login — dentalOS "welcome back" card on rose+saffron atmospheric orbs
 // (chrome supplied by AuthShell, shared with the rest of the auth flow).
+// FSH stays multi-tenant, so the Tenant field leads the form; Email +
+// Password follow. The demo picker ("Step into any role") signs in
+// instantly and is gated on the runtime demoMode flag — on in staging,
+// off in production.
 // ────────────────────────────────────────────────────────────────────────
 
 export function LoginPage() {
@@ -29,6 +49,7 @@ export function LoginPage() {
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [showPassword, setShowPassword] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
 
@@ -45,9 +66,10 @@ export function LoginPage() {
 
   const performLogin = async (creds: { email: string; password: string }) => {
     setError(null);
+    setFieldErrors({});
     setSubmitting(true);
     try {
-       await login({
+      await login({
         email: creds.email,
         password: creds.password,
         tenant: env.defaultTenant,
@@ -65,6 +87,9 @@ export function LoginPage() {
         navigate(from, { replace: true });
       }
     } catch (err) {
+      const fieldErrs = extractFieldErrors(err);
+      setFieldErrors(fieldErrs ?? {});
+
       const message =
         err instanceof ApiRequestError
           ? err.problem?.detail ?? err.problem?.title ?? err.message
@@ -137,9 +162,14 @@ export function LoginPage() {
               placeholder="name@example.com"
               autoComplete="email"
               required
-              aria-invalid={error ? true : undefined}
+              aria-invalid={!!getFieldError(fieldErrors, "Email")}
               className="h-11 text-[14px]"
             />
+            {getFieldError(fieldErrors, "Email") && (
+              <p className="text-[11.5px] text-[var(--color-destructive)]" role="alert">
+                {getFieldError(fieldErrors, "Email")}
+              </p>
+            )}
           </div>
 
           <div className="space-y-1.5">
@@ -166,7 +196,7 @@ export function LoginPage() {
                 placeholder="Enter your password"
                 autoComplete="current-password"
                 required
-                aria-invalid={error ? true : undefined}
+                aria-invalid={!!getFieldError(fieldErrors, "Password")}
                 className="h-11 pr-11 text-[14px]"
               />
               <button
@@ -178,6 +208,12 @@ export function LoginPage() {
                 {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
               </button>
             </div>
+
+            {getFieldError(fieldErrors, "Password") && (
+              <p className="text-[11.5px] text-[var(--color-destructive)]" role="alert">
+                {getFieldError(fieldErrors, "Password")}
+              </p>
+            )}
           </div>
 
           {error && (
