@@ -1,5 +1,3 @@
-import { useState, type FormEvent } from "react";
-import { Link, Navigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import {
   AlertCircle,
@@ -9,13 +7,15 @@ import {
   Mail,
   MailCheck,
 } from "lucide-react";
+import { useState, type FormEvent } from "react";
+import { Link, Navigate } from "react-router-dom";
+import { requestPasswordReset } from "@/api/identity";
 import { useAuth } from "@/auth/use-auth";
+import { AuthHeadline, AuthShell } from "@/components/auth/auth-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { AuthHeadline, AuthShell } from "@/components/auth/auth-shell";
-import { requestPasswordReset } from "@/api/identity";
-import { ApiRequestError } from "@/lib/api-client";
+import { ApiRequestError, CONSTANT_TENANT } from "@/lib/api-client";
 import { cn } from "@/lib/cn";
 
 /**
@@ -27,6 +27,9 @@ import { cn } from "@/lib/cn";
  * server response to imply existence — always render the same "check your
  * inbox" success state after a 2xx.
  */
+
+const tenant = CONSTANT_TENANT;
+
 export function ForgotPasswordPage() {
   const { isAuthenticated } = useAuth();
   const [email, setEmail] = useState("");
@@ -34,7 +37,7 @@ export function ForgotPasswordPage() {
   const [error, setError] = useState<string | null>(null);
 
   const mutation = useMutation({
-    mutationFn: () => requestPasswordReset({ email }),
+    mutationFn: () => requestPasswordReset({ email, tenant }),
     onSuccess: () => setSubmitted(true),
     onError: (err: unknown) => {
       // Most failures here are infra (tenant not resolvable, server down) —

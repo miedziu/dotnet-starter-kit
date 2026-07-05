@@ -66,7 +66,7 @@ export const AuthContext = createContext<AuthContextValue | null>(null);
 // Permissions are NOT in the JWT (it carries only role names). They're fetched
 // from /api/v1/identity/permissions and cached in the token store; this builds
 // the user from the token's identity claims + that separately-hydrated list.
-function claimsToUser(claims: JwtClaims | null, permissions: string[], hasReferralHighlight: boolean = false): AuthUser | null {
+function claimsToUser(claims: JwtClaims | null, permissions: string[]): AuthUser | null {
   if (!claims?.sub) return null;
   // `name` is the standard short claim; `unique_name` is what
   // JwtSecurityTokenHandler emits for ClaimTypes.Name. Treat empty

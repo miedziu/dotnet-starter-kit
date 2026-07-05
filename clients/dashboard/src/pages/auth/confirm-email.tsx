@@ -1,10 +1,10 @@
+import { AlertCircle, ArrowRight, CheckCircle2, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { AlertCircle, ArrowRight, CheckCircle2, Loader2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { AuthHeadline, AuthShell } from "@/components/auth/auth-shell";
 import { confirmEmail } from "@/api/identity";
-import { ApiRequestError } from "@/lib/api-client";
+import { AuthHeadline, AuthShell } from "@/components/auth/auth-shell";
+import { Button } from "@/components/ui/button";
+import { ApiRequestError, CONSTANT_TENANT } from "@/lib/api-client";
 
 /**
  * Confirm-email landing — the link sent during registration brings the
@@ -46,7 +46,8 @@ export function ConfirmEmailPage() {
     }
 
     let cancelled = false;
-    void confirmEmail({ userId, code })
+    const tenant = CONSTANT_TENANT;
+    void confirmEmail({ userId, code, tenant })
       .then((message) => {
         if (cancelled) return;
         setStatus({

@@ -3,7 +3,7 @@ import { tokenStore } from "@/auth/token-store";
 import { env } from "@/env";
 
 // Constant tenant for the tenantless UI
-const CONSTANT_TENANT = "acme";
+export const CONSTANT_TENANT = "acme";
 
 export type ApiError = {
   status: number;

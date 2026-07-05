@@ -1,5 +1,3 @@
-import { useEffect, useMemo, useState, type FormEvent } from "react";
-import { Link, Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import {
   AlertCircle,
@@ -10,14 +8,16 @@ import {
   Loader2,
   ShieldCheck,
 } from "lucide-react";
+import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { Link, Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
+import { resetPassword } from "@/api/identity";
 import { useAuth } from "@/auth/use-auth";
+import { AuthHeadline, AuthShell } from "@/components/auth/auth-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { AuthHeadline, AuthShell } from "@/components/auth/auth-shell";
-import { resetPassword } from "@/api/identity";
-import { ApiRequestError } from "@/lib/api-client";
+import { ApiRequestError, CONSTANT_TENANT } from "@/lib/api-client";
 import { cn } from "@/lib/cn";
 
 /**
@@ -88,8 +88,10 @@ export function ResetPasswordPage() {
   const strength = useMemo(() => scorePassword(password), [password]);
   const matches = password.length > 0 && password === confirm;
 
+  const tenant = CONSTANT_TENANT;
+
   const mutation = useMutation({
-    mutationFn: () => resetPassword({ email, password, token }),
+    mutationFn: () => resetPassword({ email, password, token, tenant }),
     onSuccess: () => {
       toast.success("Password updated", {
         description: "Sign in with your new password to continue.",
