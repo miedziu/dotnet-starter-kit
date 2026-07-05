@@ -268,6 +268,7 @@ internal sealed class UserRegistrationService(
             UserName = userName,
             FirstName = firstName,
             LastName = lastName,
+            CreatedAt = TimeProvider.System.GetUtcNow().UtcDateTime,
             EmailConfirmed = true,
             PhoneNumberConfirmed = false,
             IsActive = true
@@ -339,6 +340,7 @@ internal sealed class UserRegistrationService(
             LastName = lastName,
             UserName = userName,
             PhoneNumber = phoneNumber,
+            CreatedAt = TimeProvider.System.GetUtcNow().UtcDateTime,
             IsActive = true,
             EmailConfirmed = false,
             PhoneNumberConfirmed = false,

@@ -17,6 +17,8 @@ public class FshUser : IdentityUser, IHasDomainEvents
 
     public string? ObjectId { get; set; }
 
+    public DateTime CreatedAt { get; set; } = TimeProvider.System.GetUtcNow().UtcDateTime;
+
     /// <summary>Timestamp when the user last changed their password</summary>
     public DateTime LastPasswordChangeDate { get; set; } = TimeProvider.System.GetUtcNow().UtcDateTime;
 
