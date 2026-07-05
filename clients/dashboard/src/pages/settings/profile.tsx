@@ -223,12 +223,9 @@ function ReferralSection({ referralLink }: { referralLink: string | null }) {
   const hasReferralHighlight = checkReferralHighlight();
   const sectionRef = useRef<HTMLElement>(null);
   const [highlighted, setHighlighted] = useState(false);
-  // Track if toast has been shown to prevent multiple toasts in dev mode
-  const toastShownRef = useRef(false);
 
   useEffect(() => {
-    if (hasReferralHighlight && !toastShownRef.current) {
-      toastShownRef.current = true;
+    if (hasReferralHighlight){
       const usernames = getReferralUsernames();
       toast.success(`You were referred by ${usernames[usernames.length - 1]}! Welcome!`);
       sectionRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
