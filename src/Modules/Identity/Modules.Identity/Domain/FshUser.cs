@@ -23,11 +23,8 @@ public class FshUser : IdentityUser, IHasDomainEvents
     // Navigation property for password history
     public virtual ICollection<PasswordHistory> PasswordHistories { get; set; } = new List<PasswordHistory>();
 
-    // Navigation property for referral code
-    public virtual Referral? Referral { get; set; }
-
-    // Navigation collection for users this user has referred
-    public virtual ICollection<Referral> ReferredUsers { get; set; } = new List<Referral>();
+    // Navigation collection for users this user has referred (via Referrals table)
+    public virtual ICollection<Referral> Referrals { get; set; } = new List<Referral>();
 
     // IHasDomainEvents implementation
     public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();

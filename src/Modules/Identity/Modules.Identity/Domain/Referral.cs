@@ -3,38 +3,32 @@ using FSH.Framework.Core.Domain;
 namespace FSH.Modules.Identity.Domain;
 
 /// <summary>
-/// Represents a referral relationship between users. A user can have one referral code
-/// that can be shared, and multiple referral records linking them to users they've referred.
+/// Represents a referral conversion - when a user registers via another user's referral link.
+/// Uses composite key (ReferrerUserId, NewReferredUserId) to prevent duplicate referrals.
+///
+/// Implements <see cref="IGlobalEntity"/> to opt out of tenant isolation. Referrals are
+/// created within a tenant context but the relationship between referrer and referred
+/// user is inherently tenant-specific. Since both users belong to the same tenant,
+/// the TenantId column would be redundant for filtering purposes.
 /// </summary>
-public class Referral : BaseEntity<Guid>
+public class Referral : IGlobalEntity
 {
-    public string ReferralCode { get; private set; } = default!;
-    
     public string ReferrerUserId { get; private set; } = default!;
-    public string? ReferredUserId { get; private set; }
-    
-    public DateTime CreatedAt { get; private set; }
-    public DateTime? UsedAt { get; private set; }
-    
+
+    public string NewReferredUserId { get; private set; } = default!;
+
     // Navigation properties
     public virtual FshUser ReferrerUser { get; private set; } = default!;
-    public virtual FshUser? ReferredUser { get; set; }
-    
+    public virtual FshUser NewReferredUser { get; private set; } = default!;
+
     private Referral() { } // EF Core
-    
-    public static Referral Create(string referralCode, string referrerUserId)
+
+    public static Referral Create(string referrerUserId, string newReferredUserId)
     {
         return new Referral
         {
-            ReferralCode = referralCode,
             ReferrerUserId = referrerUserId,
-            CreatedAt = TimeProvider.System.GetUtcNow().UtcDateTime,
+            NewReferredUserId = newReferredUserId,
         };
-    }
-    
-    public void MarkUsed(string referredUserId)
-    {
-        ReferredUserId = referredUserId;
-        UsedAt = TimeProvider.System.GetUtcNow().UtcDateTime;
     }
 }

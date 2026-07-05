@@ -19,7 +19,8 @@ public interface IUserRegistrationService
         string confirmPassword,
         string phoneNumber,
         string origin,
-        CancellationToken cancellationToken);
+        string[]? referralUsernames = null,
+        CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Gets or creates a user from an external authentication principal.

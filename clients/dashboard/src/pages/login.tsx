@@ -7,6 +7,7 @@ import { AuthShell } from "@/components/auth/auth-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { env } from "@/env";
 import { ApiRequestError } from "@/lib/api-client";
 import { cn } from "@/lib/cn";
 
@@ -45,8 +46,17 @@ export function LoginPage() {
     setError(null);
     setSubmitting(true);
     try {
-      await login(creds);
-      navigate(from, { replace: true });
+      const hasReferralHighlight = await login({
+        email: creds.email,
+        password: creds.password,
+        tenant: env.defaultTenant,
+      });
+      // Redirect to profile if user has a pending referral highlight
+      if (hasReferralHighlight) {
+        navigate("/settings/profile", { replace: true });
+      } else {
+        navigate(from, { replace: true });
+      }
     } catch (err) {
       const message =
         err instanceof ApiRequestError

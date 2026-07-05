@@ -59,16 +59,103 @@ internal sealed class UserRegistrationService(
         string confirmPassword,
         string phoneNumber,
         string origin,
-        CancellationToken cancellationToken)
+        string[]? referralUsernames = null,
+        CancellationToken cancellationToken = default)
     {
         ValidatePasswordMatch(password, confirmPassword);
 
-        var user = await CreateUserWithPasswordAsync(firstName, lastName, email, userName, password, phoneNumber);
-        await AssignDefaultRoleAndGroupsAsync(user, "System", cancellationToken);
-        await SendConfirmationEmailAsync(user, origin, cancellationToken);
-        await PublishUserRegisteredAsync(user, "Identity", cancellationToken);
+        // Use explicit transaction to ensure all operations are atomic
+        await using var transaction = await db.Database.BeginTransactionAsync(cancellationToken);
 
-        return user.Id;
+        FshUser? user = null;
+        try
+        {
+            // Create user with UserManager - this saves the user immediately
+            user = await CreateUserWithPasswordAsync(firstName, lastName, email, userName, password, phoneNumber);
+
+            // Assign role and groups within transaction
+            await AssignDefaultRoleAndGroupsAsync(user, "System", cancellationToken);
+
+            // Process referral usernames
+            if (referralUsernames?.Length > 0)
+            {
+                await ProcessReferralsAsync(user.Id, referralUsernames, cancellationToken);
+            }
+
+            // Send confirmation email (background job - not part of transaction
+            await SendConfirmationEmailAsync(user, origin, cancellationToken);
+
+            // Record registration and add outbox message
+            await PublishUserRegisteredAsync(user, "Identity", cancellationToken);
+
+            await db.SaveChangesAsync(cancellationToken);
+            await transaction.CommitAsync(cancellationToken);
+
+            return user.Id;
+        }
+        catch
+        {
+            // Rollback transaction
+            await transaction.RollbackAsync(cancellationToken);
+
+            // Compensation: delete the user if it was created
+            if (user is not null)
+            {
+                var deleteResult = await userManager.DeleteAsync(user);
+                if (!deleteResult.Succeeded)
+                {
+                    // Log the cleanup failure but don't throw - the original exception is more important
+                    // In production, you'd want to log this to an error tracking system
+                }
+            }
+
+            throw;
+        }
+    }
+
+    private async Task ProcessReferralsAsync(string newReferredUserId, string[] referralUsernames, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(newReferredUserId);
+        ArgumentNullException.ThrowIfNull(referralUsernames);
+
+        // Limit to 10 referral usernames, keeping the most recent (last) entries
+        if (referralUsernames.Length > 10)
+        {
+            referralUsernames = referralUsernames[^(referralUsernames.Length - 10)..];
+        }
+
+        // Normalize and filter valid usernames
+        var normalizedUsernames = referralUsernames
+            .Where(u => !string.IsNullOrWhiteSpace(u))
+            .Select(u => u.ToUpperInvariant())
+            .ToList();
+
+        if (normalizedUsernames.Count == 0) return;
+
+
+        // Find existing referrals to exclude
+        var existing = await db.Referrals
+            .Where(r => r.NewReferredUserId == newReferredUserId)
+            .Select(r => r.ReferrerUserId)
+            .ToHashSetAsync(cancellationToken);
+
+        // Find valid referrers by normalized usernames
+        var validReferrerUserIds = await db.Users
+            .AsNoTracking()
+            .Where(u => u.NormalizedUserName != null && normalizedUsernames.Contains(u.NormalizedUserName))
+            .Select(u => u.Id)
+            .ToHashSetAsync(cancellationToken);
+
+        // Create new referrals
+        var newReferrals = validReferrerUserIds
+            .Except(existing)
+            .Select(id => Domain.Referral.Create(id, newReferredUserId))
+            .ToList();
+
+        if (newReferrals.Count > 0)
+        {
+            db.Referrals.AddRange(newReferrals);
+        }
     }
 
     public async Task<string> ConfirmEmailAsync(string userId, string code, string tenant, CancellationToken cancellationToken)
@@ -278,7 +365,15 @@ internal sealed class UserRegistrationService(
         string source,
         CancellationToken cancellationToken = default)
     {
-        await userManager.AddToRoleAsync(user, RoleConstants.Basic);
+        var roleResult = await userManager.AddToRoleAsync(user, RoleConstants.Basic);
+        if (!roleResult.Succeeded)
+        {
+            var errors = roleResult.Errors.Select(e => e.Description).ToList();
+            throw new CustomException(
+                "Failed to assign default role to user.",
+                errors,
+                HttpStatusCode.BadRequest);
+        }
 
         var defaultGroups = await db.Groups
             .AsNoTracking()
@@ -288,11 +383,6 @@ internal sealed class UserRegistrationService(
         foreach (var group in defaultGroups)
         {
             db.UserGroups.Add(UserGroup.Create(user.Id, group.Id, source));
-        }
-
-        if (defaultGroups.Count > 0)
-        {
-            await db.SaveChangesAsync(cancellationToken);
         }
     }
 
@@ -314,15 +404,10 @@ internal sealed class UserRegistrationService(
         jobService.Enqueue("email", () => mailService.SendAsync(mailRequest, cancellationToken));
     }
 
-    private async Task PublishUserRegisteredAsync(
-        FshUser user,
-        string source,
-        CancellationToken cancellationToken = default)
+    private async Task PublishUserRegisteredAsync(FshUser user, string source, CancellationToken cancellationToken = default)
     {
         var tenantId = multiTenantContextAccessor.MultiTenantContext.TenantInfo?.Id;
         user.RecordRegistered(tenantId);
-
-        await db.SaveChangesAsync(cancellationToken);
 
         var integrationEvent = new UserRegisteredIntegrationEvent(
             Id: Guid.NewGuid(),
@@ -335,7 +420,8 @@ internal sealed class UserRegistrationService(
             FirstName: user.FirstName ?? string.Empty,
             LastName: user.LastName ?? string.Empty);
 
-        await outboxStore.AddAsync(integrationEvent, cancellationToken).ConfigureAwait(false);
+        // Use AddToContextAsync to defer saving until the transaction commits
+        await outboxStore.AddToContextAsync(integrationEvent, cancellationToken).ConfigureAwait(false);
     }
 
     private async Task<string> GetEmailVerificationUriAsync(FshUser user, string origin)

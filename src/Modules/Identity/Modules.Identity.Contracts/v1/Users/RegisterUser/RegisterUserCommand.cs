@@ -16,6 +16,5 @@ public class RegisterUserCommand : ICommand<RegisterUserResponse>
     [JsonIgnore]
     public string? Origin { get; set; }
 
-    [JsonIgnore]
-    public string? ReferralCode { get; set; }
+    public string[]? ReferralUsernames { get; set; }
 }

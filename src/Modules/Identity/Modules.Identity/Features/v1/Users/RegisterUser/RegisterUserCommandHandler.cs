@@ -5,8 +5,7 @@ using Mediator;
 namespace FSH.Modules.Identity.Features.v1.Users.RegisterUser;
 
 public sealed class RegisterUserCommandHandler(
-    IUserRegistrationService registrationService,
-    IReferralService referralService) : ICommandHandler<RegisterUserCommand, RegisterUserResponse>
+    IUserRegistrationService registrationService) : ICommandHandler<RegisterUserCommand, RegisterUserResponse>
 {
     public async ValueTask<RegisterUserResponse> Handle(RegisterUserCommand command, CancellationToken cancellationToken)
     {
@@ -21,13 +20,8 @@ public sealed class RegisterUserCommandHandler(
             command.ConfirmPassword,
             command.PhoneNumber ?? string.Empty,
             command.Origin ?? string.Empty,
+            command.ReferralUsernames,
             cancellationToken).ConfigureAwait(false);
-
-        // Record referral if provided
-        if (!string.IsNullOrWhiteSpace(command.ReferralCode))
-        {
-            await referralService.RecordReferralAsync(command.ReferralCode, userId, cancellationToken).ConfigureAwait(false);
-        }
 
         return new RegisterUserResponse(userId);
     }

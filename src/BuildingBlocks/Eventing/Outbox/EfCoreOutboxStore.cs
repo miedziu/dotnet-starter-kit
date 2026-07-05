@@ -30,6 +30,12 @@ public sealed class EfCoreOutboxStore<TDbContext> : IOutboxStore
 
     public async Task AddAsync(IIntegrationEvent @event, CancellationToken ct = default)
     {
+        await AddToContextAsync(@event, ct).ConfigureAwait(false);
+        await _dbContext.SaveChangesAsync(ct).ConfigureAwait(false);
+    }
+
+    public ValueTask AddToContextAsync(IIntegrationEvent @event, CancellationToken ct = default)
+    {
         ArgumentNullException.ThrowIfNull(@event);
 
         var payload = _serializer.Serialize(@event);
@@ -45,8 +51,8 @@ public sealed class EfCoreOutboxStore<TDbContext> : IOutboxStore
             IsDead = false
         };
 
-        await _dbContext.Set<OutboxMessage>().AddAsync(message, ct).ConfigureAwait(false);
-        await _dbContext.SaveChangesAsync(ct).ConfigureAwait(false);
+        _dbContext.Set<OutboxMessage>().Add(message);
+        return default;
     }
 
     public async Task<IReadOnlyList<OutboxMessage>> GetPendingBatchAsync(int batchSize, CancellationToken ct = default)
@@ -75,11 +81,11 @@ public sealed class EfCoreOutboxStore<TDbContext> : IOutboxStore
         message.RetryCount++;
         message.LastError = error;
         message.IsDead = isDead;
-        _dbContext.Set<OutboxMessage>().Update(message);
 
         _logger.LogWarning("Outbox message {MessageId} failed. RetryCount={RetryCount}, IsDead={IsDead}, Error={Error}",
             message.Id, message.RetryCount, message.IsDead, error);
 
+        _dbContext.Set<OutboxMessage>().Update(message);
         await _dbContext.SaveChangesAsync(ct).ConfigureAwait(false);
     }
 }

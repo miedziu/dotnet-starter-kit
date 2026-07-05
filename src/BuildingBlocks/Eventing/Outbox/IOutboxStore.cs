@@ -9,6 +9,13 @@ public interface IOutboxStore
 {
     Task AddAsync(IIntegrationEvent @event, CancellationToken ct = default);
 
+    /// <summary>
+    /// Adds an integration event to the outbox without saving changes.
+    /// Use this when you want to include the outbox message in a larger transaction
+    /// with other entities. Call DbContext.SaveChangesAsync() separately to commit all changes.
+    /// </summary>
+    ValueTask AddToContextAsync(IIntegrationEvent @event, CancellationToken ct = default);
+
     Task<IReadOnlyList<OutboxMessage>> GetPendingBatchAsync(int batchSize, CancellationToken ct = default);
 
     Task MarkAsProcessedAsync(OutboxMessage message, CancellationToken ct = default);

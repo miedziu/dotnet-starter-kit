@@ -152,7 +152,7 @@ export const router = createBrowserRouter([
     errorElement: <RouteError />,
   },
   {
-    path: "/ref",
+    path: "/r/:username",
     element: withSuspense(<ReferralRedirectPage />),
     errorElement: <RouteError />,
   },

@@ -43,7 +43,7 @@ export type AuthContextValue = {
   permissionsHydrated: boolean;
   /** Truthy iff the current access token carries act_sub (impersonation mode). */
   impersonation: ImpersonationInfo | null;
-  login: (input: { email: string; password: string; tenant: string }) => Promise<void>;
+  login: (input: { email: string; password: string; tenant: string }) => Promise<boolean>;
   logout: () => void;
   /** Re-fetch the permission set for the signed-in user (e.g. after a role change). */
   refreshPermissions: () => Promise<void>;
@@ -192,7 +192,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const refresh = () => {
       const claims = decodeJwt(tokenStore.getAccessToken());
-      const hasReferralHighlight = checkAndClearPendingReferralHighlight();
+      // Only check referral highlight when we have a valid token.
+      // Prevents clearing the flag prematurely during login flow
+      // when setTenant()/setPermissions() emit events before tokens are set.
+      const hasReferralHighlight = claims !== null && !isTokenExpired(claims)
+        ? checkAndClearPendingReferralHighlight()
+        : false;
       setUser(claimsToUser(claims, tokenStore.getPermissions(), hasReferralHighlight));
       setImpersonation(claimsToImpersonation(claims));
     };
@@ -221,7 +226,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = useCallback(
     async (input: { email: string; password: string; tenant: string }) => {
-      tokenStore.setTenant(input.tenant);
+      // Check for pending referral highlight BEFORE setting tenant/permissions.
+      // These calls emit events that would clear the pending flag prematurely.
+      const hasReferralHighlight = checkAndClearPendingReferralHighlight();
+
       // Stale permissions from a previous user must not leak into the new
       // session — clear before issuing the token so the hydration effect
       // re-fetches from scratch.
@@ -239,7 +247,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           "SuperAdmin accounts must use the admin app. Sign in there instead.",
         );
       }
+      // Set tokens AFTER checking referral highlight but BEFORE setting tenant.
+      // This ensures the subscription's refresh() has a valid token when it runs.
       tokenStore.setTokens(tokens.accessToken, tokens.refreshToken);
+      tokenStore.setTenant(input.tenant);
       // Drop any cached query state from before login. Without this, a
       // failed pre-login probe (e.g. OverviewPage's billing fetch
       // firing during the brief window before ProtectedRoute redirects
@@ -248,6 +259,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // the next page — react-query's retry config blocks auto-retries
       // for 401, so the stale error would never refetch on its own.
       queryClient.clear();
+
+      return hasReferralHighlight;
     },
     [queryClient],
   );

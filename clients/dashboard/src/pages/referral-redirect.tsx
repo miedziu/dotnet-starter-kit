@@ -1,19 +1,18 @@
 import { useEffect } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { addReferralCode } from "@/hooks/use-referral";
+import { useParams, useNavigate } from "react-router-dom";
+import { addReferralUsername } from "@/hooks/use-referral";
 
 export function ReferralRedirectPage() {
-  const [searchParams] = useSearchParams();
+  const { username } = useParams<{ username: string }>();
   const navigate = useNavigate();
 
   useEffect(() => {
-    const code = searchParams.get("c");
-    if (code) {
-      addReferralCode(code);
+    if (username) {
+      addReferralUsername(username);
     }
     // Redirect to register page
     navigate("/register", { replace: true });
-  }, [searchParams, navigate]);
+  }, [username, navigate]);
 
   return null;
 }

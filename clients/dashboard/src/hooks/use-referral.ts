@@ -1,37 +1,38 @@
-const REFERRAL_KEY = "fsh.dashboard.referralCodes";
+const REFERRAL_KEY = "fsh.dashboard.referralUsernames";
 const PENDING_HIGHLIGHT_KEY = "fsh.dashboard.pendingReferralHighlight";
+const MAX_REFERRAL_COUNT = 10;
 
-// Get all stored referral codes for the current user
-export function getReferralCodes(): string[] {
+// Get all stored referral usernames for the current user
+export function getReferralUsernames(): string[] {
   const stored = localStorage.getItem(REFERRAL_KEY);
   if (!stored) return [];
   try {
-    const codes = JSON.parse(stored) as string[];
-    return Array.isArray(codes) ? codes : [];
+    const usernames = JSON.parse(stored) as string[];
+    return Array.isArray(usernames) ? usernames : [];
   } catch {
     return [];
   }
 }
 
-// Add a referral code (append if not already present)
-export function addReferralCode(code: string): void {
-  if (!code || code.length === 0) return;
-  
-  const existing = getReferralCodes();
-  if (!existing.includes(code)) {
-    const updated = [...existing, code];
-    localStorage.setItem(REFERRAL_KEY, JSON.stringify(updated));
+// Add a referral username (append if not already present)
+// Limits the array to MAX_REFERRAL_COUNT, removing oldest entries first
+export function addReferralUsername(username: string): void {
+  if (!username || username.length === 0) return;
+
+  const existing = getReferralUsernames();
+  if (!existing.includes(username)) {
+    const updated = [...existing, username];
+    // Limit to MAX_REFERRAL_COUNT by removing oldest entries (from the beginning)
+    const trimmed = updated.length > MAX_REFERRAL_COUNT
+      ? updated.slice(updated.length - MAX_REFERRAL_COUNT)
+      : updated;
+    localStorage.setItem(REFERRAL_KEY, JSON.stringify(trimmed));
   }
 }
 
-// Clear all referral codes
-export function clearReferralCodes(): void {
-  localStorage.removeItem(REFERRAL_KEY);
-}
-
 // Set pending highlight flag for post-registration navigation
-export function setPendingReferralHighlight(hasCodes: boolean): void {
-  if (hasCodes) {
+export function setPendingReferralHighlight(hasUsernames: boolean): void {
+  if (hasUsernames) {
     localStorage.setItem(PENDING_HIGHLIGHT_KEY, "true");
   } else {
     localStorage.removeItem(PENDING_HIGHLIGHT_KEY);
@@ -45,22 +46,4 @@ export function checkAndClearPendingReferralHighlight(): boolean {
     localStorage.removeItem(PENDING_HIGHLIGHT_KEY);
   }
   return hasHighlight;
-}
-
-// React hook for referral codes
-import { useState, useEffect } from "react";
-
-export function useReferralCodes() {
-  const [codes, setCodes] = useState<string[]>([]);
-  
-  useEffect(() => {
-    setCodes(getReferralCodes());
-  }, []);
-  
-  const addCode = (code: string) => {
-    addReferralCode(code);
-    setCodes(getReferralCodes());
-  };
-  
-  return { codes, addCode, clear: clearReferralCodes };
 }

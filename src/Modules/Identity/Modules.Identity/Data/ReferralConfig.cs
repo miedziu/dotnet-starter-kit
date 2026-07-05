@@ -13,48 +13,29 @@ public class ReferralConfig : IEntityTypeConfiguration<Referral>
         builder
             .ToTable("Referrals", IdentityModuleConstants.SchemaName);
 
-        builder.HasKey(r => r.Id);
-
-        builder.Property(r => r.ReferralCode)
-            .IsRequired()
-            .HasMaxLength(16);
-
-        builder.HasIndex(r => r.ReferralCode)
-            .IsUnique();
+        // Composite key: (ReferrerUserId, NewReferredUserId) prevents duplicate referrals
+        builder.HasKey(r => new { r.ReferrerUserId, r.NewReferredUserId });
 
         builder.Property(r => r.ReferrerUserId)
             .IsRequired()
             .HasMaxLength(64);
 
-        builder.Property(r => r.ReferredUserId)
+        builder.Property(r => r.NewReferredUserId)
+            .IsRequired()
             .HasMaxLength(64);
 
-        builder.Property(r => r.CreatedAt)
-            .IsRequired();
-
-        builder.Property(r => r.UsedAt);
-
-        // Navigation: ReferrerUser -> Referral (one-to-one)
+        // Navigation: Referral belongs to ReferrerUser (many-to-one)
         builder.HasOne(r => r.ReferrerUser)
-            .WithOne(u => u.Referral)
-            .HasForeignKey<Referral>(r => r.ReferrerUserId)
-            .HasPrincipalKey<FshUser>(u => u.Id)
+            .WithMany(u => u.Referrals)
+            .HasForeignKey(r => r.ReferrerUserId)
             .IsRequired()
             .OnDelete(DeleteBehavior.Cascade);
 
-        // Navigation: Referral -> ReferredUser (many-to-one, optional)
-        builder.HasOne(r => r.ReferredUser)
-            .WithMany(u => u.ReferredUsers)
-            .HasForeignKey(r => r.ReferredUserId)
-            .HasPrincipalKey(u => u.Id)
-            .IsRequired(false)
-            .OnDelete(DeleteBehavior.SetNull);
-
-        // Indexes for common queries
-        builder.HasIndex(r => r.ReferrerUserId)
-            .HasDatabaseName("IX_Referrals_ReferrerUserId");
-        
-        builder.HasIndex(r => r.ReferredUserId)
-            .HasDatabaseName("IX_Referrals_ReferredUserId");
+        // Navigation: Referral belongs to NewReferredUser (many-to-one)
+        builder.HasOne(r => r.NewReferredUser)
+            .WithMany()
+            .HasForeignKey(r => r.NewReferredUserId)
+            .IsRequired()
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

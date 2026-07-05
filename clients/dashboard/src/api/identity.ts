@@ -50,12 +50,7 @@ export type RegisterUserInput = {
   password: string;
   confirmPassword: string;
   phoneNumber?: string;
-  referralCode?: string;
-};
-
-export type ReferralLinkResponse = {
-  code: string;
-  link: string;
+  referralUsernames?: string[];
 };
 
 export type RegisterUserResponse = {
@@ -159,6 +154,7 @@ export async function getMyProfile(): Promise<UserDto> {
 export async function registerUser(input: RegisterUserInput): Promise<RegisterUserResponse> {
   return apiFetch<RegisterUserResponse>(`/api/v1/identity/register`, {
     method: "POST",
+    skipAuth: true,
     body: JSON.stringify(input),
   });
 }
@@ -542,12 +538,4 @@ export async function disableTwoFactor(currentPassword: string): Promise<{ succe
     method: "POST",
     body: JSON.stringify({ currentPassword }),
   });
-}
-
-// -----------------------------
-// Referral
-// -----------------------------
-
-export async function getReferralLink(): Promise<ReferralLinkResponse> {
-  return apiFetch<ReferralLinkResponse>("/api/v1/identity/referral-link");
 }

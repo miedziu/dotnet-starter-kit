@@ -1,4 +1,4 @@
-﻿using Asp.Versioning;
+using Asp.Versioning;
 using FSH.Framework.Core.Context;
 using FSH.Framework.Eventing;
 using FSH.Framework.Persistence;
@@ -62,7 +62,6 @@ using FSH.Modules.Identity.Features.v1.Users.SelfRegistration;
 using FSH.Modules.Identity.Features.v1.Users.SetProfileImage;
 using FSH.Modules.Identity.Features.v1.Users.ToggleUserStatus;
 using FSH.Modules.Identity.Features.v1.Users.UpdateUser;
-using FSH.Modules.Identity.Features.v1.Users.Referral;
 using FSH.Modules.Identity.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -141,9 +140,6 @@ public class IdentityModule : IModule
 
         // Quota gauge: reports live user count per tenant for the Users quota.
         services.AddScoped<IQuotaGaugeProvider, UserCountQuotaGaugeProvider>();
-
-        // Referral service
-        services.AddScoped<IReferralService, ReferralService>();
 
         services.AddIdentity<FshUser, FshRole>(options =>
         {
@@ -257,8 +253,5 @@ public class IdentityModule : IModule
         group.MapEnrollTwoFactorEndpoint();
         group.MapVerifyEnrollTwoFactorEndpoint();
         group.MapDisableTwoFactorEndpoint();
-
-        // referral
-        group.MapGetReferralLinkEndpoint();
     }
 }

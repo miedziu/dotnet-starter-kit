@@ -1,4 +1,3 @@
-﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -11,29 +10,25 @@ namespace FSH.Starter.Migrations.PostgreSQL.Identity
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            // Create Referrals table with composite primary key (ReferrerUserId, NewReferredUserId)
             migrationBuilder.CreateTable(
                 name: "Referrals",
                 schema: "identity",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    ReferralCode = table.Column<string>(type: "character varying(16)", maxLength: 16, nullable: false),
                     ReferrerUserId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
-                    ReferredUserId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UsedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    TenantId = table.Column<string>(type: "text", nullable: false)
+                    NewReferredUserId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Referrals", x => x.Id);
+                    table.PrimaryKey("PK_Referrals", x => new { x.ReferrerUserId, x.NewReferredUserId });
                     table.ForeignKey(
-                        name: "FK_Referrals_Users_ReferredUserId",
-                        column: x => x.ReferredUserId,
+                        name: "FK_Referrals_Users_NewReferredUserId",
+                        column: x => x.NewReferredUserId,
                         principalSchema: "identity",
                         principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.SetNull);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Referrals_Users_ReferrerUserId",
                         column: x => x.ReferrerUserId,
@@ -43,24 +38,6 @@ namespace FSH.Starter.Migrations.PostgreSQL.Identity
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateIndex(
-                name: "IX_Referrals_ReferralCode",
-                schema: "identity",
-                table: "Referrals",
-                column: "ReferralCode",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Referrals_ReferredUserId",
-                schema: "identity",
-                table: "Referrals",
-                column: "ReferredUserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Referrals_ReferrerUserId",
-                schema: "identity",
-                table: "Referrals",
-                column: "ReferrerUserId");
         }
 
         /// <inheritdoc />

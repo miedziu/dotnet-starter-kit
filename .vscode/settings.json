@@ -23,6 +23,7 @@
         ".vscode/t*": true,
         //".vscode/*": true,
         ".github": true,
+        "**/*.tsbuildinfo": true,
         "**/*.md": true, //
         "**/*.min.*": true,
         //"**/*Migrations*/*": true, //

@@ -20,6 +20,9 @@ import { setPendingReferralHighlight } from "@/hooks/use-referral";
 import { ApiRequestError } from "@/lib/api-client";
 import { cn } from "@/lib/cn";
 
+// Field-level errors from FluentValidation are keyed by property name
+type FieldErrors = Record<string, string[] | undefined>;
+
 // ────────────────────────────────────────────────────────────────────────────
 // Password strength scoring (matches reset-password.tsx style)
 // ────────────────────────────────────────────────────────────────────────────
@@ -73,7 +76,9 @@ export function RegisterPage() {
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string[]>([]);
+  // Field-level errors keyed by field name (from FluentValidation)
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -81,19 +86,58 @@ export function RegisterPage() {
   const strength = useMemo(() => scorePassword(password), [password]);
   const passwordsMatch = password.length > 0 && password === confirmPassword;
 
-  // Get referral code from localStorage (persistent) or URL params
-  const [referralCode, setReferralCode] = useState<string>("");
-  const [storedReferralCodes, setStoredReferralCodes] = useState<string[]>([]);
+  // Get referral usernames from localStorage
+  const [storedReferralUsernames, setStoredReferralUsernames] = useState<string[]>([]);
 
   useEffect(() => {
-    const stored = localStorage.getItem("fsh.dashboard.referralCodes");
-    const codes = stored ? JSON.parse(stored) as string[] : [];
-    setStoredReferralCodes(Array.isArray(codes) ? codes : []);
-    // Use the first referral code if available
-    if (codes.length > 0 && !referralCode) {
-      setReferralCode(codes[0]);
-    }
+    const stored = localStorage.getItem("fsh.dashboard.referralUsernames");
+    const usernames = stored ? JSON.parse(stored) as string[] : [];
+    setStoredReferralUsernames(Array.isArray(usernames) ? usernames : []);
   }, []);
+
+  // Helper function to check if a field has validation errors
+  function getFieldError(field: string): string | undefined {
+    const errors = fieldErrors[field];
+    return errors?.[0];
+  }
+
+  // Helper function to extract field-level errors from API response
+  function extractFieldErrors(err: unknown): FieldErrors {
+    if (err instanceof ApiRequestError && err.problem?.errors) {
+      const errors = err.problem.errors;
+      if (Array.isArray(errors)) {
+        // Flat array of errors - no field mapping available
+        return {};
+      } else {
+        // Record keyed by field name (FluentValidation format)
+        return errors;
+      }
+    }
+    return {};
+  }
+
+  // Helper function to extract all errors from API response
+  function getErrorsFromResponse(err: unknown): string[] {
+    if (err instanceof ApiRequestError && err.problem) {
+      // FluentValidation errors arrive as Record<string, string[]>
+      const errors = err.problem.errors;
+      if (errors) {
+        if (Array.isArray(errors)) {
+          // Flat array of errors
+          return errors;
+        } else {
+          // Record keyed by field - extract all messages
+          return Object.values(errors).flat();
+        }
+      }
+      // Fall back to single error message
+      return [err.problem.detail ?? err.problem.title ?? err.message];
+    }
+    if (err instanceof Error) {
+      return [err.message];
+    }
+    return ["An unexpected error occurred"];
+  }
 
   const mutation = useMutation({
     mutationFn: () =>
@@ -105,27 +149,25 @@ export function RegisterPage() {
         password,
         confirmPassword,
         phoneNumber: "",
-        referralCode: referralCode || undefined,
+        referralUsernames: storedReferralUsernames.length > 0 ? storedReferralUsernames : undefined,
       }),
     onSuccess: () => {
       setSubmitted(true);
       // Set pending highlight for post-registration navigation
-      if (storedReferralCodes.length > 0) {
+      if (storedReferralUsernames.length > 0) {
         setPendingReferralHighlight(true);
       }
     },
     onError: (err: unknown) => {
-      const detail =
-        err instanceof ApiRequestError
-          ? err.problem?.detail ?? err.problem?.title ?? err.message
-          : (err as Error).message;
-      setError(detail);
+      setError(getErrorsFromResponse(err));
+      setFieldErrors(extractFieldErrors(err));
     },
   });
 
-  // Clear error when form fields change
+  // Clear errors when form fields change
   useEffect(() => {
-    setError(null);
+    setError([]);
+    setFieldErrors({});
   }, [firstName, lastName, email, userName, password, confirmPassword]);
 
   if (isAuthenticated) {
@@ -135,13 +177,17 @@ export function RegisterPage() {
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!passwordsMatch) {
-      setError("Passwords don't match.");
+      setError(["Passwords don't match."]);
+      setFieldErrors({});
       return;
     }
     if (password.length < 8) {
-      setError("Use at least 8 characters.");
+      setError(["Use at least 8 characters."]);
+      setFieldErrors({});
       return;
     }
+    setError([]);
+    setFieldErrors({});
     mutation.mutate();
   };
 
@@ -202,7 +248,7 @@ export function RegisterPage() {
             </p>
           </div>
 
-          <form onSubmit={onSubmit} className="space-y-5" noValidate aria-describedby={error ? "register-error" : undefined}>
+          <form onSubmit={onSubmit} className="space-y-5" noValidate aria-describedby={error.length > 0 ? "register-error" : undefined}>
             {/* First Name */}
             <div className="space-y-1.5">
               <Label
@@ -218,9 +264,15 @@ export function RegisterPage() {
                 placeholder="John"
                 autoComplete="given-name"
                 required
-                aria-invalid={error ? true : undefined}
-                className="h-11 text-[14px]"
+                aria-invalid={getFieldError("firstName") ? true : undefined}
+                aria-describedby={getFieldError("firstName") ? "firstName-error" : undefined}
+                className={cn("h-11 text-[14px]", getFieldError("firstName") && "border-destructive")}
               />
+              {getFieldError("firstName") && (
+                <p id="firstName-error" className="text-[12px] text-[var(--color-destructive)]">
+                  {getFieldError("firstName")}
+                </p>
+              )}
             </div>
 
             {/* Last Name */}
@@ -238,9 +290,15 @@ export function RegisterPage() {
                 placeholder="Doe"
                 autoComplete="family-name"
                 required
-                aria-invalid={error ? true : undefined}
-                className="h-11 text-[14px]"
+                aria-invalid={getFieldError("lastName") ? true : undefined}
+                aria-describedby={getFieldError("lastName") ? "lastName-error" : undefined}
+                className={cn("h-11 text-[14px]", getFieldError("lastName") && "border-destructive")}
               />
+              {getFieldError("lastName") && (
+                <p id="lastName-error" className="text-[12px] text-[var(--color-destructive)]">
+                  {getFieldError("lastName")}
+                </p>
+              )}
             </div>
 
             {/* Email */}
@@ -258,10 +316,17 @@ export function RegisterPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="john@example.com"
                 autoComplete="email"
+                autoFocus
                 required
-                aria-invalid={error ? true : undefined}
-                className="h-11 text-[14px]"
+                aria-invalid={getFieldError("email") ? true : undefined}
+                aria-describedby={getFieldError("email") ? "email-error" : undefined}
+                className={cn("h-11 text-[14px]", getFieldError("email") && "border-destructive")}
               />
+              {getFieldError("email") && (
+                <p id="email-error" className="text-[12px] text-[var(--color-destructive)]">
+                  {getFieldError("email")}
+                </p>
+              )}
             </div>
 
             {/* Username */}
@@ -279,9 +344,15 @@ export function RegisterPage() {
                 placeholder="johndoe"
                 autoComplete="username"
                 required
-                aria-invalid={error ? true : undefined}
-                className="h-11 text-[14px]"
+                aria-invalid={getFieldError("userName") ? true : undefined}
+                aria-describedby={getFieldError("userName") ? "userName-error" : undefined}
+                className={cn("h-11 text-[14px]", getFieldError("userName") && "border-destructive")}
               />
+              {getFieldError("userName") && (
+                <p id="userName-error" className="text-[12px] text-[var(--color-destructive)]">
+                  {getFieldError("userName")}
+                </p>
+              )}
             </div>
 
             {/* Password */}
@@ -301,11 +372,10 @@ export function RegisterPage() {
                   placeholder="At least 8 characters"
                   autoComplete="new-password"
                   required
-                  autoFocus
                   minLength={8}
-                  aria-invalid={error ? true : undefined}
-                  aria-describedby={error ? "register-error" : undefined}
-                  className="h-11 pr-11 text-[14px]"
+                  aria-invalid={getFieldError("password") ? true : error.length > 0 ? true : undefined}
+                  aria-describedby={getFieldError("password") ? "password-error" : error.length > 0 ? "register-error" : undefined}
+                  className={cn("h-11 pr-11 text-[14px]", getFieldError("password") && "border-destructive")}
                 />
                 <button
                   type="button"
@@ -316,6 +386,12 @@ export function RegisterPage() {
                   {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
                 </button>
               </div>
+
+              {getFieldError("password") && (
+                <p id="password-error" className="text-[12px] text-[var(--color-destructive)]">
+                  {getFieldError("password")}
+                </p>
+              )}
 
               {strength && (
                 <div className="fsh-enter flex items-center gap-2 pt-1.5">
@@ -353,9 +429,9 @@ export function RegisterPage() {
                   autoComplete="new-password"
                   required
                   minLength={8}
-                  aria-invalid={error ? true : undefined}
-                  aria-describedby={error ? "register-error" : undefined}
-                  className="h-11 pr-11 text-[14px]"
+                  aria-invalid={getFieldError("confirmPassword") ? true : error.length > 0 ? true : undefined}
+                  aria-describedby={getFieldError("confirmPassword") ? "confirmPassword-error" : error.length > 0 ? "register-error" : undefined}
+                  className={cn("h-11 pr-11 text-[14px]", getFieldError("confirmPassword") && "border-destructive")}
                 />
                 <button
                   type="button"
@@ -367,7 +443,13 @@ export function RegisterPage() {
                 </button>
               </div>
 
-              {confirmPassword.length > 0 && (
+              {getFieldError("confirmPassword") && (
+                <p id="confirmPassword-error" className="text-[12px] text-[var(--color-destructive)]">
+                  {getFieldError("confirmPassword")}
+                </p>
+              )}
+
+              {confirmPassword.length > 0 && !getFieldError("confirmPassword") && (
                 <div
                   className={cn(
                     "flex items-center gap-1.5 pt-1 text-[11.5px]",
@@ -387,7 +469,7 @@ export function RegisterPage() {
               )}
             </div>
 
-            {error && (
+            {error.length > 0 && (
               <div
                 id="register-error"
                 role="alert"
@@ -399,7 +481,11 @@ export function RegisterPage() {
                 )}
               >
                 <AlertCircle className="mt-0.5 size-4 shrink-0" />
-                <span className="leading-snug">{error}</span>
+                <ul className="list-disc list-inside space-y-1">
+                  {error.map((msg, idx) => (
+                    <li key={idx} className="leading-snug">{msg}</li>
+                  ))}
+                </ul>
               </div>
             )}
 
