@@ -15,7 +15,7 @@ public sealed class SessionCleanupHostedService : BackgroundService
     private readonly IServiceScopeFactory _scopeFactory;
     private readonly ILogger<SessionCleanupHostedService> _logger;
     private readonly TimeProvider _timeProvider;
-    private readonly TimeSpan _cleanupInterval = TimeSpan.FromHours(1);
+    private readonly TimeSpan _cleanupInterval = TimeSpan.FromMinutes(10);
     private readonly int _retentionDays = 30;
 
     public SessionCleanupHostedService(
@@ -62,6 +62,7 @@ public sealed class SessionCleanupHostedService : BackgroundService
         // cutoffDate = now - retentionDays, so ExpiresAt < cutoffDate already implies ExpiresAt < now.
         var cutoffDate = _timeProvider.GetUtcNow().UtcDateTime.AddDays(-_retentionDays);
         var deleted = await db.UserSessions
+            .IgnoreQueryFilters()
             .Where(s => s.ExpiresAt < cutoffDate)
             .ExecuteDeleteAsync(cancellationToken);
 
