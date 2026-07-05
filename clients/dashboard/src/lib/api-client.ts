@@ -78,7 +78,7 @@ type RequestInitEx = RequestInit & {
   timeoutMs?: number;
 };
 
-const DEFAULT_TIMEOUT_MS = 30_000;
+const DEFAULT_TIMEOUT_MS = 300_000;
 
 function withTimeout(
   init: RequestInit,

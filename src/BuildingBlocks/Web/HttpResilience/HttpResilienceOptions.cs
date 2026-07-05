@@ -44,4 +44,11 @@ public sealed class HttpResilienceOptions
     /// Minimum throughput before circuit breaker evaluates. Default: 10 requests.
     /// </summary>
     public int CircuitBreakerMinimumThroughput { get; set; } = 10;
+
+    /// <summary>
+    /// Sampling duration used by the circuit breaker to calculate failure ratio.
+    /// Must be at least double of AttemptTimeout to satisfy the underlying validator.
+    /// Default: 60 seconds.
+    /// </summary>
+    public TimeSpan CircuitBreakerSamplingDuration { get; set; } = TimeSpan.FromSeconds(60);
 }

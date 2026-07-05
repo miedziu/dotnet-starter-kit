@@ -25,6 +25,7 @@
         ".github": true,
         "**/*.md": true, //
         "**/*.min.*": true,
+        //"**/*Migrations*/*": true, //
         ".agents": true
     },
     "diffEditor.renderGutterMenu": false,

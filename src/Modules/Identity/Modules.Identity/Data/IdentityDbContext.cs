@@ -74,6 +74,8 @@ public class IdentityDbContext : MultiTenantIdentityDbContext<FshUser,
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
+        //optionsBuilder.LogTo(message => System.Diagnostics.Debug.WriteLine(message)).EnableDetailedErrors();
+
         if (!string.IsNullOrWhiteSpace(TenantInfo?.ConnectionString))
         {
             optionsBuilder.ConfigureHeroDatabase(

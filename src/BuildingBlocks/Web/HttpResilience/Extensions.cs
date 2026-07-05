@@ -1,6 +1,5 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Http.Resilience;
 
 namespace FSH.Framework.Web.HttpResilience;
 
@@ -33,6 +32,10 @@ public static class Extensions
             pipeline.CircuitBreaker.BreakDuration = options.CircuitBreakerBreakDuration;
             pipeline.CircuitBreaker.FailureRatio = options.CircuitBreakerFailureRatio;
             pipeline.CircuitBreaker.MinimumThroughput = options.CircuitBreakerMinimumThroughput;
+            // Ensure sampling duration is at least double the attempt timeout to satisfy validators
+            var minSampling = TimeSpan.FromTicks(options.AttemptTimeout.Ticks * 2);
+            var sampling = options.CircuitBreakerSamplingDuration > minSampling ? options.CircuitBreakerSamplingDuration : minSampling;
+            pipeline.CircuitBreaker.SamplingDuration = sampling;
         });
 
         return builder;

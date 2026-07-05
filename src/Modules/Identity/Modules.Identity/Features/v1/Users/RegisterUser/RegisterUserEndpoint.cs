@@ -25,12 +25,10 @@ public static class RegisterUserEndpoint
         })
         .WithName("RegisterUser")
         .WithSummary("Register user")
-        .RequirePermission(IdentityPermissions.Users.Create)
+        .AllowAnonymous()
         .WithIdempotency()
         .WithDescription("Create a new user account.")
         .Produces<RegisterUserResponse>(StatusCodes.Status201Created)
-        .Produces(StatusCodes.Status401Unauthorized)
-        .Produces(StatusCodes.Status403Forbidden)
         .Produces(StatusCodes.Status400BadRequest);
     }
 }

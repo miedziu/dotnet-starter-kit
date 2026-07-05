@@ -47,6 +47,7 @@ public class BaseDbContext(IMultiTenantContextAccessor<AppTenantInfo> multiTenan
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         ArgumentNullException.ThrowIfNull(optionsBuilder);
+        //optionsBuilder.LogTo(message => System.Diagnostics.Debug.WriteLine(message)).EnableDetailedErrors();
 
         if (!string.IsNullOrWhiteSpace(multiTenantContextAccessor?.MultiTenantContext.TenantInfo?.ConnectionString))
         {
