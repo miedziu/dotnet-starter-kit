@@ -106,7 +106,7 @@ public sealed class TenantExpiryScanJob
 
         // Dedup: one notice per tenant per state per validity period (re-arms when ValidUpto changes).
         var alreadyNotified = await _db.TenantExpiryNotices
-            .AnyAsync(x => x.TenantId == tenant.Id && x.NoticeType == noticeType && x.ValidUptoUtc == validUpto, ct)
+            .AnyAsync(x => x.NoticeType == noticeType && x.ValidUptoUtc == validUpto, ct)
             .ConfigureAwait(false);
         if (alreadyNotified)
         {

@@ -23,10 +23,8 @@ internal sealed class ImpersonationGrantService(
             jti: input.Jti,
             actorUserId: input.ActorUserId,
             actorUserName: input.ActorUserName,
-            actorTenantId: input.ActorTenantId,
             impersonatedUserId: input.ImpersonatedUserId,
             impersonatedUserName: input.ImpersonatedUserName,
-            impersonatedTenantId: input.ImpersonatedTenantId,
             reason: input.Reason,
             startedAtUtc: input.StartedAtUtc,
             expiresAtUtc: input.ExpiresAtUtc,
@@ -120,7 +118,6 @@ internal sealed class ImpersonationGrantService(
 
     public async Task<IReadOnlyList<ImpersonationGrantDto>> ListAsync(
         ImpersonationGrantStatus? status,
-        string? impersonatedTenantId,
         string? actorUserId,
         int take,
         CancellationToken ct = default)
@@ -128,10 +125,6 @@ internal sealed class ImpersonationGrantService(
         var now = timeProvider.GetUtcNow().UtcDateTime;
         IQueryable<ImpersonationGrant> q = db.ImpersonationGrants.AsNoTracking();
 
-        if (!string.IsNullOrWhiteSpace(impersonatedTenantId))
-        {
-            q = q.Where(g => g.ImpersonatedTenantId == impersonatedTenantId);
-        }
         if (!string.IsNullOrWhiteSpace(actorUserId))
         {
             q = q.Where(g => g.ActorUserId == actorUserId);
@@ -233,10 +226,8 @@ internal sealed class ImpersonationGrantService(
             Jti: g.Jti,
             ActorUserId: g.ActorUserId,
             ActorUserName: g.ActorUserName,
-            ActorTenantId: g.ActorTenantId,
             ImpersonatedUserId: g.ImpersonatedUserId,
             ImpersonatedUserName: g.ImpersonatedUserName,
-            ImpersonatedTenantId: g.ImpersonatedTenantId,
             Reason: g.Reason,
             StartedAtUtc: g.StartedAtUtc,
             ExpiresAtUtc: g.ExpiresAtUtc,

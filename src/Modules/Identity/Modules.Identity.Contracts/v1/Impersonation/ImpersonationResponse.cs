@@ -4,6 +4,4 @@ public sealed record ImpersonationResponse(
     string AccessToken,
     DateTime AccessTokenExpiresAt,
     string ActorUserId,
-    string ActorTenantId,
-    string ImpersonatedUserId,
-    string ImpersonatedTenantId);
+    string ImpersonatedUserId);

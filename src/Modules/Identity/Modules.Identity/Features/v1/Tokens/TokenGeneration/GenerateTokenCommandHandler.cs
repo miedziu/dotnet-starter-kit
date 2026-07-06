@@ -86,7 +86,7 @@ public sealed class GenerateTokenCommandHandler
             ct: cancellationToken);
 
         // Issue token
-        var token = await _tokenService.IssueAsync(subject, claims, /*extra*/ null, cancellationToken);
+        var token = await _tokenService.IssueAsync(subject, claims, cancellationToken);
 
         // Persist refresh token (hashed) for this user
         await _identityService.StoreRefreshTokenAsync(subject, token.RefreshToken, token.RefreshTokenExpiresAt, cancellationToken);

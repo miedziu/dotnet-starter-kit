@@ -15,13 +15,6 @@ public class TenantThemeConfiguration : IEntityTypeConfiguration<TenantTheme>
 
         builder.HasKey(t => t.Id);
 
-        builder.HasIndex(t => t.TenantId)
-            .IsUnique();
-
-        builder.Property(t => t.TenantId)
-            .HasMaxLength(64)
-            .IsRequired();
-
         // Light Palette
         builder.Property(t => t.PrimaryColor).HasMaxLength(9).IsRequired();
         builder.Property(t => t.SecondaryColor).HasMaxLength(9).IsRequired();

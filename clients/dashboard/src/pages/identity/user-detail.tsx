@@ -260,7 +260,6 @@ export function UserDetailPage() {
       if (!actor?.tenant) throw new Error("No tenant on current session");
       return beginImpersonation({
         targetUserId: user.id,
-        targetTenantId: actor.tenant,
         reason: impersonationReason.trim() || undefined,
       });
     },

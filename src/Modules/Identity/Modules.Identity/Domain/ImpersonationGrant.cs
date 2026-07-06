@@ -12,7 +12,7 @@ namespace FSH.Modules.Identity.Domain;
 /// Implements <see cref="IGlobalEntity"/> to opt out of the auto-applied
 /// tenant filter — cross-tenant impersonations span tenants, so the shadow
 /// TenantId column doesn't map cleanly. Tenant access is controlled in the
-/// query layer via explicit filters on ActorTenantId / ImpersonatedTenantId.
+/// query layer via explicit filters.
 /// </summary>
 public class ImpersonationGrant : IGlobalEntity
 {
@@ -23,11 +23,9 @@ public class ImpersonationGrant : IGlobalEntity
 
     public string ActorUserId { get; private set; } = default!;
     public string? ActorUserName { get; private set; }
-    public string ActorTenantId { get; private set; } = default!;
 
     public string ImpersonatedUserId { get; private set; } = default!;
     public string? ImpersonatedUserName { get; private set; }
-    public string ImpersonatedTenantId { get; private set; } = default!;
 
     public string Reason { get; private set; } = string.Empty;
 
@@ -54,10 +52,8 @@ public class ImpersonationGrant : IGlobalEntity
         string jti,
         string actorUserId,
         string? actorUserName,
-        string actorTenantId,
         string impersonatedUserId,
         string? impersonatedUserName,
-        string impersonatedTenantId,
         string reason,
         DateTime startedAtUtc,
         DateTime expiresAtUtc,
@@ -71,10 +67,8 @@ public class ImpersonationGrant : IGlobalEntity
             Jti = jti,
             ActorUserId = actorUserId,
             ActorUserName = actorUserName,
-            ActorTenantId = actorTenantId,
             ImpersonatedUserId = impersonatedUserId,
             ImpersonatedUserName = impersonatedUserName,
-            ImpersonatedTenantId = impersonatedTenantId,
             Reason = reason,
             StartedAtUtc = startedAtUtc,
             ExpiresAtUtc = expiresAtUtc,

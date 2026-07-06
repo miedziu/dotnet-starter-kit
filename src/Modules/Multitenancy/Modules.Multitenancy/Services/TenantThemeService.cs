@@ -90,7 +90,7 @@ public sealed class TenantThemeService : ITenantThemeService
     {
         var entity = await state.DbContext.TenantThemes
             .AsNoTracking()
-            .FirstOrDefaultAsync(t => t.TenantId == state.TenantId, ct)
+            .FirstOrDefaultAsync(ct)
             .ConfigureAwait(false);
 
         return entity is null ? TenantThemeDto.Default : MapEntityToDto(entity);
@@ -114,7 +114,7 @@ public sealed class TenantThemeService : ITenantThemeService
         ArgumentNullException.ThrowIfNull(theme);
 
         var entity = await _dbContext.TenantThemes
-            .FirstOrDefaultAsync(t => t.TenantId == tenantId, ct)
+            .FirstOrDefaultAsync(ct)
             .ConfigureAwait(false);
 
         if (entity is null)
@@ -194,7 +194,7 @@ public sealed class TenantThemeService : ITenantThemeService
         ArgumentException.ThrowIfNullOrWhiteSpace(tenantId);
 
         var entity = await _dbContext.TenantThemes
-            .FirstOrDefaultAsync(t => t.TenantId == tenantId, ct)
+            .FirstOrDefaultAsync(ct)
             .ConfigureAwait(false);
 
         if (entity is not null)
@@ -235,7 +235,7 @@ public sealed class TenantThemeService : ITenantThemeService
 
         // Set new default
         var entity = await _dbContext.TenantThemes
-            .FirstOrDefaultAsync(t => t.TenantId == tenantId, ct)
+            .FirstOrDefaultAsync(ct)
             .ConfigureAwait(false);
 
         if (entity is null)

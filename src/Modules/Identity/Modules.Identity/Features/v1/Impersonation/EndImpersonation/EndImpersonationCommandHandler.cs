@@ -56,10 +56,9 @@ public sealed class EndImpersonationCommandHandler
             ?? throw new UnauthorizedException();
 
         var actorUserId = claims.FirstOrDefault(c => c.Type == ClaimConstants.ActorSubject)?.Value;
-        var actorTenantId = claims.FirstOrDefault(c => c.Type == ClaimConstants.ActorTenant)?.Value;
         var jti = claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Jti)?.Value;
 
-        if (string.IsNullOrWhiteSpace(actorUserId) || string.IsNullOrWhiteSpace(actorTenantId))
+        if (string.IsNullOrWhiteSpace(actorUserId))
         {
             // Signed in but no act_sub claim (End called on a non-impersonation token): client error,
             // must be 4xx not CustomException's default 500.
@@ -70,7 +69,6 @@ public sealed class EndImpersonationCommandHandler
         }
 
         var impersonatedUserId = _currentUser.GetUserId().ToString();
-        var impersonatedTenantId = _currentUser.GetTenant() ?? string.Empty;
 
         // Mark grant ended BEFORE issuing actor tokens so a racing JWT-hook request sees "ended" (safer than the reverse).
         // If MarkEnded fails we proceed anyway: the grant expires naturally and the hook treats Unknown states as revoked.
@@ -89,7 +87,7 @@ public sealed class EndImpersonationCommandHandler
         }
 
         var actorClaimsResult = await _identityService
-            .BuildClaimsForUserAsync(actorUserId, actorTenantId, cancellationToken);
+            .BuildClaimsForUserAsync(actorUserId, cancellationToken);
 
         if (actorClaimsResult is null)
         {
@@ -98,22 +96,20 @@ public sealed class EndImpersonationCommandHandler
 
         var (subject, actorClaims) = actorClaimsResult.Value;
 
-        var token = await _tokenService.IssueAsync(subject, actorClaims, actorTenantId, cancellationToken);
+        var token = await _tokenService.IssueAsync(subject, actorClaims, cancellationToken);
         await _identityService.StoreRefreshTokenAsync(subject, token.RefreshToken, token.RefreshTokenExpiresAt, cancellationToken);
 
         await _securityAudit.ImpersonationEndedAsync(
             actorUserId: actorUserId,
-            actorTenantId: actorTenantId,
             targetUserId: impersonatedUserId,
-            targetTenantId: impersonatedTenantId,
             clientId: _requestContext.ClientId ?? "unknown",
             ct: cancellationToken);
 
         if (_logger.IsEnabled(LogLevel.Information))
         {
             _logger.LogInformation(
-                "Impersonation ended: actor {ActorUserId}@{ActorTenant} returned from {TargetUserId}@{TargetTenant} jti={Jti}",
-                actorUserId, actorTenantId, impersonatedUserId, impersonatedTenantId, jti ?? "<missing>");
+                "Impersonation ended: actor {ActorUserId} returned from {TargetUserId} jti={Jti}",
+                actorUserId, impersonatedUserId, jti ?? "<missing>");
         }
 
         return token;

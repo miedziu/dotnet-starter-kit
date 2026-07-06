@@ -48,7 +48,6 @@ export type AuthContextValue = {
   /** Begin impersonating another user. Resolves once the new token is installed. */
   beginImpersonation: (input: {
     targetUserId: string;
-    targetTenantId: string;
     reason?: string;
   }) => Promise<void>;
   /**
@@ -259,12 +258,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [queryClient]);
 
   const beginImpersonation = useCallback(
-    async (input: { targetUserId: string; targetTenantId: string; reason?: string }) => {
+    async (input: { targetUserId: string; reason?: string }) => {
       const response = await startImpersonation(input);
       // Swap the active token. queryClient.clear() drops cached queries
       // so the next render fetches with the new identity — otherwise
       // user/role/permission caches from the actor session would leak.
-      tokenStore.beginImpersonation(response.accessToken, response.impersonatedTenantId);
+      tokenStore.beginImpersonation(response.accessToken);
       queryClient.clear();
     },
     [queryClient],

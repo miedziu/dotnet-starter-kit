@@ -1,7 +1,7 @@
 using FSH.Framework.Core.Context;
+using FSH.Framework.Core.Exceptions;
 using FSH.Modules.Auditing.Contracts;
 using FSH.Modules.Identity.Contracts.Services;
-using FSH.Framework.Core.Exceptions;
 using FSH.Modules.Identity.Contracts.v1.Tokens.RefreshToken;
 using Mediator;
 using Microsoft.Extensions.Logging;
@@ -95,7 +95,7 @@ public sealed class RefreshTokenCommandHandler
         await _securityAudit.TokenRevokedAsync(subject, clientId!, "RefreshTokenRotated", cancellationToken);
 
         // Issue new tokens
-        var newToken = await _tokenService.IssueAsync(subject, claims, null, cancellationToken);
+        var newToken = await _tokenService.IssueAsync(subject, claims, cancellationToken);
 
         // Persist rotated refresh token for this user
         await _identityService.StoreRefreshTokenAsync(subject, newToken.RefreshToken, newToken.RefreshTokenExpiresAt, cancellationToken);

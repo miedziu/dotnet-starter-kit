@@ -61,7 +61,7 @@ public sealed class IdentityService : IIdentityService
             await VerifyTwoFactorOrThrowAsync(user, twoFactorCode);
         }
 
-        var claims = await BuildUserClaimsAsync(user, tenant.Id, ct);
+        var claims = await BuildUserClaimsAsync(user, ct);
         return (user.Id, claims);
     }
 
@@ -91,13 +91,13 @@ public sealed class IdentityService : IIdentityService
         ValidateRefreshTokenAsync(string refreshToken, CancellationToken ct = default)
     {
         var tenant = GetValidatedTenant();
-        var user = await FindUserByRefreshTokenAsync(refreshToken, tenant.Id, ct);
+        var user = await FindUserByRefreshTokenAsync(refreshToken, ct);
 
         ValidateRefreshTokenExpiry(user);
         ValidateUserStatus(user);
         ValidateTenantStatus(tenant);
 
-        var claims = await BuildUserClaimsAsync(user, tenant.Id, ct);
+        var claims = await BuildUserClaimsAsync(user, ct);
         return (user.Id, claims);
     }
 
@@ -127,10 +127,9 @@ public sealed class IdentityService : IIdentityService
     }
 
     public async Task<(string Subject, IEnumerable<Claim> Claims)?>
-        BuildClaimsForUserAsync(string userId, string tenantId, CancellationToken ct = default)
+        BuildClaimsForUserAsync(string userId, CancellationToken ct = default)
     {
         ArgumentNullException.ThrowIfNull(userId);
-        ArgumentNullException.ThrowIfNull(tenantId);
 
         // Users are global (shared across tenants) - no tenant filter needed
         var user = await _userManager.Users
@@ -143,7 +142,7 @@ public sealed class IdentityService : IIdentityService
 
         ValidateUserStatus(user);
 
-        var claims = CreateBasicClaims(user, tenantId);
+        var claims = CreateBasicClaims(user);
 
         var userRoleIds = await _dbContext.UserRoles
             .Where(ur => ur.UserId == userId)
@@ -221,15 +220,15 @@ public sealed class IdentityService : IIdentityService
         return user;
     }
 
-    private async Task<FshUser> FindUserByRefreshTokenAsync(string refreshToken, string tenantId, CancellationToken ct)
+    private async Task<FshUser> FindUserByRefreshTokenAsync(string refreshToken, CancellationToken ct)
     {
         var hashedToken = HashToken(refreshToken);
 
         if (_logger.IsEnabled(LogLevel.Debug))
         {
             _logger.LogDebug(
-                "Validating refresh token for tenant {TenantId}. Token hash: {TokenHash}",
-                tenantId, hashedToken[..Math.Min(8, hashedToken.Length)]);
+                "Validating refresh token. Token hash: {TokenHash}",
+                hashedToken[..Math.Min(8, hashedToken.Length)]);
         }
 
         var user = await _userManager.Users
@@ -237,7 +236,7 @@ public sealed class IdentityService : IIdentityService
 
         if (user is null)
         {
-            _logger.LogWarning("No user found with matching refresh token hash for tenant {TenantId}", tenantId);
+            _logger.LogWarning("No user found with matching refresh token hash");
             throw new UnauthorizedException("refresh token is invalid or expired");
         }
 
@@ -289,14 +288,14 @@ public sealed class IdentityService : IIdentityService
         }
     }
 
-    private async Task<List<Claim>> BuildUserClaimsAsync(FshUser user, string tenantId, CancellationToken ct)
+    private async Task<List<Claim>> BuildUserClaimsAsync(FshUser user, CancellationToken ct)
     {
-        var claims = CreateBasicClaims(user, tenantId);
+        var claims = CreateBasicClaims(user);
         await AddRoleClaimsAsync(claims, user, ct);
         return claims;
     }
 
-    private static List<Claim> CreateBasicClaims(FshUser user, string tenantId)
+    private static List<Claim> CreateBasicClaims(FshUser user)
     {
         var fullName = $"{user.FirstName} {user.LastName}".Trim();
         return
@@ -313,7 +312,6 @@ public sealed class IdentityService : IIdentityService
             new(ClaimTypes.MobilePhone, user.PhoneNumber ?? string.Empty),
             new(ClaimConstants.Fullname, fullName),
             new(ClaimTypes.Surname, user.LastName ?? string.Empty),
-            new(ClaimConstants.Tenant, tenantId),
             new(ClaimConstants.ImageUrl, user.ImageUrl?.ToString() ?? string.Empty)
         ];
     }

@@ -320,11 +320,6 @@ namespace FSH.Starter.Migrations.PostgreSQL.Identity
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<string>("ActorTenantId")
-                        .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("character varying(64)");
-
                     b.Property<string>("ActorUserId")
                         .IsRequired()
                         .HasMaxLength(64)
@@ -343,11 +338,6 @@ namespace FSH.Starter.Migrations.PostgreSQL.Identity
 
                     b.Property<DateTime>("ExpiresAtUtc")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("ImpersonatedTenantId")
-                        .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("character varying(64)");
 
                     b.Property<string>("ImpersonatedUserId")
                         .IsRequired()
@@ -402,8 +392,8 @@ namespace FSH.Starter.Migrations.PostgreSQL.Identity
                     b.HasIndex("ActorUserId", "StartedAtUtc")
                         .HasDatabaseName("IX_ImpersonationGrants_ActorUserId_StartedAtUtc");
 
-                    b.HasIndex("ImpersonatedTenantId", "StartedAtUtc")
-                        .HasDatabaseName("IX_ImpersonationGrants_ImpersonatedTenantId_StartedAtUtc");
+                    b.HasIndex("StartedAtUtc")
+                        .HasDatabaseName("IX_ImpersonationGrants_StartedAtUtc");
 
                     b.ToTable("ImpersonationGrants", "identity");
                 });

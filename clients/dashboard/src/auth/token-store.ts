@@ -76,7 +76,7 @@ export const tokenStore = {
    * refresh in the api client checks for refreshToken presence and will
    * skip silently (impersonation sessions are intentionally short-lived).
    */
-  beginImpersonation(impersonationAccessToken: string, impersonatedTenant: string | null) {
+  beginImpersonation(impersonationAccessToken: string) {
     const access = localStorage.getItem(ACCESS_KEY);
     const refresh = localStorage.getItem(REFRESH_KEY);
     const tenant = localStorage.getItem(TENANT_KEY);
@@ -89,7 +89,6 @@ export const tokenStore = {
     // Drop the operator's permissions — the impersonated subject has its own;
     // the auth context re-hydrates on the subject change.
     localStorage.removeItem(PERMS_KEY);
-    if (impersonatedTenant) localStorage.setItem(TENANT_KEY, impersonatedTenant);
     emit();
   },
 

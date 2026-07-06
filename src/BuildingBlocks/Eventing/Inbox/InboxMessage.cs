@@ -7,10 +7,6 @@ namespace FSH.Framework.Eventing.Inbox;
 /// <summary>
 /// Inbox message to track processed integration events per handler for idempotent consumers.
 ///
-/// Implements <see cref="IGlobalEntity"/> to opt out of automatic tenant
-/// filtering: inbox consumers run in background scopes and the
-/// "already-processed" lookup must cross tenants. Per-row tenant
-/// association is kept in the explicit nullable <see cref="TenantId"/> column.
 /// </summary>
 public class InboxMessage : IGlobalEntity
 {
@@ -21,8 +17,6 @@ public class InboxMessage : IGlobalEntity
     public string HandlerName { get; set; } = default!;
 
     public DateTime ProcessedOnUtc { get; set; }
-
-    public string? TenantId { get; set; }
 }
 
 public sealed class InboxMessageConfiguration : IEntityTypeConfiguration<InboxMessage>
@@ -49,8 +43,5 @@ public sealed class InboxMessageConfiguration : IEntityTypeConfiguration<InboxMe
         builder.Property(i => i.HandlerName)
             .HasMaxLength(256)
             .IsRequired();
-
-        builder.Property(i => i.TenantId)
-            .HasMaxLength(64);
     }
 }

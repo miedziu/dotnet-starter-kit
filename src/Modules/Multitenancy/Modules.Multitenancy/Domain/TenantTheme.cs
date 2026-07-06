@@ -2,10 +2,8 @@ using FSH.Framework.Core.Domain;
 
 namespace FSH.Modules.Multitenancy.Domain;
 
-public class TenantTheme : BaseEntity<Guid>, IHasTenant, IAuditableEntity
+public class TenantTheme : BaseEntity<Guid>, IAuditableEntity
 {
-    public string TenantId { get; private set; } = default!;
-
     // Light Palette
     public string PrimaryColor { get; set; } = "#2563EB";
     public string SecondaryColor { get; set; } = "#0F172A";
@@ -59,7 +57,6 @@ public class TenantTheme : BaseEntity<Guid>, IHasTenant, IAuditableEntity
         return new TenantTheme
         {
             Id = Guid.NewGuid(),
-            TenantId = tenantId,
             CreatedBy = createdBy,
             CreatedOnUtc = DateTimeOffset.UtcNow
         };

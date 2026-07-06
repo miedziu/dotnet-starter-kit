@@ -57,22 +57,11 @@ public sealed class StartImpersonationCommandHandler
         }
 
         var actorUserId = _currentUser.GetUserId().ToString();
-        var actorTenantId = _currentUser.GetTenant()
-            ?? throw new UnauthorizedException("missing tenant context");
         var actorUserName = _currentUser.Name;
-
-        // Cross-tenant impersonation requires the actor to be in the root tenant. Tenant admins
-        // can only impersonate users within their own tenant.
-        if (!string.Equals(actorTenantId, MultitenancyConstants.Root.Id, StringComparison.Ordinal)
-            && !string.Equals(actorTenantId, request.TargetTenantId, StringComparison.Ordinal))
-        {
-            throw new ForbiddenException("cross-tenant impersonation is restricted to platform operators");
-        }
 
         // Prevent self-impersonation (pointless, confuses the audit trail). Caller error → explicit 4xx,
         // not the 500 CustomException defaults to.
-        if (string.Equals(actorUserId, request.TargetUserId, StringComparison.Ordinal)
-            && string.Equals(actorTenantId, request.TargetTenantId, StringComparison.Ordinal))
+        if (string.Equals(actorUserId, request.TargetUserId, StringComparison.Ordinal))
         {
             throw new CustomException("cannot impersonate yourself", errors: null, System.Net.HttpStatusCode.BadRequest);
         }
@@ -89,7 +78,7 @@ public sealed class StartImpersonationCommandHandler
         }
 
         var targetClaimsResult = await _identityService
-            .BuildClaimsForUserAsync(request.TargetUserId, request.TargetTenantId, cancellationToken);
+            .BuildClaimsForUserAsync(request.TargetUserId, cancellationToken);
 
         if (targetClaimsResult is null)
         {
@@ -109,8 +98,7 @@ public sealed class StartImpersonationCommandHandler
             [
                 new Claim(JwtRegisteredClaimNames.Jti, jti),
                 // RFC 8693 actor claims so the issued token carries who is acting.
-                new Claim(ClaimConstants.ActorSubject, actorUserId),
-                new Claim(ClaimConstants.ActorTenant, actorTenantId)
+                new Claim(ClaimConstants.ActorSubject, actorUserId)
             ])
             .ToList();
 
@@ -130,10 +118,8 @@ public sealed class StartImpersonationCommandHandler
             Jti: jti,
             ActorUserId: actorUserId,
             ActorUserName: actorUserName,
-            ActorTenantId: actorTenantId,
             ImpersonatedUserId: subject,
             ImpersonatedUserName: targetUserName,
-            ImpersonatedTenantId: request.TargetTenantId,
             Reason: request.Reason ?? string.Empty,
             StartedAtUtc: startedAtUtc,
             ExpiresAtUtc: expiresAt,
@@ -143,9 +129,7 @@ public sealed class StartImpersonationCommandHandler
 
         await _securityAudit.ImpersonationStartedAsync(
             actorUserId: actorUserId,
-            actorTenantId: actorTenantId,
             targetUserId: subject,
-            targetTenantId: request.TargetTenantId,
             clientId: _requestContext.ClientId ?? "unknown",
             ip: _requestContext.IpAddress ?? "unknown",
             userAgent: _requestContext.UserAgent ?? "unknown",
@@ -153,15 +137,13 @@ public sealed class StartImpersonationCommandHandler
             ct: cancellationToken);
 
         _logger.LogWarning(
-            "Impersonation started: actor {ActorUserId}@{ActorTenant} -> target {TargetUserId}@{TargetTenant} jti={Jti}",
-            actorUserId, actorTenantId, subject, request.TargetTenantId, jti);
+            "Impersonation started: actor {ActorUserId} -> target {TargetUserId} jti={Jti}",
+            actorUserId, subject, jti);
 
         return new ImpersonationResponse(
             AccessToken: accessToken,
             AccessTokenExpiresAt: expiresAt,
             ActorUserId: actorUserId,
-            ActorTenantId: actorTenantId,
-            ImpersonatedUserId: subject,
-            ImpersonatedTenantId: request.TargetTenantId);
+            ImpersonatedUserId: subject);
     }
 }

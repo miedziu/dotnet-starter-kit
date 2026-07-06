@@ -32,5 +32,5 @@ public interface IIdentityService
     /// tenant context differs from the target user's tenant. Returns null if the user is not found.
     /// </summary>
     Task<(string Subject, IEnumerable<Claim> Claims)?>
-        BuildClaimsForUserAsync(string userId, string tenantId, CancellationToken ct = default);
+        BuildClaimsForUserAsync(string userId, CancellationToken ct = default);
 }

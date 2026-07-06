@@ -20,10 +20,8 @@ namespace FSH.Starter.Migrations.PostgreSQL.Identity
                     Jti = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
                     ActorUserId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
                     ActorUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
-                    ActorTenantId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
                     ImpersonatedUserId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
                     ImpersonatedUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
-                    ImpersonatedTenantId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
                     Reason = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
                     StartedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     ExpiresAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
@@ -48,10 +46,10 @@ namespace FSH.Starter.Migrations.PostgreSQL.Identity
                 columns: new[] { "ActorUserId", "StartedAtUtc" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ImpersonationGrants_ImpersonatedTenantId_StartedAtUtc",
+                name: "IX_ImpersonationGrants_StartedAtUtc",
                 schema: "identity",
                 table: "ImpersonationGrants",
-                columns: new[] { "ImpersonatedTenantId", "StartedAtUtc" });
+                column: "StartedAtUtc");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ImpersonationGrants_Jti",

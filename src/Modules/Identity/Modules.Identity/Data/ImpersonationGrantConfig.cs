@@ -27,11 +27,9 @@ public class ImpersonationGrantConfig : IEntityTypeConfiguration<ImpersonationGr
 
         builder.Property(g => g.ActorUserId).IsRequired().HasMaxLength(64);
         builder.Property(g => g.ActorUserName).HasMaxLength(256);
-        builder.Property(g => g.ActorTenantId).IsRequired().HasMaxLength(64);
 
         builder.Property(g => g.ImpersonatedUserId).IsRequired().HasMaxLength(64);
         builder.Property(g => g.ImpersonatedUserName).HasMaxLength(256);
-        builder.Property(g => g.ImpersonatedTenantId).IsRequired().HasMaxLength(64);
 
         builder.Property(g => g.Reason).IsRequired().HasMaxLength(500);
         builder.Property(g => g.RevokeReason).HasMaxLength(500);
@@ -44,8 +42,8 @@ public class ImpersonationGrantConfig : IEntityTypeConfiguration<ImpersonationGr
 
         // Composite index supports the most common query: "active grants in
         // tenant X, newest first".
-        builder.HasIndex(g => new { g.ImpersonatedTenantId, g.StartedAtUtc })
-            .HasDatabaseName("IX_ImpersonationGrants_ImpersonatedTenantId_StartedAtUtc");
+        builder.HasIndex(g => new { g.StartedAtUtc })
+            .HasDatabaseName("IX_ImpersonationGrants_StartedAtUtc");
 
         builder.HasIndex(g => new { g.ActorUserId, g.StartedAtUtc })
             .HasDatabaseName("IX_ImpersonationGrants_ActorUserId_StartedAtUtc");

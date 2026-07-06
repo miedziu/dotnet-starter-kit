@@ -10,7 +10,6 @@ namespace FSH.Modules.Multitenancy.Domain;
 public sealed class TenantExpiryNotice
 {
     public Guid Id { get; private set; }
-    public string TenantId { get; private set; } = default!;
     public string NoticeType { get; private set; } = default!;
     public DateTime ValidUptoUtc { get; private set; }
     public DateTime CreatedAtUtc { get; private set; }
@@ -27,7 +26,6 @@ public sealed class TenantExpiryNotice
         return new TenantExpiryNotice
         {
             Id = Guid.NewGuid(),
-            TenantId = tenantId,
             NoticeType = noticeType,
             ValidUptoUtc = DateTime.SpecifyKind(validUptoUtc, DateTimeKind.Utc),
             CreatedAtUtc = DateTime.SpecifyKind(nowUtc, DateTimeKind.Utc),

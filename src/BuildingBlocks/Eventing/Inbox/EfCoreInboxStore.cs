@@ -42,7 +42,6 @@ public sealed class EfCoreInboxStore<TDbContext> : IInboxStore
             Id = eventId,
             EventType = eventType,
             HandlerName = handlerName,
-            TenantId = tenantId,
             ProcessedOnUtc = _timeProvider.GetUtcNow().UtcDateTime
         };
 

@@ -18,10 +18,6 @@ public sealed class StartImpersonationCommandValidator : AbstractValidator<Start
             .Cascade(CascadeMode.Stop)
             .NotEmpty();
 
-        RuleFor(p => p.TargetTenantId)
-            .Cascade(CascadeMode.Stop)
-            .NotEmpty();
-
         RuleFor(p => p.DurationMinutes!.Value)
             .GreaterThan(0)
             .LessThanOrEqualTo(MaxImpersonationMinutes)

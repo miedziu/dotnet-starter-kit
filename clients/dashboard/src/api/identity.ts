@@ -359,9 +359,7 @@ export type ImpersonationResponse = {
   accessToken: string;
   accessTokenExpiresAt: string;
   actorUserId: string;
-  actorTenantId: string;
   impersonatedUserId: string;
-  impersonatedTenantId: string;
 };
 
 export type EndImpersonationResponse = {
@@ -373,7 +371,6 @@ export type EndImpersonationResponse = {
 
 export async function startImpersonation(input: {
   targetUserId: string;
-  targetTenantId: string;
   reason?: string;
 }): Promise<ImpersonationResponse> {
   return apiFetch<ImpersonationResponse>(`/api/v1/identity/impersonation/start`, {
