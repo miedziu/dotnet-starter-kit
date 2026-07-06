@@ -1,4 +1,4 @@
-﻿using Finbuckle.MultiTenant.Abstractions;
+using Finbuckle.MultiTenant.Abstractions;
 using Finbuckle.MultiTenant.EntityFrameworkCore;
 using FSH.Framework.Core.Domain;
 using FSH.Framework.Shared.Multitenancy;
@@ -34,9 +34,9 @@ public class BaseDbContext(IMultiTenantContextAccessor<AppTenantInfo> multiTenan
         ArgumentNullException.ThrowIfNull(modelBuilder);
         modelBuilder.AppendGlobalQueryFilter<ISoftDeletable>(QueryFilters.SoftDelete, s => !s.IsDeleted);
         base.OnModelCreating(modelBuilder);
-        // Default-on tenant isolation: entities not marked IGlobalEntity get IsMultiTenant().
+        // Tenant isolation disabled - entities are global (shared across tenants).
         // Subclasses must call base.OnModelCreating AFTER ApplyConfigurationsFromAssembly so per-entity configs are in place.
-        modelBuilder.ApplyTenantIsolationByDefault();
+        // modelBuilder.ApplyTenantIsolationByDefault();
     }
 
     /// <summary>

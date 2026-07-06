@@ -69,7 +69,8 @@ public class IdentityDbContext : MultiTenantIdentityDbContext<FshUser,
 
         // Default-on tenant isolation: non-IGlobalEntity entities get IsMultiTenant() automatically (Outbox/Inbox/ImpersonationGrant opt out).
         // Identity tables are already IsMultiTenant in IdentityConfigurations.cs; auto-apply detects that annotation and skips them.
-        builder.ApplyTenantIsolationByDefault();
+        // builder.ApplyTenantIsolationByDefault();
+        // Tenant isolation disabled - entities are global (shared across tenants).
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
