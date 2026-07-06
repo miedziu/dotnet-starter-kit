@@ -8,7 +8,6 @@ public sealed record TenantProvisioningStepDto(
     string? Error);
 
 public sealed record TenantProvisioningStatusDto(
-    string TenantId,
     string Status,
     string CorrelationId,
     string? CurrentStep,

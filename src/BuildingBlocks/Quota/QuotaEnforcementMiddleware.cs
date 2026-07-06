@@ -1,5 +1,3 @@
-using System.Diagnostics;
-using System.Globalization;
 using Finbuckle.MultiTenant.Abstractions;
 using FSH.Framework.Shared.Auditing;
 using FSH.Framework.Shared.Multitenancy;
@@ -7,6 +5,8 @@ using FSH.Framework.Shared.Quota;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System.Diagnostics;
+using System.Globalization;
 
 namespace FSH.Framework.Quota;
 
@@ -67,7 +67,7 @@ public sealed class QuotaEnforcementMiddleware : IMiddleware
         }
 
         var result = await _quotaService
-            .CheckAndRecordAsync(tenantId, QuotaResource.ApiCalls, 1, context.RequestAborted)
+            .CheckAndRecordAsync(QuotaResource.ApiCalls, 1, context.RequestAborted)
             .ConfigureAwait(false);
 
         if (result.Allowed)

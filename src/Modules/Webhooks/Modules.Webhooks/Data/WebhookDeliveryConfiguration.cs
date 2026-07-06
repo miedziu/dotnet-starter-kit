@@ -11,7 +11,6 @@ public sealed class WebhookDeliveryConfiguration : IEntityTypeConfiguration<Webh
     {
         ArgumentNullException.ThrowIfNull(builder);
         builder.ToTable("Deliveries", "webhooks");
-        builder.IsMultiTenant();
         builder.HasKey(x => x.Id);
         builder.Property(x => x.EventType).IsRequired().HasMaxLength(256);
         builder.Property(x => x.PayloadJson).IsRequired();

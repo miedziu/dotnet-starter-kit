@@ -10,12 +10,11 @@ namespace FSH.Modules.Billing.Services;
 public interface IUsageReporter
 {
     /// <summary>
-    /// Captures one <see cref="UsageSnapshot"/> per <c>QuotaResource</c> for the given tenant/period.
-    /// Idempotent: if a snapshot already exists for (tenant, period, resource) the existing record is
+    /// Captures one <see cref="UsageSnapshot"/> per <c>QuotaResource</c> for the given period.
+    /// Idempotent: if a snapshot already exists for (period, resource) the existing record is
     /// returned instead of a new one.
     /// </summary>
     Task<IReadOnlyList<UsageSnapshot>> CaptureForPeriodAsync(
-        string tenantId,
         int periodYear,
         int periodMonth,
         CancellationToken cancellationToken = default);

@@ -19,30 +19,28 @@ public sealed class TenantRenewedIntegrationEventHandler(
     public async Task HandleAsync(TenantRenewedIntegrationEvent @event, CancellationToken ct = default)
     {
         ArgumentNullException.ThrowIfNull(@event);
-        var tenantId = @event.TenantId
-            ?? throw new InvalidOperationException("TenantRenewedIntegrationEvent is missing TenantId.");
 
         if (@event.PlanChanged)
         {
             await TenantSubscriptionMaintenance.ReplaceActiveSubscriptionAsync(
-                db, tenantId, @event.PlanId, @event.PeriodStartUtc, @event.PeriodEndUtc, ct).ConfigureAwait(false);
+                db, @event.PlanId, @event.PeriodStartUtc, @event.PeriodEndUtc, ct).ConfigureAwait(false);
         }
         else
         {
             // Same-plan renewal: extend the active subscription's term so EndUtc tracks the renewed
             // ValidUpto (otherwise the dashboard's "Current term"/validity drifts behind enforcement).
             await TenantSubscriptionMaintenance.ExtendActiveSubscriptionAsync(
-                db, tenantId, @event.PeriodEndUtc, ct).ConfigureAwait(false);
+                db, @event.PeriodEndUtc, ct).ConfigureAwait(false);
         }
 
         await billing.CreateSubscriptionInvoiceAsync(
-            tenantId, @event.PlanId, @event.PeriodStartUtc, @event.PeriodEndUtc, ct).ConfigureAwait(false);
+            @event.PlanId, @event.PeriodStartUtc, @event.PeriodEndUtc, ct).ConfigureAwait(false);
 
         if (logger.IsEnabled(LogLevel.Information))
         {
             logger.LogInformation(
-                "[Billing] tenant {TenantId} renewed on plan {PlanKey} (planChanged={PlanChanged}); term ends {End:o}",
-                tenantId, @event.PlanKey, @event.PlanChanged, @event.PeriodEndUtc);
+                "[Billing] renewed on plan {PlanKey} (planChanged={PlanChanged}); term ends {End:o}",
+                @event.PlanKey, @event.PlanChanged, @event.PeriodEndUtc);
         }
     }
 }

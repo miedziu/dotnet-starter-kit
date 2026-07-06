@@ -118,11 +118,6 @@ namespace FSH.Starter.Migrations.PostgreSQL.Billing
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
-                    b.Property<string>("TenantId")
-                        .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("character varying(64)");
-
                     b.Property<DateTime?>("VoidedAtUtc")
                         .HasColumnType("timestamp with time zone");
 
@@ -133,7 +128,7 @@ namespace FSH.Starter.Migrations.PostgreSQL.Billing
 
                     b.HasIndex("Status");
 
-                    b.HasIndex("TenantId", "PeriodYear", "PeriodMonth", "Purpose")
+                    b.HasIndex("PeriodYear", "PeriodMonth", "Purpose")
                         .IsUnique()
                         .HasDatabaseName("ux_invoices_tenant_period_purpose")
                         .HasFilter("\"Purpose\" <> 2");
@@ -197,22 +192,12 @@ namespace FSH.Starter.Migrations.PostgreSQL.Billing
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
-                    b.Property<string>("TenantId")
-                        .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("character varying(64)");
-
                     b.Property<DateTime?>("UpdatedAtUtc")
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("TenantId")
-                        .IsUnique()
-                        .HasDatabaseName("ux_subscriptions_tenantid_active")
-                        .HasFilter("\"Status\" = 0");
-
-                    b.HasIndex("TenantId", "Status");
+                    b.HasIndex("Status");
 
                     b.ToTable("Subscriptions", "billing");
                 });
@@ -250,16 +235,11 @@ namespace FSH.Starter.Migrations.PostgreSQL.Billing
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
-                    b.Property<string>("TenantId")
-                        .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("character varying(64)");
-
                     b.HasKey("Id");
 
                     b.HasIndex("InvoiceId");
 
-                    b.HasIndex("TenantId", "Status");
+                    b.HasIndex("Status");
 
                     b.ToTable("TopupRequests", "billing");
                 });
@@ -285,17 +265,12 @@ namespace FSH.Starter.Migrations.PostgreSQL.Billing
                     b.Property<int>("Resource")
                         .HasColumnType("integer");
 
-                    b.Property<string>("TenantId")
-                        .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("character varying(64)");
-
                     b.Property<long>("UsedUnits")
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("TenantId", "PeriodYear", "PeriodMonth", "Resource")
+                    b.HasIndex("PeriodYear", "PeriodMonth", "Resource")
                         .IsUnique()
                         .HasDatabaseName("ux_usage_snapshots_tenant_period_resource");
 
@@ -314,19 +289,10 @@ namespace FSH.Starter.Migrations.PostgreSQL.Billing
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
-                    b.Property<string>("TenantId")
-                        .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("character varying(64)");
-
                     b.Property<DateTime?>("UpdatedAtUtc")
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("TenantId")
-                        .IsUnique()
-                        .HasDatabaseName("ux_wallets_tenantid");
 
                     b.ToTable("Wallets", "billing");
                 });
@@ -351,11 +317,6 @@ namespace FSH.Starter.Migrations.PostgreSQL.Billing
                         .HasMaxLength(128)
                         .HasColumnType("character varying(128)");
 
-                    b.Property<string>("TenantId")
-                        .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("character varying(64)");
-
                     b.Property<Guid>("WalletId")
                         .HasColumnType("uuid");
 
@@ -365,8 +326,6 @@ namespace FSH.Starter.Migrations.PostgreSQL.Billing
                         .IsUnique()
                         .HasDatabaseName("ux_wallet_transactions_topup_reference")
                         .HasFilter("\"Kind\" = 0");
-
-                    b.HasIndex("TenantId");
 
                     b.HasIndex("WalletId", "CreatedAtUtc");
 

@@ -10,7 +10,6 @@ namespace FSH.Modules.Billing.Domain;
 /// </summary>
 public sealed class UsageSnapshot : BaseEntity<Guid>
 {
-    public string TenantId { get; private set; } = default!;
     public int PeriodYear { get; private set; }
     public int PeriodMonth { get; private set; }
     public QuotaResource Resource { get; private set; }
@@ -21,14 +20,12 @@ public sealed class UsageSnapshot : BaseEntity<Guid>
     private UsageSnapshot() { }
 
     public static UsageSnapshot Capture(
-        string tenantId,
         int periodYear,
         int periodMonth,
         QuotaResource resource,
         long usedUnits,
         long limitUnits)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(tenantId);
         if (periodYear is < 2000 or > 2100)
         {
             throw new ArgumentOutOfRangeException(nameof(periodYear));
@@ -41,7 +38,6 @@ public sealed class UsageSnapshot : BaseEntity<Guid>
         return new UsageSnapshot
         {
             Id = Guid.CreateVersion7(),
-            TenantId = tenantId,
             PeriodYear = periodYear,
             PeriodMonth = periodMonth,
             Resource = resource,

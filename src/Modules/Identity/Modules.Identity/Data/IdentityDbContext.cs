@@ -1,5 +1,4 @@
 using Finbuckle.MultiTenant.Abstractions;
-using Finbuckle.MultiTenant.Identity.EntityFrameworkCore;
 using FSH.Framework.Eventing.Inbox;
 using FSH.Framework.Eventing.Outbox;
 using FSH.Framework.Persistence;
@@ -7,13 +6,15 @@ using FSH.Framework.Shared.Multitenancy;
 using FSH.Framework.Shared.Persistence;
 using FSH.Modules.Identity.Domain;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 
 namespace FSH.Modules.Identity.Data;
 
-public class IdentityDbContext : MultiTenantIdentityDbContext<FshUser,
+public class IdentityDbContext : IdentityDbContext<
+    FshUser,
     FshRole,
     string,
     IdentityUserClaim<string>,
@@ -24,7 +25,6 @@ public class IdentityDbContext : MultiTenantIdentityDbContext<FshUser,
     IdentityUserPasskey<string>>
 {
     private readonly DatabaseOptions _settings;
-    private new AppTenantInfo TenantInfo { get; set; }
     private readonly IHostEnvironment _environment;
     public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
 
@@ -43,45 +43,47 @@ public class IdentityDbContext : MultiTenantIdentityDbContext<FshUser,
     public DbSet<ImpersonationGrant> ImpersonationGrants => Set<ImpersonationGrant>();
     public DbSet<Referral> Referrals => Set<Referral>();
 
+    // Tenant info is set by the DbMigrator for logging purposes
+    public AppTenantInfo? TenantInfo { get; set; }
+
     public IdentityDbContext(
         IMultiTenantContextAccessor<AppTenantInfo> multiTenantContextAccessor,
         DbContextOptions<IdentityDbContext> options,
         IOptions<DatabaseOptions> settings,
-        IHostEnvironment environment) : base(multiTenantContextAccessor, options)
+        IHostEnvironment environment) : base(options)
     {
-        ArgumentNullException.ThrowIfNull(multiTenantContextAccessor);
         ArgumentNullException.ThrowIfNull(settings);
 
         _environment = environment;
         _settings = settings.Value;
-        TenantInfo = multiTenantContextAccessor.MultiTenantContext.TenantInfo!;
+
+        // Try to get tenant info from the accessor for logging
+        TenantInfo = multiTenantContextAccessor?.MultiTenantContext?.TenantInfo;
     }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
         ArgumentNullException.ThrowIfNull(builder);
 
-        base.OnModelCreating(builder);
+        base.OnModelCreating(builder); //?
         builder.ApplyConfigurationsFromAssembly(typeof(IdentityDbContext).Assembly);
 
         builder.ApplyConfiguration(new OutboxMessageConfiguration(IdentityModuleConstants.SchemaName));
         builder.ApplyConfiguration(new InboxMessageConfiguration(IdentityModuleConstants.SchemaName));
 
-        // Default-on tenant isolation: non-IGlobalEntity entities get IsMultiTenant() automatically (Outbox/Inbox/ImpersonationGrant opt out).
-        // Identity tables are already IsMultiTenant in IdentityConfigurations.cs; auto-apply detects that annotation and skips them.
-        // builder.ApplyTenantIsolationByDefault();
-        // Tenant isolation disabled - entities are global (shared across tenants).
+        // Tenant isolation disabled - Identity entities are global (shared across tenants).
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         //optionsBuilder.LogTo(message => System.Diagnostics.Debug.WriteLine(message)).EnableDetailedErrors();
 
-        if (!string.IsNullOrWhiteSpace(TenantInfo?.ConnectionString))
+        var connectionString = _settings.ConnectionString;
+        if (!string.IsNullOrWhiteSpace(connectionString))
         {
             optionsBuilder.ConfigureHeroDatabase(
                 _settings.Provider,
-                TenantInfo.ConnectionString,
+                connectionString,
                 _settings.MigrationsAssembly,
                 _environment.IsDevelopment());
         }

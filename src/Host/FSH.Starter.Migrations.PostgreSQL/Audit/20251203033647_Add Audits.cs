@@ -24,7 +24,6 @@ namespace FSH.Starter.Migrations.PostgreSQL.Audit
                     ReceivedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     EventType = table.Column<int>(type: "integer", nullable: false),
                     Severity = table.Column<byte>(type: "smallint", nullable: false),
-                    TenantId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
                     UserId = table.Column<string>(type: "text", nullable: true),
                     UserName = table.Column<string>(type: "text", nullable: true),
                     TraceId = table.Column<string>(type: "text", nullable: true),
@@ -51,12 +50,6 @@ namespace FSH.Starter.Migrations.PostgreSQL.Audit
                 schema: "audit",
                 table: "AuditRecords",
                 column: "OccurredAtUtc");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AuditRecords_TenantId",
-                schema: "audit",
-                table: "AuditRecords",
-                column: "TenantId");
         }
 
         /// <inheritdoc />

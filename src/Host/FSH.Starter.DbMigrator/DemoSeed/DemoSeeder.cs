@@ -1,15 +1,11 @@
-using System.Globalization;
-using Finbuckle.MultiTenant;
 using Finbuckle.MultiTenant.Abstractions;
 using FSH.Framework.Shared.Constants;
-using FSH.Framework.Shared.Identity.Claims;
 using FSH.Framework.Shared.Multitenancy;
 using FSH.Modules.Billing.Contracts;
 using FSH.Modules.Billing.Data;
 using FSH.Modules.Billing.Domain;
 using FSH.Modules.Catalog.Contracts.Authorization;
 using FSH.Modules.Catalog.Data;
-using FSH.Modules.Catalog.Domain;
 using FSH.Modules.Chat.Data;
 using FSH.Modules.Chat.Domain;
 using FSH.Modules.Identity.Contracts.Authorization;
@@ -27,6 +23,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using System.Globalization;
 
 namespace FSH.Starter.DbMigrator.DemoSeed;
 
@@ -136,7 +133,7 @@ internal sealed class DemoSeeder
             await tenantService.MigrateTenantAsync(existing, cancellationToken).ConfigureAwait(false);
             await tenantService.SeedTenantAsync(existing, cancellationToken).ConfigureAwait(false);
 
-            await EnsureProvisioningRecordAsync(tenantDb, demo.Id, cancellationToken).ConfigureAwait(false);
+            await EnsureProvisioningRecordAsync(tenantDb, cancellationToken).ConfigureAwait(false);
         }
     }
 
@@ -145,19 +142,19 @@ internal sealed class DemoSeeder
     /// pipeline — so no <see cref="TenantProvisioning"/> row exists and the admin
     /// Provisioning panel would 404. Record a completed run (all steps done) so the
     /// panel shows a real "Completed" history instead. Idempotent: skips if a row
-    /// already exists for the tenant.
+    /// already exists.
     /// </summary>
-    private static async Task EnsureProvisioningRecordAsync(TenantDbContext tenantDb, string tenantId, CancellationToken cancellationToken)
+    private static async Task EnsureProvisioningRecordAsync(TenantDbContext tenantDb, CancellationToken cancellationToken)
     {
         var alreadyTracked = await tenantDb.Set<TenantProvisioning>()
-            .AnyAsync(p => p.TenantId == tenantId, cancellationToken)
+            .AnyAsync(cancellationToken)
             .ConfigureAwait(false);
         if (alreadyTracked)
         {
             return;
         }
 
-        var provisioning = new TenantProvisioning(tenantId, Guid.NewGuid().ToString());
+        var provisioning = new TenantProvisioning(Guid.NewGuid().ToString());
         foreach (var step in Enum.GetValues<TenantProvisioningStepName>())
         {
             var stepEntity = new TenantProvisioningStep(provisioning.Id, step);
@@ -179,13 +176,16 @@ internal sealed class DemoSeeder
     /// via <c>TenantSubscribedIntegrationEvent</c>, but demo tenants are provisioned inline (see
     /// <see cref="EnsureDemoTenantsExistAsync"/>) and never publish it — so we write the row directly.
     ///
+    /// Billing is now global (not tenant-scoped), so this creates a single active subscription.
+    /// The first tenant with a paid plan wins; subsequent runs skip if an active subscription exists.
+    ///
     /// Paid plans also get an issued term invoice, matching the real flow. It's written directly
     /// rather than via <c>IBillingService</c> so we don't publish <c>InvoiceIssuedIntegrationEvent</c>
     /// — the one-shot migrator has no outbox dispatcher and demo seeding shouldn't fire
     /// notifications/emails. The subscription's term is aligned to the tenant's <c>ValidUpto</c> so the
     /// dashboard's term matches the enforced validity window.
     ///
-    /// Idempotent: skips when the tenant already has an active subscription.
+    /// Idempotent: skips when an active subscription already exists.
     /// </summary>
     private async Task SeedTenantSubscriptionAsync(DemoTenant demo, CancellationToken cancellationToken)
     {
@@ -194,8 +194,6 @@ internal sealed class DemoSeeder
         var tenant = await tenantStore.GetAsync(demo.Id).ConfigureAwait(false);
         if (tenant is null) return;
 
-        // BillingDbContext is NOT tenant-filtered (TenantId is an explicit column), so no Finbuckle
-        // context juggling is required — we scope by TenantId directly.
         var billingDb = scope.ServiceProvider.GetRequiredService<BillingDbContext>();
 
         var plan = await billingDb.Plans
@@ -211,10 +209,9 @@ internal sealed class DemoSeeder
             return;
         }
 
-        // Reuse the existing active subscription's term if present so re-runs don't re-subscribe but
-        // still backfill a missing invoice, otherwise start fresh aligned to the tenant's ValidUpto.
+        // Billing is now global: check for an existing active subscription
         var existing = await billingDb.Subscriptions
-            .FirstOrDefaultAsync(s => s.TenantId == demo.Id && s.Status == SubscriptionStatus.Active, cancellationToken)
+            .FirstOrDefaultAsync(s => s.Status == SubscriptionStatus.Active, cancellationToken)
             .ConfigureAwait(false);
 
         var startUtc = existing?.StartUtc ?? DateTime.UtcNow;
@@ -222,12 +219,12 @@ internal sealed class DemoSeeder
 
         if (existing is null)
         {
-            billingDb.Subscriptions.Add(Subscription.Create(demo.Id, plan.Id, startUtc, endUtc));
+            billingDb.Subscriptions.Add(Subscription.Create(plan.Id, startUtc, endUtc));
             if (_logger.IsEnabled(LogLevel.Information))
             {
                 _logger.LogInformation(
-                    "[demo-seed] [{Tenant}] subscribed to plan '{PlanKey}' (term ends {End:o})",
-                    demo.Id, plan.Key, endUtc);
+                    "[demo-seed] subscribed to plan '{PlanKey}' (term ends {End:o})",
+                    plan.Key, endUtc);
             }
         }
 
@@ -236,14 +233,14 @@ internal sealed class DemoSeeder
         if (plan.TermPrice.Amount > 0m)
         {
             var invoiceNumber = string.Create(
-                CultureInfo.InvariantCulture, $"SUB-{startUtc:yyyyMM}-{demo.Id.ToUpperInvariant()}");
+                CultureInfo.InvariantCulture, $"SUB-{startUtc:yyyyMM}-GLBL");
             var invoiceExists = await billingDb.Invoices
-                .AnyAsync(i => i.TenantId == demo.Id && i.InvoiceNumber == invoiceNumber, cancellationToken)
+                .AnyAsync(i => i.InvoiceNumber == invoiceNumber, cancellationToken)
                 .ConfigureAwait(false);
             if (!invoiceExists)
             {
                 var invoice = Invoice.CreateDraft(
-                    demo.Id, invoiceNumber, startUtc.Year, startUtc.Month, plan.Currency,
+                    invoiceNumber, startUtc.Year, startUtc.Month, plan.Currency,
                     InvoicePurpose.Subscription, startUtc, endUtc);
                 invoice.AddLineItem(
                     InvoiceLineItemKind.BaseFee,
@@ -257,8 +254,8 @@ internal sealed class DemoSeeder
                 if (_logger.IsEnabled(LogLevel.Information))
                 {
                     _logger.LogInformation(
-                        "[demo-seed] [{Tenant}] issued term invoice {InvoiceNumber} ({Amount} {Currency})",
-                        demo.Id, invoiceNumber, plan.TermPrice, plan.Currency);
+                        "[demo-seed] issued term invoice {InvoiceNumber} ({Amount} {Currency})",
+                        invoiceNumber, plan.TermPrice, plan.Currency);
                 }
             }
         }
@@ -625,7 +622,7 @@ internal sealed class DemoSeeder
                 await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
                 dbContext.Messages.Add(Message.Create(dm.Id, aliceId, "hey, got a sec for the hydration thing?"));
-                dbContext.Messages.Add(Message.Create(dm.Id, bobId,   "yeah, throw me a repro and i'll look in the morning"));
+                dbContext.Messages.Add(Message.Create(dm.Id, bobId, "yeah, throw me a repro and i'll look in the morning"));
                 await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
                 channelCount++; messageCount += 2;

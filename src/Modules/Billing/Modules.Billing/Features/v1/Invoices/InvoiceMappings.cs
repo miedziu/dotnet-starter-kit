@@ -7,7 +7,6 @@ internal static class InvoiceMappings
 {
     public static InvoiceDto ToDto(this Invoice invoice) => new(
         invoice.Id,
-        invoice.TenantId,
         invoice.InvoiceNumber,
         invoice.PeriodYear,
         invoice.PeriodMonth,

@@ -20,11 +20,6 @@ namespace FSH.Starter.Migrations.PostgreSQL.Audit
                 schema: "audit",
                 table: "AuditRecords");
 
-            migrationBuilder.DropIndex(
-                name: "IX_AuditRecords_TenantId",
-                schema: "audit",
-                table: "AuditRecords");
-
             migrationBuilder.AlterDatabase()
                 .Annotation("Npgsql:PostgresExtension:pg_trgm", ",,");
 
@@ -54,15 +49,15 @@ namespace FSH.Starter.Migrations.PostgreSQL.Audit
                 name: "IX_AuditRecords_Tenant_EventType_OccurredAt",
                 schema: "audit",
                 table: "AuditRecords",
-                columns: new[] { "TenantId", "EventType", "OccurredAtUtc" },
-                descending: new[] { false, false, true });
+                columns: new[] { "EventType", "OccurredAtUtc" },
+                descending: new[] { false, true });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AuditRecords_Tenant_OccurredAt",
                 schema: "audit",
                 table: "AuditRecords",
-                columns: new[] { "TenantId", "OccurredAtUtc" },
-                descending: new[] { false, true });
+                columns: new[] { "OccurredAtUtc" },
+                descending: new[] { true });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AuditRecords_TraceId",
@@ -131,12 +126,6 @@ namespace FSH.Starter.Migrations.PostgreSQL.Audit
                 schema: "audit",
                 table: "AuditRecords",
                 column: "OccurredAtUtc");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AuditRecords_TenantId",
-                schema: "audit",
-                table: "AuditRecords",
-                column: "TenantId");
         }
     }
 }

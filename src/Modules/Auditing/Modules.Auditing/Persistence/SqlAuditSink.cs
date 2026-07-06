@@ -52,7 +52,6 @@ public sealed class SqlAuditSink : IAuditSink
                 ReceivedAtUtc = e.ReceivedAtUtc,
                 EventType = (int)e.EventType,
                 Severity = (byte)e.Severity,
-                TenantId = e.TenantId,
                 UserId = e.UserId,
                 UserName = e.UserName,
                 TraceId = e.TraceId,

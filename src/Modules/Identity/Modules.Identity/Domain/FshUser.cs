@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace FSH.Modules.Identity.Domain;
 
-public class FshUser : IdentityUser, IHasDomainEvents
+public class FshUser : IdentityUser, IGlobalEntity, IHasDomainEvents
 {
     private readonly List<IDomainEvent> _domainEvents = [];
 

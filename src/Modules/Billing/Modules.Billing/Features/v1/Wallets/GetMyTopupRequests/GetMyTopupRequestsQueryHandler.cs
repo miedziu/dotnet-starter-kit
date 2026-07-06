@@ -1,6 +1,3 @@
-using Finbuckle.MultiTenant.Abstractions;
-using FSH.Framework.Core.Exceptions;
-using FSH.Framework.Shared.Multitenancy;
 using FSH.Framework.Shared.Persistence;
 using FSH.Modules.Billing.Contracts.Dtos;
 using FSH.Modules.Billing.Contracts.v1.Wallets;
@@ -12,20 +9,13 @@ using Microsoft.EntityFrameworkCore;
 namespace FSH.Modules.Billing.Features.v1.Wallets.GetMyTopupRequests;
 
 public sealed class GetMyTopupRequestsQueryHandler(
-    BillingDbContext dbContext,
-    IMultiTenantContextAccessor<AppTenantInfo> tenantAccessor)
+    BillingDbContext dbContext)
     : IQueryHandler<GetMyTopupRequestsQuery, PagedResponse<TopupRequestDto>>
 {
     public async ValueTask<PagedResponse<TopupRequestDto>> Handle(GetMyTopupRequestsQuery query, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(query);
-
-        // BillingDbContext is not tenant-filtered; resolve caller's own tenant and scope strictly to it.
-        var tenantId = tenantAccessor.MultiTenantContext?.TenantInfo?.Id
-            ?? throw new UnauthorizedException("Tenant context is required.");
-
-        var q = dbContext.TopupRequests.AsNoTracking()
-            .Where(r => r.TenantId == tenantId);
+        var q = dbContext.TopupRequests.AsNoTracking();
 
         if (query.Status is not null)
         {

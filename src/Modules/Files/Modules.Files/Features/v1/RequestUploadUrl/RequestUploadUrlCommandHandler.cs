@@ -1,10 +1,8 @@
-using System.Net;
 using FSH.Framework.Core.Context;
 using FSH.Framework.Core.Exceptions;
 using FSH.Framework.Quota;
 using FSH.Framework.Shared.Quota;
 using FSH.Framework.Storage.Services;
-using FSH.Modules.Files.Contracts;
 using FSH.Modules.Files.Contracts.v1.Commands;
 using FSH.Modules.Files.Contracts.v1.DTOs;
 using FSH.Modules.Files.Data;
@@ -12,6 +10,7 @@ using FSH.Modules.Files.Domain;
 using FSH.Modules.Files.Services;
 using Mediator;
 using Microsoft.Extensions.Options;
+using System.Net;
 
 namespace FSH.Modules.Files.Features.v1.RequestUploadUrl;
 
@@ -68,7 +67,7 @@ public sealed class RequestUploadUrlCommandHandler(
         }
 
         // Quota pre-check (no debit yet — debit happens on finalize with actual bytes).
-        var quotaCheck = await quotas.CheckAsync(tenantId, QuotaResource.StorageBytes, cmd.SizeBytes, cancellationToken).ConfigureAwait(false);
+        var quotaCheck = await quotas.CheckAsync(QuotaResource.StorageBytes, cmd.SizeBytes, cancellationToken).ConfigureAwait(false);
         if (!quotaCheck.Allowed)
         {
             throw new CustomException(

@@ -9,34 +9,33 @@ namespace FSH.Modules.Billing.Services;
 public interface IBillingService
 {
     /// <summary>
-    /// Returns the wallet for <paramref name="tenantId"/>, creating one if none exists.
-    /// The wallet is the single balance ledger per tenant for prepaid credit (e.g. WhatsApp).
+    /// Returns the global wallet, creating one if none exists. Billing is not tenant-scoped: there
+    /// is a single wallet ledger for prepaid credit (e.g. WhatsApp) shared across the system.
     /// </summary>
-    Task<Wallet> GetOrCreateWalletAsync(string tenantId, string currency, CancellationToken cancellationToken = default);
+    Task<Wallet> GetOrCreateWalletAsync(string currency, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Creates and issues a Topup-purpose invoice for the pending <see cref="TopupRequest"/>,
     /// fires <c>InvoiceIssuedIntegrationEvent</c>, calls <c>request.MarkInvoiced</c>, and saves —
     /// all in one unit of work.
     /// </summary>
-    Task<Invoice> CreateTopupInvoiceAsync(string tenantId, Guid topupRequestId, CancellationToken cancellationToken = default);
+    Task<Invoice> CreateTopupInvoiceAsync(Guid topupRequestId, CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Generates a Draft invoice for the tenant/period by snapshotting usage and pricing it against
-    /// the tenant's active subscription plan. Returns null if the tenant has no active subscription
-    /// or an invoice already exists for the period.
+    /// Generates a Draft invoice for the period by snapshotting usage and pricing it against the
+    /// active subscription plan. Returns null if there is no active subscription or an invoice
+    /// already exists for the period.
     /// </summary>
     Task<Invoice?> GenerateInvoiceForPeriodAsync(
-        string tenantId,
         int periodYear,
         int periodMonth,
         CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Generates draft invoices for every tenant with an active subscription for the given period.
-    /// Returns the count of invoices created (existing invoices for the period are skipped).
+    /// Generates the draft invoice for the global active subscription for the given period.
+    /// Returns the count of invoices created (an existing invoice for the period is skipped).
     /// </summary>
-    Task<int> GenerateInvoicesForAllTenantsAsync(
+    Task<int> GenerateInvoicesAsync(
         int periodYear,
         int periodMonth,
         CancellationToken cancellationToken = default);
@@ -47,7 +46,6 @@ public interface IBillingService
     /// Idempotent: returns the existing invoice if one already exists for the term.
     /// </summary>
     Task<Invoice?> CreateSubscriptionInvoiceAsync(
-        string tenantId,
         Guid planId,
         DateTime periodStartUtc,
         DateTime periodEndUtc,

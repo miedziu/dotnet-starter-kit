@@ -1,4 +1,3 @@
-using Finbuckle.MultiTenant.EntityFrameworkCore.Extensions;
 using FSH.Modules.Identity.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -12,8 +11,7 @@ public class GroupConfiguration : IEntityTypeConfiguration<Group>
         ArgumentNullException.ThrowIfNull(builder);
 
         builder
-            .ToTable("Groups", IdentityModuleConstants.SchemaName)
-            .IsMultiTenant();
+            .ToTable("Groups", IdentityModuleConstants.SchemaName);
 
         builder.HasKey(g => g.Id);
 

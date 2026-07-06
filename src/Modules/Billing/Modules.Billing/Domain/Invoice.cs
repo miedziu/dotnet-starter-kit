@@ -12,7 +12,6 @@ public sealed class Invoice : AggregateRoot<Guid>
 {
     private readonly List<InvoiceLineItem> _lineItems = new();
 
-    public string TenantId { get; private set; } = default!;
     public string InvoiceNumber { get; private set; } = default!;
     public int PeriodYear { get; private set; }
     public int PeriodMonth { get; private set; }
@@ -44,16 +43,14 @@ public sealed class Invoice : AggregateRoot<Guid>
     private Invoice() { }
 
     public static Invoice CreateDraft(
-        string tenantId,
         string invoiceNumber,
         int periodYear,
         int periodMonth,
         string currency)
-        => CreateDraft(tenantId, invoiceNumber, periodYear, periodMonth, currency,
+        => CreateDraft(invoiceNumber, periodYear, periodMonth, currency,
             InvoicePurpose.Usage, periodStartUtc: null, periodEndUtc: null);
 
     public static Invoice CreateDraft(
-        string tenantId,
         string invoiceNumber,
         int periodYear,
         int periodMonth,
@@ -62,7 +59,6 @@ public sealed class Invoice : AggregateRoot<Guid>
         DateTime? periodStartUtc,
         DateTime? periodEndUtc)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(tenantId);
         ArgumentException.ThrowIfNullOrWhiteSpace(invoiceNumber);
         ArgumentException.ThrowIfNullOrWhiteSpace(currency);
         if (periodYear is < 2000 or > 2100)
@@ -77,7 +73,6 @@ public sealed class Invoice : AggregateRoot<Guid>
         return new Invoice
         {
             Id = Guid.CreateVersion7(),
-            TenantId = tenantId,
             InvoiceNumber = invoiceNumber,
             PeriodYear = periodYear,
             PeriodMonth = periodMonth,
@@ -96,7 +91,6 @@ public sealed class Invoice : AggregateRoot<Guid>
     /// <see cref="SubtotalAmount"/> is set before the invoice is issued.
     /// </summary>
     public static Invoice CreateTopupDraft(
-        string tenantId,
         string invoiceNumber,
         int periodYear,
         int periodMonth,
@@ -104,7 +98,7 @@ public sealed class Invoice : AggregateRoot<Guid>
         decimal amount,
         string lineItemDescription)
     {
-        var invoice = CreateDraft(tenantId, invoiceNumber, periodYear, periodMonth, currency,
+        var invoice = CreateDraft(invoiceNumber, periodYear, periodMonth, currency,
             InvoicePurpose.Topup, periodStartUtc: null, periodEndUtc: null);
         invoice.AddLineItem(InvoiceLineItemKind.Adjustment, lineItemDescription, 1m, amount);
         return invoice;

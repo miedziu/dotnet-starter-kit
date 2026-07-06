@@ -42,10 +42,6 @@ namespace FSH.Starter.Migrations.PostgreSQL.Identity
                     b.Property<DateTime>("ProcessedOnUtc")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("TenantId")
-                        .HasMaxLength(64)
-                        .HasColumnType("character varying(64)");
-
                     b.HasKey("Id", "HandlerName");
 
                     b.ToTable("InboxMessages", "identity");
@@ -80,10 +76,6 @@ namespace FSH.Starter.Migrations.PostgreSQL.Identity
                     b.Property<int>("RetryCount")
                         .HasColumnType("integer");
 
-                    b.Property<string>("TenantId")
-                        .HasMaxLength(64)
-                        .HasColumnType("character varying(64)");
-
                     b.Property<string>("Type")
                         .IsRequired()
                         .HasMaxLength(512)
@@ -114,13 +106,9 @@ namespace FSH.Starter.Migrations.PostgreSQL.Identity
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
 
-                    b.Property<string>("TenantId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("NormalizedName", "TenantId")
+                    b.HasIndex("NormalizedName")
                         .IsUnique()
                         .HasDatabaseName("RoleNameIndex");
 
@@ -150,10 +138,6 @@ namespace FSH.Starter.Migrations.PostgreSQL.Identity
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("RoleId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("TenantId")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -236,10 +220,6 @@ namespace FSH.Starter.Migrations.PostgreSQL.Identity
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("text");
 
-                    b.Property<string>("TenantId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("boolean");
 
@@ -252,7 +232,7 @@ namespace FSH.Starter.Migrations.PostgreSQL.Identity
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
 
-                    b.HasIndex("NormalizedUserName", "TenantId")
+                    b.HasIndex("NormalizedUserName")
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex");
 
@@ -311,10 +291,6 @@ namespace FSH.Starter.Migrations.PostgreSQL.Identity
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
 
-                    b.Property<string>("TenantId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.HasKey("Id");
 
                     b.HasIndex("IsDefault");
@@ -336,10 +312,6 @@ namespace FSH.Starter.Migrations.PostgreSQL.Identity
                     b.Property<string>("RoleId")
                         .HasMaxLength(450)
                         .HasColumnType("character varying(450)");
-
-                    b.Property<string>("TenantId")
-                        .IsRequired()
-                        .HasColumnType("text");
 
                     b.HasKey("GroupId", "RoleId");
 
@@ -463,10 +435,6 @@ namespace FSH.Starter.Migrations.PostgreSQL.Identity
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("TenantId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasMaxLength(256)
@@ -517,10 +485,6 @@ namespace FSH.Starter.Migrations.PostgreSQL.Identity
                     b.Property<string>("AddedBy")
                         .HasMaxLength(450)
                         .HasColumnType("character varying(450)");
-
-                    b.Property<string>("TenantId")
-                        .IsRequired()
-                        .HasColumnType("text");
 
                     b.HasKey("UserId", "GroupId");
 
@@ -594,10 +558,6 @@ namespace FSH.Starter.Migrations.PostgreSQL.Identity
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
 
-                    b.Property<string>("TenantId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<string>("UserAgent")
                         .IsRequired()
                         .HasMaxLength(1024)
@@ -637,10 +597,6 @@ namespace FSH.Starter.Migrations.PostgreSQL.Identity
                     b.Property<string>("ClaimValue")
                         .HasColumnType("text");
 
-                    b.Property<string>("TenantId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("text");
@@ -665,10 +621,6 @@ namespace FSH.Starter.Migrations.PostgreSQL.Identity
                     b.Property<string>("ProviderDisplayName")
                         .HasColumnType("text");
 
-                    b.Property<string>("TenantId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("text");
@@ -690,10 +642,6 @@ namespace FSH.Starter.Migrations.PostgreSQL.Identity
                     b.Property<string>("RoleId")
                         .HasColumnType("text");
 
-                    b.Property<string>("TenantId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.HasKey("UserId", "RoleId");
 
                     b.HasIndex("RoleId");
@@ -712,10 +660,6 @@ namespace FSH.Starter.Migrations.PostgreSQL.Identity
                         .HasColumnType("text");
 
                     b.Property<string>("Name")
-                        .HasColumnType("text");
-
-                    b.Property<string>("TenantId")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Value")

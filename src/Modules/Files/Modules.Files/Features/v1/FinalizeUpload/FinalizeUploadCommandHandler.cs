@@ -1,5 +1,3 @@
-using System.Diagnostics;
-using System.Net;
 using FSH.Framework.Core.Context;
 using FSH.Framework.Core.Exceptions;
 using FSH.Framework.Eventing.Abstractions;
@@ -10,11 +8,12 @@ using FSH.Modules.Files.Contracts.Events;
 using FSH.Modules.Files.Contracts.v1.Commands;
 using FSH.Modules.Files.Contracts.v1.DTOs;
 using FSH.Modules.Files.Data;
-using FSH.Modules.Files.Domain;
 using FSH.Modules.Files.Features.v1.Internal;
 using FSH.Modules.Files.Services;
 using Mediator;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
+using System.Net;
 
 namespace FSH.Modules.Files.Features.v1.FinalizeUpload;
 
@@ -78,7 +77,7 @@ public sealed class FinalizeUploadCommandHandler(
         asset.MarkAvailable(head.SizeBytes, scanResult);
 
         // Debit quota with the actual bytes. Refunded on hard purge by PurgeDeletedFilesJob.
-        await quotas.RecordAsync(tenantId, QuotaResource.StorageBytes, head.SizeBytes, cancellationToken).ConfigureAwait(false);
+        await quotas.RecordAsync(QuotaResource.StorageBytes, head.SizeBytes, cancellationToken).ConfigureAwait(false);
 
         await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 

@@ -58,7 +58,7 @@ public sealed class PurgeDeletedFilesJob(
             // Falls back gracefully with no tenant (the refund is simply lost).
             try
             {
-                await quotas.RecordAsync("", QuotaResource.StorageBytes, -totalBytes, cancellationToken).ConfigureAwait(false);
+                await quotas.RecordAsync(QuotaResource.StorageBytes, -totalBytes, cancellationToken).ConfigureAwait(false);
             }
             catch (Exception ex)
             {

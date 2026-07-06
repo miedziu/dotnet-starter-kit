@@ -45,7 +45,7 @@ public sealed class TenantProvisioningService : ITenantProvisioningService
         }
 
         var correlationId = Guid.NewGuid().ToString();
-        var provisioning = new TenantProvisioning(tenant.Id, correlationId);
+        var provisioning = new TenantProvisioning(correlationId);
 
         provisioning.Steps.Add(new TenantProvisioningStep(provisioning.Id, TenantProvisioningStepName.Database));
         provisioning.Steps.Add(new TenantProvisioningStep(provisioning.Id, TenantProvisioningStepName.Migrations));
@@ -76,7 +76,6 @@ public sealed class TenantProvisioningService : ITenantProvisioningService
     {
         return await _dbContext.Set<TenantProvisioning>()
             .Include(p => p.Steps)
-            .Where(p => p.TenantId == tenantId)
             .OrderByDescending(p => p.CreatedUtc)
             .FirstOrDefaultAsync(cancellationToken)
             .ConfigureAwait(false);
@@ -169,7 +168,7 @@ public sealed class TenantProvisioningService : ITenantProvisioningService
     {
         return await _dbContext.Set<TenantProvisioning>()
             .Include(p => p.Steps)
-            .FirstOrDefaultAsync(p => p.TenantId == tenantId && p.CorrelationId == correlationId, cancellationToken)
+            .FirstOrDefaultAsync(p => p.CorrelationId == correlationId, cancellationToken)
             .ConfigureAwait(false)
             ?? throw new NotFoundException($"Provisioning {correlationId} for tenant {tenantId} not found.");
     }
@@ -207,7 +206,6 @@ public sealed class TenantProvisioningService : ITenantProvisioningService
             .ToArray();
 
         return new TenantProvisioningStatusDto(
-            provisioning.TenantId,
             provisioning.Status.ToString(),
             provisioning.CorrelationId,
             provisioning.CurrentStep,

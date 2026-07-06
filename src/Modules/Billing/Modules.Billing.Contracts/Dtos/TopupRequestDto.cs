@@ -2,7 +2,6 @@ namespace FSH.Modules.Billing.Contracts.Dtos;
 
 public sealed record TopupRequestDto(
     Guid Id,
-    string TenantId,
     decimal Amount,
     string Currency,
     string? Note,

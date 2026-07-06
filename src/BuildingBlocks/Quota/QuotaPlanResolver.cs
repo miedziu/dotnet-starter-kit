@@ -19,14 +19,9 @@ public sealed class QuotaPlanResolver
         _options = options;
     }
 
-    public long ResolveLimit(AppTenantInfo? tenant, QuotaResource resource)
+    public long ResolveLimit(QuotaResource resource)
     {
-        if (tenant is not null && tenant.QuotaLimits.TryGetValue(resource, out var tenantLimit))
-        {
-            return NormalizeLimit(tenantLimit);
-        }
-
-        var planName = !string.IsNullOrWhiteSpace(tenant?.Plan) ? tenant!.Plan! : _options.DefaultPlan;
+        var planName = _options.DefaultPlan;
 
         if (_options.Plans.TryGetValue(planName, out var plan)
             && plan.TryGetValue(resource, out var planLimit))

@@ -53,8 +53,8 @@ internal sealed class IdentityDbInitializer(
             if (await roleManager.Roles.SingleOrDefaultAsync(r => r.Name == roleName, cancellationToken)
                 is not FshRole role)
             {
-                // create role
-                role = new FshRole(roleName, $"{roleName} Role for {multiTenantContextAccessor.MultiTenantContext.TenantInfo?.Id} Tenant");
+                // create role - roles are global (shared across tenants)
+                role = new FshRole(roleName, $"{roleName} Role");
                 await roleManager.CreateAsync(role);
             }
 
@@ -94,7 +94,7 @@ internal sealed class IdentityDbInitializer(
         {
             if (logger.IsEnabled(LogLevel.Information))
             {
-                logger.LogInformation("Seeding {Role} Permission '{Permission}' for '{TenantId}' Tenant.", role.Name, claim.ClaimValue, multiTenantContextAccessor.MultiTenantContext.TenantInfo?.Id);
+                logger.LogInformation("Seeding {Role} Permission '{Permission}'.", role.Name, claim.ClaimValue);
             }
             await dbContext.RoleClaims.AddAsync(claim, cancellationToken);
         }
@@ -109,12 +109,6 @@ internal sealed class IdentityDbInitializer(
 
     private async Task SeedSystemGroupsAsync(CancellationToken cancellationToken = default)
     {
-        var tenantId = multiTenantContextAccessor.MultiTenantContext.TenantInfo?.Id;
-        if (string.IsNullOrWhiteSpace(tenantId))
-        {
-            return;
-        }
-
         // Seed "All Users" default group - all new users are automatically added to this group
         const string allUsersGroupName = "All Users";
         var allUsersGroup = await context.Groups
@@ -133,7 +127,7 @@ internal sealed class IdentityDbInitializer(
             await context.Groups.AddAsync(allUsersGroup, cancellationToken);
             if (logger.IsEnabled(LogLevel.Information))
             {
-                logger.LogInformation("Seeding '{GroupName}' system group for '{TenantId}' Tenant.", allUsersGroupName, tenantId);
+                logger.LogInformation("Seeding '{GroupName}' system group.", allUsersGroupName);
             }
         }
 
@@ -155,7 +149,7 @@ internal sealed class IdentityDbInitializer(
             await context.Groups.AddAsync(administratorsGroup, cancellationToken);
             if (logger.IsEnabled(LogLevel.Information))
             {
-                logger.LogInformation("Seeding '{GroupName}' system group for '{TenantId}' Tenant.", administratorsGroupName, tenantId);
+                logger.LogInformation("Seeding '{GroupName}' system group.", administratorsGroupName);
             }
         }
 
@@ -176,7 +170,7 @@ internal sealed class IdentityDbInitializer(
                 await context.SaveChangesAsync(cancellationToken);
                 if (logger.IsEnabled(LogLevel.Information))
                 {
-                    logger.LogInformation("Assigned Admin role to '{GroupName}' group for '{TenantId}' Tenant.", administratorsGroupName, tenantId);
+                    logger.LogInformation("Assigned Admin role to '{GroupName}' group.", administratorsGroupName);
                 }
             }
         }
@@ -184,24 +178,27 @@ internal sealed class IdentityDbInitializer(
 
     private async Task SeedAdminUserAsync(CancellationToken cancellationToken = default)
     {
-        if (string.IsNullOrWhiteSpace(multiTenantContextAccessor.MultiTenantContext.TenantInfo?.Id) || string.IsNullOrWhiteSpace(multiTenantContextAccessor.MultiTenantContext.TenantInfo?.AdminEmail))
+        var tenantId = multiTenantContextAccessor.MultiTenantContext.TenantInfo?.Id;
+        var adminEmail = multiTenantContextAccessor.MultiTenantContext.TenantInfo?.AdminEmail;
+        
+        if (string.IsNullOrWhiteSpace(tenantId) || string.IsNullOrWhiteSpace(adminEmail))
         {
             return;
         }
 
-        if (await userManager.Users.FirstOrDefaultAsync(u => u.Email == multiTenantContextAccessor.MultiTenantContext.TenantInfo!.AdminEmail, cancellationToken)
+        if (await userManager.Users.FirstOrDefaultAsync(u => u.Email == adminEmail, cancellationToken)
             is not FshUser adminUser)
         {
-            string adminUserName = $"{multiTenantContextAccessor.MultiTenantContext.TenantInfo?.Id.Trim()}.{RoleConstants.Admin}".ToUpperInvariant();
+            string adminUserName = $"{tenantId.Trim()}.{RoleConstants.Admin}".ToUpperInvariant();
             adminUser = new FshUser
             {
-                FirstName = multiTenantContextAccessor.MultiTenantContext.TenantInfo?.Id.Trim().ToUpperInvariant(),
+                FirstName = tenantId.Trim().ToUpperInvariant(),
                 LastName = RoleConstants.Admin,
-                Email = multiTenantContextAccessor.MultiTenantContext.TenantInfo?.AdminEmail,
+                Email = adminEmail,
                 UserName = adminUserName,
                 EmailConfirmed = true,
                 PhoneNumberConfirmed = true,
-                NormalizedEmail = multiTenantContextAccessor.MultiTenantContext.TenantInfo?.AdminEmail!.ToUpperInvariant(),
+                NormalizedEmail = adminEmail.ToUpperInvariant(),
                 NormalizedUserName = adminUserName.ToUpperInvariant(),
                 // No default avatar: the asset was never shipped, and baking an absolute
                 // {OriginUrl}/… URL at seed time pinned it to the seeder's localhost origin
@@ -212,9 +209,9 @@ internal sealed class IdentityDbInitializer(
 
             if (logger.IsEnabled(LogLevel.Information))
             {
-                logger.LogInformation("Seeding Default Admin User for '{TenantId}' Tenant.", multiTenantContextAccessor.MultiTenantContext.TenantInfo?.Id);
+                logger.LogInformation("Seeding Default Admin User for '{TenantId}'.", tenantId);
             }
-            var initialPassword = ResolveInitialAdminPassword(multiTenantContextAccessor.MultiTenantContext.TenantInfo!.Id!);
+            var initialPassword = ResolveInitialAdminPassword(tenantId);
             var password = new PasswordHasher<FshUser>();
             adminUser.PasswordHash = password.HashPassword(adminUser, initialPassword);
             // MUST check IdentityResult: a silent failure (password-policy reject, transient DB error)
@@ -223,7 +220,7 @@ internal sealed class IdentityDbInitializer(
             if (!createResult.Succeeded)
             {
                 throw new InvalidOperationException(
-                    $"Failed to seed admin user for tenant '{multiTenantContextAccessor.MultiTenantContext.TenantInfo!.Id}': "
+                    $"Failed to seed admin user for tenant '{tenantId}': "
                     + string.Join("; ", createResult.Errors.Select(e => e.Description)));
             }
         }
@@ -233,7 +230,7 @@ internal sealed class IdentityDbInitializer(
         {
             if (logger.IsEnabled(LogLevel.Information))
             {
-                logger.LogInformation("Assigning Admin Role to Admin User for '{TenantId}' Tenant.", multiTenantContextAccessor.MultiTenantContext.TenantInfo?.Id);
+                logger.LogInformation("Assigning Admin Role to Admin User for '{TenantId}'.", tenantId);
             }
             await userManager.AddToRoleAsync(adminUser, RoleConstants.Admin);
         }

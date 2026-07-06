@@ -209,11 +209,6 @@ namespace FSH.Starter.Migrations.PostgreSQL.MultiTenancy
                         .HasMaxLength(9)
                         .HasColumnType("character varying(9)");
 
-                    b.Property<string>("TenantId")
-                        .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("character varying(64)");
-
                     b.Property<string>("TertiaryColor")
                         .IsRequired()
                         .HasMaxLength(9)
@@ -225,9 +220,6 @@ namespace FSH.Starter.Migrations.PostgreSQL.MultiTenancy
                         .HasColumnType("character varying(9)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("TenantId")
-                        .IsUnique();
 
                     b.ToTable("TenantThemes", "tenant");
                 });
@@ -262,10 +254,6 @@ namespace FSH.Starter.Migrations.PostgreSQL.MultiTenancy
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");
-
-                    b.Property<string>("TenantId")
-                        .IsRequired()
-                        .HasColumnType("text");
 
                     b.HasKey("Id");
 

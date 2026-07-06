@@ -59,7 +59,7 @@ namespace FSH.Starter.Migrations.PostgreSQL.Billing
                 name: "ux_invoices_tenant_period_purpose",
                 schema: "billing",
                 table: "Invoices",
-                columns: new[] { "TenantId", "PeriodYear", "PeriodMonth", "Purpose" },
+                columns: new[] { "PeriodYear", "PeriodMonth", "Purpose" },
                 unique: true);
         }
 
@@ -100,7 +100,7 @@ namespace FSH.Starter.Migrations.PostgreSQL.Billing
                 name: "ux_invoices_tenant_period",
                 schema: "billing",
                 table: "Invoices",
-                columns: new[] { "TenantId", "PeriodYear", "PeriodMonth" },
+                columns: new[] { "PeriodYear", "PeriodMonth" },
                 unique: true);
         }
     }

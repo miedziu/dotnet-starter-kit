@@ -17,7 +17,6 @@ namespace FSH.Starter.Migrations.PostgreSQL.MultiTenancy
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    TenantId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
                     PrimaryColor = table.Column<string>(type: "character varying(9)", maxLength: 9, nullable: false),
                     SecondaryColor = table.Column<string>(type: "character varying(9)", maxLength: 9, nullable: false),
                     TertiaryColor = table.Column<string>(type: "character varying(9)", maxLength: 9, nullable: false),
@@ -55,13 +54,6 @@ namespace FSH.Starter.Migrations.PostgreSQL.MultiTenancy
                 {
                     table.PrimaryKey("PK_TenantThemes", x => x.Id);
                 });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_TenantThemes_TenantId",
-                schema: "tenant",
-                table: "TenantThemes",
-                column: "TenantId",
-                unique: true);
         }
 
         /// <inheritdoc />

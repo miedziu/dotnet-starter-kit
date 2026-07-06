@@ -97,7 +97,6 @@ public sealed class GetExceptionAuditsQueryHandler : IQueryHandler<GetExceptionA
                 OccurredAtUtc = a.OccurredAtUtc,
                 EventType = (AuditEventType)a.EventType,
                 Severity = (AuditSeverity)a.Severity,
-                TenantId = a.TenantId,
                 UserId = a.UserId,
                 UserName = a.UserName,
                 TraceId = a.TraceId,

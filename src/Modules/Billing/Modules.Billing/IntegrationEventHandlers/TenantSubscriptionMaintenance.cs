@@ -13,18 +13,17 @@ internal static class TenantSubscriptionMaintenance
 {
     public static async Task ReplaceActiveSubscriptionAsync(
         BillingDbContext db,
-        string tenantId,
         Guid planId,
         DateTime startUtc,
         DateTime endUtc,
         CancellationToken cancellationToken)
     {
         var active = await db.Subscriptions
-            .FirstOrDefaultAsync(s => s.TenantId == tenantId && s.Status == SubscriptionStatus.Active, cancellationToken)
+            .FirstOrDefaultAsync(s => s.Status == SubscriptionStatus.Active, cancellationToken)
             .ConfigureAwait(false);
         active?.Cancel(startUtc);
 
-        db.Subscriptions.Add(Subscription.Create(tenantId, planId, startUtc, endUtc));
+        db.Subscriptions.Add(Subscription.Create(planId, startUtc, endUtc));
         await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
     }
 
@@ -35,12 +34,11 @@ internal static class TenantSubscriptionMaintenance
     /// </summary>
     public static async Task ExtendActiveSubscriptionAsync(
         BillingDbContext db,
-        string tenantId,
         DateTime endUtc,
         CancellationToken cancellationToken)
     {
         var active = await db.Subscriptions
-            .FirstOrDefaultAsync(s => s.TenantId == tenantId && s.Status == SubscriptionStatus.Active, cancellationToken)
+            .FirstOrDefaultAsync(s => s.Status == SubscriptionStatus.Active, cancellationToken)
             .ConfigureAwait(false);
         if (active is null)
         {

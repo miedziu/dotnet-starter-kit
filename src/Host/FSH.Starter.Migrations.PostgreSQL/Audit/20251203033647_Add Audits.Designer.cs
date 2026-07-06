@@ -62,11 +62,6 @@ namespace FSH.Starter.Migrations.PostgreSQL.Audit
                     b.Property<long>("Tags")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("TenantId")
-                        .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("character varying(64)");
-
                     b.Property<string>("TraceId")
                         .HasColumnType("text");
 
@@ -81,8 +76,6 @@ namespace FSH.Starter.Migrations.PostgreSQL.Audit
                     b.HasIndex("EventType");
 
                     b.HasIndex("OccurredAtUtc");
-
-                    b.HasIndex("TenantId");
 
                     b.ToTable("AuditRecords", "audit");
 

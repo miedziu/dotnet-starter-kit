@@ -60,10 +60,6 @@ namespace FSH.Starter.Migrations.PostgreSQL.Audit
                     b.Property<long>("Tags")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("TenantId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<string>("TraceId")
                         .HasColumnType("text");
 
@@ -99,12 +95,12 @@ namespace FSH.Starter.Migrations.PostgreSQL.Audit
                     NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("UserName"), "gin");
                     NpgsqlIndexBuilderExtensions.HasOperators(b.HasIndex("UserName"), new[] { "gin_trgm_ops" });
 
-                    b.HasIndex("TenantId", "OccurredAtUtc")
-                        .IsDescending(false, true)
+                    b.HasIndex("OccurredAtUtc")
+                        .IsDescending(true)
                         .HasDatabaseName("IX_AuditRecords_Tenant_OccurredAt");
 
-                    b.HasIndex("TenantId", "EventType", "OccurredAtUtc")
-                        .IsDescending(false, false, true)
+                    b.HasIndex("EventType", "OccurredAtUtc")
+                        .IsDescending(false, true)
                         .HasDatabaseName("IX_AuditRecords_Tenant_EventType_OccurredAt");
 
                     b.ToTable("AuditRecords", "audit");

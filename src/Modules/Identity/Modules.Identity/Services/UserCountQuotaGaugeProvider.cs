@@ -25,13 +25,11 @@ internal sealed class UserCountQuotaGaugeProvider : IQuotaGaugeProvider
 
     public QuotaResource Resource => QuotaResource.Users;
 
-    public async ValueTask<long> GetCurrentAsync(string tenantId, CancellationToken ct = default)
+    public async ValueTask<long> GetCurrentAsync(CancellationToken ct = default)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(tenantId);
-
         return await _userManager.Users
             .IgnoreQueryFilters()
-            .CountAsync(u => EF.Property<string>(u, "TenantId") == tenantId, ct)
+            .CountAsync(ct)
             .ConfigureAwait(false);
     }
 }

@@ -1,7 +1,7 @@
-using System.Collections.Concurrent;
 using Finbuckle.MultiTenant.Abstractions;
 using FSH.Framework.Shared.Multitenancy;
 using FSH.Framework.Shared.Quota;
+using System.Collections.Concurrent;
 
 namespace FSH.Framework.Quota;
 
@@ -12,9 +12,7 @@ namespace FSH.Framework.Quota;
 public sealed class InMemoryQuotaService : IQuotaService
 {
     private readonly ConcurrentDictionary<string, long> _counters;
-    private readonly QuotaOptions _options;
     private readonly QuotaPlanResolver _planResolver;
-    private readonly IMultiTenantContextAccessor<AppTenantInfo>? _tenantAccessor;
     private readonly Dictionary<QuotaResource, IQuotaGaugeProvider> _gauges;
     private readonly TimeProvider _timeProvider;
 
@@ -33,18 +31,15 @@ public sealed class InMemoryQuotaService : IQuotaService
         ArgumentNullException.ThrowIfNull(timeProvider);
 
         _counters = store.Counters;
-        _options = options;
         _planResolver = planResolver;
         _timeProvider = timeProvider;
-        _tenantAccessor = tenantAccessor;
         _gauges = gauges.ToDictionary(g => g.Resource);
     }
 
-    public ValueTask<QuotaCheckResult> CheckAsync(string tenantId, QuotaResource resource, long amount, CancellationToken ct = default)
+    public ValueTask<QuotaCheckResult> CheckAsync(QuotaResource resource, long amount, CancellationToken ct = default)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(tenantId);
-        var (limit, exempt) = ResolveLimit(tenantId, resource);
-        var current = GetCounter(tenantId, resource);
+        var (limit, exempt) = ResolveLimit(resource);
+        var current = GetCounter(resource);
 
         if (exempt || limit == long.MaxValue)
         {
@@ -55,36 +50,34 @@ public sealed class InMemoryQuotaService : IQuotaService
         return ValueTask.FromResult(new QuotaCheckResult(allowed, resource, current, limit, GetPeriodResetUtc(resource)));
     }
 
-    public ValueTask<long> RecordAsync(string tenantId, QuotaResource resource, long amount, CancellationToken ct = default)
+    public ValueTask<long> RecordAsync(QuotaResource resource, long amount, CancellationToken ct = default)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(tenantId);
         if (!IsCounterResource(resource))
         {
-            return GetCurrentAsync(tenantId, resource, ct);
+            return GetCurrentAsync(resource, ct);
         }
 
-        var key = BuildCounterKey(tenantId, resource);
+        var key = BuildCounterKey(resource);
         var updated = _counters.AddOrUpdate(key, amount, (_, v) => v + amount);
         return ValueTask.FromResult(updated);
     }
 
-    public async ValueTask<QuotaCheckResult> CheckAndRecordAsync(string tenantId, QuotaResource resource, long amount, CancellationToken ct = default)
+    public async ValueTask<QuotaCheckResult> CheckAndRecordAsync(QuotaResource resource, long amount, CancellationToken ct = default)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(tenantId);
-        var (limit, exempt) = ResolveLimit(tenantId, resource);
+        var (limit, exempt) = ResolveLimit(resource);
 
         if (exempt || limit == long.MaxValue)
         {
-            var after = await RecordAsync(tenantId, resource, amount, ct).ConfigureAwait(false);
+            var after = await RecordAsync(resource, amount, ct).ConfigureAwait(false);
             return QuotaCheckResult.Unlimited(resource, after);
         }
 
         if (!IsCounterResource(resource))
         {
-            return await CheckAsync(tenantId, resource, amount, ct).ConfigureAwait(false);
+            return await CheckAsync(resource, amount, ct).ConfigureAwait(false);
         }
 
-        var key = BuildCounterKey(tenantId, resource);
+        var key = BuildCounterKey(resource);
         var newValue = _counters.AddOrUpdate(key, amount, (_, v) => v + amount);
 
         if (newValue <= limit)
@@ -96,42 +89,29 @@ public sealed class InMemoryQuotaService : IQuotaService
         return new QuotaCheckResult(false, resource, newValue - amount, limit, GetPeriodResetUtc(resource));
     }
 
-    public ValueTask<long> GetCurrentAsync(string tenantId, QuotaResource resource, CancellationToken ct = default)
+    public ValueTask<long> GetCurrentAsync(QuotaResource resource, CancellationToken ct = default)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(tenantId);
-
         if (!IsCounterResource(resource))
         {
             if (_gauges.TryGetValue(resource, out var provider))
             {
-                return provider.GetCurrentAsync(tenantId, ct);
+                return provider.GetCurrentAsync(ct);
             }
 
             return ValueTask.FromResult(0L);
         }
 
-        return ValueTask.FromResult(GetCounter(tenantId, resource));
+        return ValueTask.FromResult(GetCounter(resource));
     }
 
-    private long GetCounter(string tenantId, QuotaResource resource)
+    private long GetCounter(QuotaResource resource)
     {
-        return _counters.TryGetValue(BuildCounterKey(tenantId, resource), out var value) ? value : 0;
+        return _counters.TryGetValue(BuildCounterKey(resource), out var value) ? value : 0;
     }
 
-    private (long Limit, bool Exempt) ResolveLimit(string tenantId, QuotaResource resource)
+    private (long Limit, bool Exempt) ResolveLimit(QuotaResource resource)
     {
-        if (_options.ExemptRootTenant && string.Equals(tenantId, MultitenancyConstants.Root.Id, StringComparison.Ordinal))
-        {
-            return (long.MaxValue, true);
-        }
-
-        var tenant = _tenantAccessor?.MultiTenantContext?.TenantInfo;
-        if (tenant is not null && !string.Equals(tenant.Id, tenantId, StringComparison.Ordinal))
-        {
-            tenant = null;
-        }
-
-        return (_planResolver.ResolveLimit(tenant, resource), false);
+        return (_planResolver.ResolveLimit(resource), false);
     }
 
     private static bool IsCounterResource(QuotaResource resource) => resource switch
@@ -147,16 +127,16 @@ public sealed class InMemoryQuotaService : IQuotaService
         _ => false
     };
 
-    private string BuildCounterKey(string tenantId, QuotaResource resource)
+    private string BuildCounterKey(QuotaResource resource)
     {
         if (!IsPeriodic(resource))
         {
-            return $"quota:{tenantId}:{resource}";
+            return $"quota:{resource}";
         }
 
         var now = _timeProvider.GetUtcNow();
         var period = $"{now.Year:D4}{now.Month:D2}";
-        return $"quota:{tenantId}:{resource}:{period}";
+        return $"quota:{resource}:{period}";
     }
 
     private DateTimeOffset? GetPeriodResetUtc(QuotaResource resource)

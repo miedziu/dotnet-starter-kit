@@ -11,7 +11,6 @@ public sealed class WebhookSubscriptionConfiguration : IEntityTypeConfiguration<
     {
         ArgumentNullException.ThrowIfNull(builder);
         builder.ToTable("Subscriptions", "webhooks");
-        builder.IsMultiTenant();
         builder.HasKey(x => x.Id);
         builder.Property(x => x.Url).IsRequired().HasMaxLength(2048);
         builder.Property(x => x.EventsCsv).IsRequired().HasMaxLength(4096);

@@ -103,11 +103,10 @@ public sealed class IdentityService : IIdentityService
 
     public async Task StoreRefreshTokenAsync(string subject, string refreshToken, DateTime expiresAtUtc, CancellationToken ct = default)
     {
-        // Targeted UPDATE bypasses tracking + Finbuckle interceptors (which NRE on cross-tenant IgnoreQueryFilters).
-        // Safe: user IDs are globally unique GUIDs, so exactly one row matches Id == subject regardless of tenant.
+        // Targeted UPDATE bypasses tracking - safe because user IDs are globally unique GUIDs,
+        // so exactly one row matches Id == subject regardless of tenant.
         var hashedToken = HashToken(refreshToken);
         var updated = await _dbContext.Users
-            .IgnoreQueryFilters()
             .Where(u => u.Id == subject)
             .ExecuteUpdateAsync(
                 s => s.SetProperty(u => u.RefreshToken, hashedToken)
@@ -133,12 +132,9 @@ public sealed class IdentityService : IIdentityService
         ArgumentNullException.ThrowIfNull(userId);
         ArgumentNullException.ThrowIfNull(tenantId);
 
-        // IgnoreQueryFilters bypasses Finbuckle's tenant filter so root-tenant callers can
-        // resolve users in other tenants during impersonation.
+        // Users are global (shared across tenants) - no tenant filter needed
         var user = await _userManager.Users
-            .IgnoreQueryFilters()
-            .Where(u => u.Id == userId && EF.Property<string>(u, "TenantId") == tenantId)
-            .FirstOrDefaultAsync(ct);
+            .FirstOrDefaultAsync(u => u.Id == userId, ct);
 
         if (user is null)
         {
@@ -150,16 +146,15 @@ public sealed class IdentityService : IIdentityService
         var claims = CreateBasicClaims(user, tenantId);
 
         var userRoleIds = await _dbContext.UserRoles
-            .IgnoreQueryFilters()
             .Where(ur => ur.UserId == userId)
             .Select(ur => ur.RoleId)
             .ToListAsync(ct);
 
         if (userRoleIds.Count > 0)
         {
+            // Roles are global (shared across tenants) - no tenant filter needed
             var roleNames = await _dbContext.Roles
-                .IgnoreQueryFilters()
-                .Where(r => userRoleIds.Contains(r.Id) && EF.Property<string>(r, "TenantId") == tenantId)
+                .Where(r => userRoleIds.Contains(r.Id))
                 .Select(r => r.Name!)
                 .ToListAsync(ct);
 

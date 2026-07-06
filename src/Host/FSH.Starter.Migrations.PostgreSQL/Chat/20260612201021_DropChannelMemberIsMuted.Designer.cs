@@ -43,10 +43,6 @@ namespace FSH.Starter.Migrations.PostgreSQL.Chat
                     b.Property<int>("Role")
                         .HasColumnType("integer");
 
-                    b.Property<string>("TenantId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasMaxLength(64)
@@ -58,7 +54,7 @@ namespace FSH.Starter.Migrations.PostgreSQL.Chat
 
                     b.HasIndex("UserId");
 
-                    b.HasIndex("UserId", "ChannelId", "TenantId")
+                    b.HasIndex("UserId", "ChannelId")
                         .IsUnique()
                         .HasDatabaseName("IX_ChannelMembers_UserId_ChannelId");
 
@@ -112,10 +108,6 @@ namespace FSH.Starter.Migrations.PostgreSQL.Chat
                         .HasMaxLength(220)
                         .HasColumnType("character varying(220)");
 
-                    b.Property<string>("TenantId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<int>("Type")
                         .HasColumnType("integer");
 
@@ -126,12 +118,12 @@ namespace FSH.Starter.Migrations.PostgreSQL.Chat
 
                     b.HasIndex("IsDeleted");
 
-                    b.HasIndex("DirectKey", "TenantId")
+                    b.HasIndex("DirectKey")
                         .IsUnique()
                         .HasDatabaseName("IX_Channels_DirectKey")
                         .HasFilter("\"Type\" = 0 AND \"IsDeleted\" = FALSE");
 
-                    b.HasIndex("Slug", "TenantId")
+                    b.HasIndex("Slug")
                         .IsUnique()
                         .HasDatabaseName("IX_Channels_Slug")
                         .HasFilter("\"Slug\" IS NOT NULL AND \"IsDeleted\" = FALSE");
@@ -182,10 +174,6 @@ namespace FSH.Starter.Migrations.PostgreSQL.Chat
                     b.Property<int>("ReplyCount")
                         .HasColumnType("integer");
 
-                    b.Property<string>("TenantId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.HasKey("Id");
 
                     b.HasIndex("ParentMessageId")
@@ -226,10 +214,6 @@ namespace FSH.Starter.Migrations.PostgreSQL.Chat
                     b.Property<long>("SizeBytes")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("TenantId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<string>("Url")
                         .IsRequired()
                         .HasMaxLength(2048)
@@ -263,10 +247,6 @@ namespace FSH.Starter.Migrations.PostgreSQL.Chat
                     b.Property<int>("StartIndex")
                         .HasColumnType("integer");
 
-                    b.Property<string>("TenantId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.HasKey("Id");
 
                     b.HasIndex("MentionedUserId");
@@ -294,10 +274,6 @@ namespace FSH.Starter.Migrations.PostgreSQL.Chat
                     b.Property<Guid>("MessageId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("TenantId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasMaxLength(64)
@@ -305,7 +281,7 @@ namespace FSH.Starter.Migrations.PostgreSQL.Chat
 
                     b.HasKey("Id");
 
-                    b.HasIndex("MessageId", "UserId", "Emoji", "TenantId")
+                    b.HasIndex("MessageId", "UserId", "Emoji")
                         .IsUnique()
                         .HasDatabaseName("UX_MessageReactions_Message_User_Emoji");
 

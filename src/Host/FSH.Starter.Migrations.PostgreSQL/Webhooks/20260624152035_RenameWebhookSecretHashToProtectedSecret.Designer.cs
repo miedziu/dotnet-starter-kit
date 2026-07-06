@@ -60,10 +60,6 @@ namespace FSH.Starter.Migrations.PostgreSQL.Webhooks
                     b.Property<bool>("Success")
                         .HasColumnType("boolean");
 
-                    b.Property<string>("TenantId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.HasKey("Id");
 
                     b.HasIndex("AttemptedAtUtc");
@@ -95,10 +91,6 @@ namespace FSH.Starter.Migrations.PostgreSQL.Webhooks
                     b.Property<string>("ProtectedSecret")
                         .HasMaxLength(512)
                         .HasColumnType("character varying(512)");
-
-                    b.Property<string>("TenantId")
-                        .IsRequired()
-                        .HasColumnType("text");
 
                     b.Property<string>("Url")
                         .IsRequired()

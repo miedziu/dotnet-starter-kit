@@ -27,8 +27,7 @@ namespace FSH.Starter.Migrations.PostgreSQL.Identity
                     ModifiedBy = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
                     DeletedOnUtc = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
-                    DeletedBy = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
-                    TenantId = table.Column<string>(type: "text", nullable: false)
+                    DeletedBy = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -41,8 +40,7 @@ namespace FSH.Starter.Migrations.PostgreSQL.Identity
                 columns: table => new
                 {
                     GroupId = table.Column<Guid>(type: "uuid", nullable: false),
-                    RoleId = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: false),
-                    TenantId = table.Column<string>(type: "text", nullable: false)
+                    RoleId = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -71,8 +69,7 @@ namespace FSH.Starter.Migrations.PostgreSQL.Identity
                     UserId = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: false),
                     GroupId = table.Column<Guid>(type: "uuid", nullable: false),
                     AddedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
-                    AddedBy = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
-                    TenantId = table.Column<string>(type: "text", nullable: false)
+                    AddedBy = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true)
                 },
                 constraints: table =>
                 {

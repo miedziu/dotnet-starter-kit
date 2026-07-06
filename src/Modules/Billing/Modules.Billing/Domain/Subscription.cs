@@ -10,7 +10,6 @@ namespace FSH.Modules.Billing.Domain;
 /// </summary>
 public sealed class Subscription : BaseEntity<Guid>
 {
-    public string TenantId { get; private set; } = default!;
     public Guid PlanId { get; private set; }
     public DateTime StartUtc { get; private set; }
     public DateTime? EndUtc { get; private set; }
@@ -20,12 +19,11 @@ public sealed class Subscription : BaseEntity<Guid>
 
     private Subscription() { }
 
-    public static Subscription Create(string tenantId, Guid planId, DateTime startUtc)
-        => Create(tenantId, planId, startUtc, endUtc: null);
+    public static Subscription Create(Guid planId, DateTime startUtc)
+        => Create(planId, startUtc, endUtc: null);
 
-    public static Subscription Create(string tenantId, Guid planId, DateTime startUtc, DateTime? endUtc)
+    public static Subscription Create(Guid planId, DateTime startUtc, DateTime? endUtc)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(tenantId);
         if (planId == Guid.Empty)
         {
             throw new ArgumentException("PlanId is required.", nameof(planId));
@@ -34,7 +32,6 @@ public sealed class Subscription : BaseEntity<Guid>
         return new Subscription
         {
             Id = Guid.CreateVersion7(),
-            TenantId = tenantId,
             PlanId = planId,
             StartUtc = DateTime.SpecifyKind(startUtc, DateTimeKind.Utc),
             EndUtc = endUtc is { } e ? DateTime.SpecifyKind(e, DateTimeKind.Utc) : null,

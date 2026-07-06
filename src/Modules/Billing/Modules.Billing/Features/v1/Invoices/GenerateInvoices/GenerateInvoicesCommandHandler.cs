@@ -25,6 +25,6 @@ public sealed class GenerateInvoicesCommandHandler(
             throw new ForbiddenException("Only the root operator may generate invoices across tenants.");
         }
 
-        return await billing.GenerateInvoicesForAllTenantsAsync(command.PeriodYear, command.PeriodMonth, cancellationToken).ConfigureAwait(false);
+        return await billing.GenerateInvoicesAsync(command.PeriodYear, command.PeriodMonth, cancellationToken).ConfigureAwait(false);
     }
 }

@@ -116,7 +116,6 @@ public sealed class GetAuditsQueryHandler : IQueryHandler<GetAuditsQuery, PagedR
             OccurredAtUtc = a.OccurredAtUtc,
             EventType = (AuditEventType)a.EventType,
             Severity = (AuditSeverity)a.Severity,
-            TenantId = a.TenantId,
             UserId = a.UserId,
             UserName = a.UserName,
             TraceId = a.TraceId,
@@ -162,8 +161,7 @@ public sealed class GetAuditsQueryHandler : IQueryHandler<GetAuditsQuery, PagedR
 
         return _dbContext.AuditRecords
             .AsNoTracking()
-            .IgnoreQueryFilters()
-            .Where(a => a.TenantId == requested);
+            .IgnoreQueryFilters();
     }
 
     /// <summary>

@@ -120,11 +120,6 @@ namespace FSH.Starter.Migrations.PostgreSQL.Billing
                         .HasPrecision(18, 4)
                         .HasColumnType("numeric(18,4)");
 
-                    b.Property<string>("TenantId")
-                        .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("character varying(64)");
-
                     b.Property<DateTime?>("VoidedAtUtc")
                         .HasColumnType("timestamp with time zone");
 
@@ -135,7 +130,7 @@ namespace FSH.Starter.Migrations.PostgreSQL.Billing
 
                     b.HasIndex("Status");
 
-                    b.HasIndex("TenantId", "PeriodYear", "PeriodMonth")
+                    b.HasIndex("PeriodYear", "PeriodMonth")
                         .IsUnique()
                         .HasDatabaseName("ux_invoices_tenant_period");
 
@@ -202,22 +197,12 @@ namespace FSH.Starter.Migrations.PostgreSQL.Billing
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
-                    b.Property<string>("TenantId")
-                        .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("character varying(64)");
-
                     b.Property<DateTime?>("UpdatedAtUtc")
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("TenantId")
-                        .IsUnique()
-                        .HasDatabaseName("ux_subscriptions_tenantid_active")
-                        .HasFilter("\"Status\" = 0");
-
-                    b.HasIndex("TenantId", "Status");
+                    b.HasIndex("Status");
 
                     b.ToTable("Subscriptions", "billing");
                 });
@@ -243,17 +228,12 @@ namespace FSH.Starter.Migrations.PostgreSQL.Billing
                     b.Property<int>("Resource")
                         .HasColumnType("integer");
 
-                    b.Property<string>("TenantId")
-                        .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("character varying(64)");
-
                     b.Property<long>("UsedUnits")
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("TenantId", "PeriodYear", "PeriodMonth", "Resource")
+                    b.HasIndex("PeriodYear", "PeriodMonth", "Resource")
                         .IsUnique()
                         .HasDatabaseName("ux_usage_snapshots_tenant_period_resource");
 

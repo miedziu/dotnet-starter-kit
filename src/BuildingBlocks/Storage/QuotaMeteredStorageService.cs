@@ -1,4 +1,3 @@
-using System.Net;
 using Finbuckle.MultiTenant.Abstractions;
 using FSH.Framework.Core.Exceptions;
 using FSH.Framework.Quota;
@@ -8,6 +7,7 @@ using FSH.Framework.Shared.Storage;
 using FSH.Framework.Storage.DTOs;
 using FSH.Framework.Storage.Services;
 using Microsoft.Extensions.Logging;
+using System.Net;
 
 namespace FSH.Framework.Storage;
 
@@ -54,7 +54,7 @@ internal sealed class QuotaMeteredStorageService : IStorageService
 
         var bytes = request.Data.Count;
         var check = await _quotas
-            .CheckAndRecordAsync(tenantId, QuotaResource.StorageBytes, bytes, cancellationToken)
+            .CheckAndRecordAsync(QuotaResource.StorageBytes, bytes, cancellationToken)
             .ConfigureAwait(false);
 
         if (!check.Allowed)
@@ -80,7 +80,7 @@ internal sealed class QuotaMeteredStorageService : IStorageService
         {
             // Roll the charge back so a failed write doesn't permanently consume quota.
             await _quotas
-                .RecordAsync(tenantId, QuotaResource.StorageBytes, -bytes, CancellationToken.None)
+                .RecordAsync(QuotaResource.StorageBytes, -bytes, CancellationToken.None)
                 .ConfigureAwait(false);
             throw;
         }
@@ -111,7 +111,7 @@ internal sealed class QuotaMeteredStorageService : IStorageService
         if (size > 0 && !string.IsNullOrWhiteSpace(tenantId))
         {
             await _quotas
-                .RecordAsync(tenantId, QuotaResource.StorageBytes, -size, CancellationToken.None)
+                .RecordAsync(QuotaResource.StorageBytes, -size, CancellationToken.None)
                 .ConfigureAwait(false);
         }
     }

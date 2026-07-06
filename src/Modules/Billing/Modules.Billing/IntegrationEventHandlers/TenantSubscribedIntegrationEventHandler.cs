@@ -19,20 +19,18 @@ public sealed class TenantSubscribedIntegrationEventHandler(
     public async Task HandleAsync(TenantSubscribedIntegrationEvent @event, CancellationToken ct = default)
     {
         ArgumentNullException.ThrowIfNull(@event);
-        var tenantId = @event.TenantId
-            ?? throw new InvalidOperationException("TenantSubscribedIntegrationEvent is missing TenantId.");
 
         await TenantSubscriptionMaintenance.ReplaceActiveSubscriptionAsync(
-            db, tenantId, @event.PlanId, @event.PeriodStartUtc, @event.PeriodEndUtc, ct).ConfigureAwait(false);
+            db, @event.PlanId, @event.PeriodStartUtc, @event.PeriodEndUtc, ct).ConfigureAwait(false);
 
         await billing.CreateSubscriptionInvoiceAsync(
-            tenantId, @event.PlanId, @event.PeriodStartUtc, @event.PeriodEndUtc, ct).ConfigureAwait(false);
+            @event.PlanId, @event.PeriodStartUtc, @event.PeriodEndUtc, ct).ConfigureAwait(false);
 
         if (logger.IsEnabled(LogLevel.Information))
         {
             logger.LogInformation(
-                "[Billing] tenant {TenantId} subscribed to plan {PlanKey}; term ends {End:o}",
-                tenantId, @event.PlanKey, @event.PeriodEndUtc);
+                "[Billing] subscribed to plan {PlanKey}; term ends {End:o}",
+                @event.PlanKey, @event.PeriodEndUtc);
         }
     }
 }

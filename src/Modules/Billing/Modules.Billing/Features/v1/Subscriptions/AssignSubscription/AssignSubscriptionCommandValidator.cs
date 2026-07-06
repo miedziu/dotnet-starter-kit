@@ -7,7 +7,6 @@ public sealed class AssignSubscriptionCommandValidator : AbstractValidator<Assig
 {
     public AssignSubscriptionCommandValidator()
     {
-        RuleFor(x => x.TenantId).NotEmpty().MaximumLength(64);
         RuleFor(x => x.PlanKey).NotEmpty().MaximumLength(64);
     }
 }

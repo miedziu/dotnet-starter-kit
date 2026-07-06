@@ -42,7 +42,6 @@ public sealed class GetAuditsByTraceQueryHandler : IQueryHandler<GetAuditsByTrac
                 OccurredAtUtc = a.OccurredAtUtc,
                 EventType = (AuditEventType)a.EventType,
                 Severity = (AuditSeverity)a.Severity,
-                TenantId = a.TenantId,
                 UserId = a.UserId,
                 UserName = a.UserName,
                 TraceId = a.TraceId,

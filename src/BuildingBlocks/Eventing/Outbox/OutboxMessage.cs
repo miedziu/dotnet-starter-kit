@@ -7,10 +7,6 @@ namespace FSH.Framework.Eventing.Outbox;
 /// <summary>
 /// Outbox message entity used to persist integration events alongside domain changes.
 ///
-/// Implements <see cref="IGlobalEntity"/> to opt out of automatic tenant
-/// filtering: outbox processors run in background scopes without a tenant
-/// context and must scan rows across tenants. Per-row tenant association
-/// is kept in the explicit nullable <see cref="TenantId"/> column.
 /// </summary>
 public class OutboxMessage : IGlobalEntity
 {
@@ -21,8 +17,6 @@ public class OutboxMessage : IGlobalEntity
     public string Type { get; set; } = default!;
 
     public string Payload { get; set; } = default!;
-
-    public string? TenantId { get; set; }
 
     public string? CorrelationId { get; set; }
 
@@ -58,9 +52,6 @@ public sealed class OutboxMessageConfiguration : IEntityTypeConfiguration<Outbox
 
         builder.Property(o => o.Payload)
             .IsRequired();
-
-        builder.Property(o => o.TenantId)
-            .HasMaxLength(64);
 
         builder.Property(o => o.CorrelationId)
             .HasMaxLength(128);

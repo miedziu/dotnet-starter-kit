@@ -10,7 +10,6 @@ public class AuditRecordConfiguration : IEntityTypeConfiguration<AuditRecord>
     {
         ArgumentNullException.ThrowIfNull(builder);
         builder.ToTable("AuditRecords", "audit");
-        builder.IsMultiTenant();
         builder.HasKey(x => x.Id);
         builder.Property(x => x.EventType).HasConversion<int>();
         builder.Property(x => x.Severity).HasConversion<byte>();
@@ -19,14 +18,14 @@ public class AuditRecordConfiguration : IEntityTypeConfiguration<AuditRecord>
 
         // Hot-path index: default audits list filters on TenantId (Finbuckle) and orders by OccurredAtUtc DESC.
         // A composite over both lets PostgreSQL serve the paged top-N from an index-only walk.
-        builder.HasIndex(x => new { x.TenantId, x.OccurredAtUtc })
-            .IsDescending(false, true)
+        builder.HasIndex(x => new { x.OccurredAtUtc })
+            .IsDescending(true)
             .HasDatabaseName("IX_AuditRecords_Tenant_OccurredAt");
 
         // Common dashboard slice: EventType within a tenant, ordered by time. Beats the
         // (TenantId, OccurredAtUtc) index when EventType is selective (e.g. only Security events).
-        builder.HasIndex(x => new { x.TenantId, x.EventType, x.OccurredAtUtc })
-            .IsDescending(false, false, true)
+        builder.HasIndex(x => new { x.EventType, x.OccurredAtUtc })
+            .IsDescending(false, true)
             .HasDatabaseName("IX_AuditRecords_Tenant_EventType_OccurredAt");
 
         // Trace/correlation lookups ("everything tied to this request"). Both columns are sparse,

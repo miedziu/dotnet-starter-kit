@@ -22,7 +22,6 @@ namespace FSH.Starter.Migrations.PostgreSQL.Billing
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    TenantId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
                     Amount = table.Column<decimal>(type: "numeric(18,4)", precision: 18, scale: 4, nullable: false),
                     Currency = table.Column<string>(type: "character varying(8)", maxLength: 8, nullable: false),
                     Note = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: true),
@@ -45,7 +44,6 @@ namespace FSH.Starter.Migrations.PostgreSQL.Billing
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    TenantId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
                     Currency = table.Column<string>(type: "character varying(8)", maxLength: 8, nullable: false),
                     Balance = table.Column<decimal>(type: "numeric(18,4)", precision: 18, scale: 4, nullable: false),
                     Status = table.Column<int>(type: "integer", nullable: false),
@@ -64,7 +62,6 @@ namespace FSH.Starter.Migrations.PostgreSQL.Billing
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     WalletId = table.Column<Guid>(type: "uuid", nullable: false),
-                    TenantId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
                     Amount = table.Column<decimal>(type: "numeric(18,4)", precision: 18, scale: 4, nullable: false),
                     Kind = table.Column<int>(type: "integer", nullable: false),
                     Description = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
@@ -87,7 +84,7 @@ namespace FSH.Starter.Migrations.PostgreSQL.Billing
                 name: "ux_invoices_tenant_period_purpose",
                 schema: "billing",
                 table: "Invoices",
-                columns: new[] { "TenantId", "PeriodYear", "PeriodMonth", "Purpose" },
+                columns: new[] { "PeriodYear", "PeriodMonth", "Purpose" },
                 unique: true,
                 filter: "\"Purpose\" <> 2");
 
@@ -98,23 +95,10 @@ namespace FSH.Starter.Migrations.PostgreSQL.Billing
                 column: "InvoiceId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_TopupRequests_TenantId_Status",
+                name: "IX_TopupRequests_Status",
                 schema: "billing",
                 table: "TopupRequests",
-                columns: new[] { "TenantId", "Status" });
-
-            migrationBuilder.CreateIndex(
-                name: "ux_wallets_tenantid",
-                schema: "billing",
-                table: "Wallets",
-                column: "TenantId",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_WalletTransactions_TenantId",
-                schema: "billing",
-                table: "WalletTransactions",
-                column: "TenantId");
+                column: "Status");
 
             migrationBuilder.CreateIndex(
                 name: "IX_WalletTransactions_WalletId_CreatedAtUtc",
@@ -147,7 +131,7 @@ namespace FSH.Starter.Migrations.PostgreSQL.Billing
                 name: "ux_invoices_tenant_period_purpose",
                 schema: "billing",
                 table: "Invoices",
-                columns: new[] { "TenantId", "PeriodYear", "PeriodMonth", "Purpose" },
+                columns: new[] { "PeriodYear", "PeriodMonth", "Purpose" },
                 unique: true);
         }
     }

@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using System;
 
@@ -23,8 +23,7 @@ namespace FSH.Starter.Migrations.PostgreSQL.Identity
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     HandlerName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
                     EventType = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: false),
-                    ProcessedOnUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    TenantId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true)
+                    ProcessedOnUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -40,7 +39,6 @@ namespace FSH.Starter.Migrations.PostgreSQL.Identity
                     CreatedOnUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     Type = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: false),
                     Payload = table.Column<string>(type: "text", nullable: false),
-                    TenantId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true),
                     CorrelationId = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: true),
                     ProcessedOnUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     RetryCount = table.Column<int>(type: "integer", nullable: false),
@@ -59,7 +57,6 @@ namespace FSH.Starter.Migrations.PostgreSQL.Identity
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: true),
-                    TenantId = table.Column<string>(type: "text", nullable: false),
                     Name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     NormalizedName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     ConcurrencyStamp = table.Column<string>(type: "text", nullable: true)
@@ -83,7 +80,6 @@ namespace FSH.Starter.Migrations.PostgreSQL.Identity
                     RefreshTokenExpiryTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     ObjectId = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     LastPasswordChangeDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    TenantId = table.Column<string>(type: "text", nullable: false),
                     UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
@@ -113,7 +109,6 @@ namespace FSH.Starter.Migrations.PostgreSQL.Identity
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     CreatedBy = table.Column<string>(type: "text", nullable: true),
                     CreatedOn = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
-                    TenantId = table.Column<string>(type: "text", nullable: false),
                     RoleId = table.Column<string>(type: "text", nullable: false),
                     ClaimType = table.Column<string>(type: "text", nullable: true),
                     ClaimValue = table.Column<string>(type: "text", nullable: true)
@@ -162,8 +157,7 @@ namespace FSH.Starter.Migrations.PostgreSQL.Identity
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     UserId = table.Column<string>(type: "text", nullable: false),
                     ClaimType = table.Column<string>(type: "text", nullable: true),
-                    ClaimValue = table.Column<string>(type: "text", nullable: true),
-                    TenantId = table.Column<string>(type: "text", nullable: false)
+                    ClaimValue = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -185,8 +179,7 @@ namespace FSH.Starter.Migrations.PostgreSQL.Identity
                     LoginProvider = table.Column<string>(type: "text", nullable: false),
                     ProviderKey = table.Column<string>(type: "text", nullable: false),
                     ProviderDisplayName = table.Column<string>(type: "text", nullable: true),
-                    UserId = table.Column<string>(type: "text", nullable: false),
-                    TenantId = table.Column<string>(type: "text", nullable: false)
+                    UserId = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -206,8 +199,7 @@ namespace FSH.Starter.Migrations.PostgreSQL.Identity
                 columns: table => new
                 {
                     UserId = table.Column<string>(type: "text", nullable: false),
-                    RoleId = table.Column<string>(type: "text", nullable: false),
-                    TenantId = table.Column<string>(type: "text", nullable: false)
+                    RoleId = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -236,8 +228,7 @@ namespace FSH.Starter.Migrations.PostgreSQL.Identity
                     UserId = table.Column<string>(type: "text", nullable: false),
                     LoginProvider = table.Column<string>(type: "text", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
-                    Value = table.Column<string>(type: "text", nullable: true),
-                    TenantId = table.Column<string>(type: "text", nullable: false)
+                    Value = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -273,7 +264,7 @@ namespace FSH.Starter.Migrations.PostgreSQL.Identity
                 name: "RoleNameIndex",
                 schema: "identity",
                 table: "Roles",
-                columns: new[] { "NormalizedName", "TenantId" },
+                column: "NormalizedName",
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -304,7 +295,7 @@ namespace FSH.Starter.Migrations.PostgreSQL.Identity
                 name: "UserNameIndex",
                 schema: "identity",
                 table: "Users",
-                columns: new[] { "NormalizedUserName", "TenantId" },
+                column: "NormalizedUserName",
                 unique: true);
         }
 

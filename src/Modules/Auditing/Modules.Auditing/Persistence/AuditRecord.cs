@@ -1,6 +1,8 @@
+using FSH.Framework.Core.Domain;
+
 namespace FSH.Modules.Auditing;
 
-public sealed class AuditRecord
+public sealed class AuditRecord : IGlobalEntity
 {
     public Guid Id { get; set; }
     public DateTime OccurredAtUtc { get; set; }
@@ -8,8 +10,6 @@ public sealed class AuditRecord
 
     public int EventType { get; set; }
     public byte Severity { get; set; }
-
-    public string? TenantId { get; set; }
     public string? UserId { get; set; }
     public string? UserName { get; set; }
     public string? TraceId { get; set; }

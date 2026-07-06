@@ -93,10 +93,6 @@ namespace FSH.Starter.Migrations.PostgreSQL.MultiTenancy
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
-                    b.Property<string>("TenantId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.HasKey("Id");
 
                     b.ToTable("TenantProvisionings", "tenant");

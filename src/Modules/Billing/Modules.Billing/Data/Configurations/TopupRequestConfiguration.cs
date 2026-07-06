@@ -11,7 +11,6 @@ public sealed class TopupRequestConfiguration : IEntityTypeConfiguration<TopupRe
         ArgumentNullException.ThrowIfNull(builder);
         builder.ToTable("TopupRequests");
         builder.HasKey(x => x.Id);
-        builder.Property(x => x.TenantId).IsRequired().HasMaxLength(64);
         builder.OwnsOne(x => x.Amount, m =>
         {
             m.Property(p => p.Amount).HasColumnName("Amount").HasPrecision(18, 4).IsRequired();
@@ -22,8 +21,8 @@ public sealed class TopupRequestConfiguration : IEntityTypeConfiguration<TopupRe
         builder.Property(x => x.DecisionNote).HasMaxLength(512);
         builder.Property(x => x.RequestedBy).HasMaxLength(64);
         builder.Property(x => x.Status).HasConversion<int>();
-        builder.HasIndex(x => new { x.TenantId, x.Status });
-        builder.HasIndex(x => x.InvoiceId);
+        builder.HasIndex(x => x.Status);
+        builder.HasIndex(x => x.InvoiceId).IsUnique();
         builder.Ignore(x => x.DomainEvents);
     }
 }

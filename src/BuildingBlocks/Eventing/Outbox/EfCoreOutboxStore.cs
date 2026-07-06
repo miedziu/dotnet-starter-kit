@@ -45,7 +45,6 @@ public sealed class EfCoreOutboxStore<TDbContext> : IOutboxStore
             CreatedOnUtc = @event.OccurredOnUtc,
             Type = @event.GetType().AssemblyQualifiedName ?? @event.GetType().FullName!,
             Payload = payload,
-            TenantId = @event.TenantId,
             CorrelationId = @event.CorrelationId,
             RetryCount = 0,
             IsDead = false

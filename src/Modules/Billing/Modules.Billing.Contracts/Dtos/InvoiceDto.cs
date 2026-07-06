@@ -2,7 +2,6 @@ namespace FSH.Modules.Billing.Contracts.Dtos;
 
 public sealed record InvoiceDto(
     Guid Id,
-    string TenantId,
     string InvoiceNumber,
     int PeriodYear,
     int PeriodMonth,

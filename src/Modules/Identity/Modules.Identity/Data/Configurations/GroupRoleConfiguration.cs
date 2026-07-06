@@ -1,4 +1,3 @@
-using Finbuckle.MultiTenant.EntityFrameworkCore.Extensions;
 using FSH.Modules.Identity.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -12,8 +11,7 @@ public class GroupRoleConfiguration : IEntityTypeConfiguration<GroupRole>
         ArgumentNullException.ThrowIfNull(builder);
 
         builder
-            .ToTable("GroupRoles", IdentityModuleConstants.SchemaName)
-            .IsMultiTenant();
+            .ToTable("GroupRoles", IdentityModuleConstants.SchemaName);
 
         builder.HasKey(gr => new { gr.GroupId, gr.RoleId });
 

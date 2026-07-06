@@ -12,15 +12,13 @@ public sealed class SubscriptionConfiguration : IEntityTypeConfiguration<Subscri
         ArgumentNullException.ThrowIfNull(builder);
         builder.ToTable("Subscriptions");
         builder.HasKey(x => x.Id);
-        builder.Property(x => x.TenantId).IsRequired().HasMaxLength(64);
         builder.Property(x => x.PlanId).IsRequired();
         builder.Property(x => x.Status).HasConversion<int>();
 
-        builder.HasIndex(x => new { x.TenantId, x.Status });
-        builder.HasIndex(x => x.TenantId)
+        builder.HasIndex(x => x.Status)
             .HasFilter($"\"Status\" = {(int)SubscriptionStatus.Active}")
             .IsUnique()
-            .HasDatabaseName("ux_subscriptions_tenantid_active");
+            .HasDatabaseName("ux_subscriptions_active");
 
         builder.Ignore(x => x.DomainEvents);
     }

@@ -20,7 +20,6 @@ namespace FSH.Starter.Migrations.PostgreSQL.MultiTenancy
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    TenantId = table.Column<string>(type: "text", nullable: false),
                     CorrelationId = table.Column<string>(type: "text", nullable: false),
                     Status = table.Column<int>(type: "integer", nullable: false),
                     CurrentStep = table.Column<string>(type: "text", nullable: true),

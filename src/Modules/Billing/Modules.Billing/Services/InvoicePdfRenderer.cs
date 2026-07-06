@@ -1,8 +1,8 @@
-using System.Globalization;
 using FSH.Modules.Billing.Contracts.Dtos;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
+using System.Globalization;
 
 namespace FSH.Modules.Billing.Services;
 
@@ -44,11 +44,11 @@ public sealed class InvoicePdfRenderer : IInvoicePdfRenderer
 
                     col.Item().Row(row =>
                     {
-                        row.RelativeItem().Column(c =>
-                        {
-                            c.Item().Text("Billed to").SemiBold();
-                            c.Item().Text(invoice.TenantId);
-                        });
+                        //row.RelativeItem().Column(c =>
+                        //{
+                        //    c.Item().Text("Billed to").SemiBold();
+                        //    c.Item().Text(invoice.);
+                        //});
                         row.RelativeItem().AlignRight().Column(c =>
                         {
                             c.Item().Text($"Status: {invoice.Status}").SemiBold();

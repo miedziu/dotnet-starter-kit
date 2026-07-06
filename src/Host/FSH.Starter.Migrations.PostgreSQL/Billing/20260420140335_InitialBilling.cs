@@ -20,7 +20,6 @@ namespace FSH.Starter.Migrations.PostgreSQL.Billing
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    TenantId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
                     InvoiceNumber = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
                     PeriodYear = table.Column<int>(type: "integer", nullable: false),
                     PeriodMonth = table.Column<int>(type: "integer", nullable: false),
@@ -65,7 +64,6 @@ namespace FSH.Starter.Migrations.PostgreSQL.Billing
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    TenantId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
                     PlanId = table.Column<Guid>(type: "uuid", nullable: false),
                     StartUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     EndUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
@@ -84,7 +82,6 @@ namespace FSH.Starter.Migrations.PostgreSQL.Billing
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    TenantId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
                     PeriodYear = table.Column<int>(type: "integer", nullable: false),
                     PeriodMonth = table.Column<int>(type: "integer", nullable: false),
                     Resource = table.Column<int>(type: "integer", nullable: false),
@@ -146,7 +143,7 @@ namespace FSH.Starter.Migrations.PostgreSQL.Billing
                 name: "ux_invoices_tenant_period",
                 schema: "billing",
                 table: "Invoices",
-                columns: new[] { "TenantId", "PeriodYear", "PeriodMonth" },
+                columns: new[] { "PeriodYear", "PeriodMonth" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -157,24 +154,16 @@ namespace FSH.Starter.Migrations.PostgreSQL.Billing
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Subscriptions_TenantId_Status",
+                name: "IX_Subscriptions_Status",
                 schema: "billing",
                 table: "Subscriptions",
-                columns: new[] { "TenantId", "Status" });
-
-            migrationBuilder.CreateIndex(
-                name: "ux_subscriptions_tenantid_active",
-                schema: "billing",
-                table: "Subscriptions",
-                column: "TenantId",
-                unique: true,
-                filter: "\"Status\" = 0");
+                column: "Status");
 
             migrationBuilder.CreateIndex(
                 name: "ux_usage_snapshots_tenant_period_resource",
                 schema: "billing",
                 table: "UsageSnapshots",
-                columns: new[] { "TenantId", "PeriodYear", "PeriodMonth", "Resource" },
+                columns: new[] { "PeriodYear", "PeriodMonth", "Resource" },
                 unique: true);
         }
 

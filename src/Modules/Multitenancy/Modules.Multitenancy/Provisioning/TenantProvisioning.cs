@@ -4,8 +4,6 @@ public sealed class TenantProvisioning
 {
     public Guid Id { get; private set; } = Guid.NewGuid();
 
-    public string TenantId { get; private set; } = default!;
-
     public string CorrelationId { get; private set; } = default!;
 
     public TenantProvisioningStatus Status { get; private set; } = TenantProvisioningStatus.Pending;
@@ -28,9 +26,8 @@ public sealed class TenantProvisioning
     {
     }
 
-    public TenantProvisioning(string tenantId, string correlationId)
+    public TenantProvisioning(string correlationId)
     {
-        TenantId = tenantId;
         CorrelationId = correlationId;
         CreatedUtc = TimeProvider.System.GetUtcNow().UtcDateTime;
     }

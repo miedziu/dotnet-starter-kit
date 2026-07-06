@@ -5,9 +5,8 @@ namespace FSH.Modules.Billing.Data;
 
 /// <summary>
 /// Billing data lives in the main application database rather than per-tenant databases because
-/// invoices and subscriptions are an administrative concern that needs cross-tenant visibility.
-/// Tenant ownership is represented as an explicit <c>TenantId</c> column and filtered in query
-/// services.
+/// invoices and subscriptions are a global administrative concern. Billing is not tenant-scoped:
+/// there is a single global subscription, wallet, and invoice set shared across the whole system.
 /// </summary>
 public sealed class BillingDbContext : DbContext
 {

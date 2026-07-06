@@ -63,19 +63,11 @@ public sealed class GetAuditSummaryQueryHandler : IQueryHandler<GetAuditSummaryQ
             .ToListAsync(cancellationToken)
             .ConfigureAwait(false);
 
-        var byTenant = await scoped
-            .Where(a => a.TenantId != null)
-            .GroupBy(a => a.TenantId!)
-            .Select(g => new { Key = g.Key, Count = (long)g.Count() })
-            .ToListAsync(cancellationToken)
-            .ConfigureAwait(false);
-
         return new AuditSummaryAggregateDto
         {
             EventsByType = byType.ToDictionary(x => (AuditEventType)x.Key, x => x.Count),
             EventsBySeverity = bySeverity.ToDictionary(x => (AuditSeverity)x.Key, x => x.Count),
             EventsBySource = bySource.ToDictionary(x => x.Key, x => x.Count, StringComparer.OrdinalIgnoreCase),
-            EventsByTenant = byTenant.ToDictionary(x => x.Key, x => x.Count, StringComparer.OrdinalIgnoreCase),
         };
     }
 
@@ -109,8 +101,7 @@ public sealed class GetAuditSummaryQueryHandler : IQueryHandler<GetAuditSummaryQ
 
         return _dbContext.AuditRecords
             .AsNoTracking()
-            .IgnoreQueryFilters()
-            .Where(a => a.TenantId == requested);
+            .IgnoreQueryFilters();
     }
 
     private (DateTime FromUtc, DateTime ToUtc) ResolveWindow(DateTime? from, DateTime? to)

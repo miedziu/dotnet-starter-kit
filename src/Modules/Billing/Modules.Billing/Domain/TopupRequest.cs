@@ -5,7 +5,6 @@ namespace FSH.Modules.Billing.Domain;
 
 public sealed class TopupRequest : AggregateRoot<Guid>
 {
-    public string TenantId { get; private set; } = default!;
     public Money Amount { get; private set; } = default!;
     public string? Note { get; private set; }
     public TopupRequestStatus Status { get; private set; }
@@ -18,14 +17,12 @@ public sealed class TopupRequest : AggregateRoot<Guid>
 
     private TopupRequest() { }
 
-    public static TopupRequest Create(string tenantId, decimal amount, string currency, string? note, string? requestedBy)
+    public static TopupRequest Create(decimal amount, string currency, string? note, string? requestedBy)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(tenantId);
         ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(amount, 0m);
         return new TopupRequest
         {
             Id = Guid.CreateVersion7(),
-            TenantId = tenantId,
             Amount = new Money(amount, string.IsNullOrWhiteSpace(currency) ? "USD" : currency),
             Note = note,
             RequestedBy = requestedBy,
