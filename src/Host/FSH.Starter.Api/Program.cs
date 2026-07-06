@@ -1,5 +1,6 @@
-﻿using FSH.Framework.Web;
+using FSH.Framework.Web;
 using FSH.Framework.Web.Modules;
+using FSH.Framework.Web.Observability.Logging.Serilog;
 using FSH.Modules.Auditing;
 using FSH.Modules.Identity;
 using FSH.Modules.Identity.Contracts.v1.Tokens.TokenGeneration;
@@ -13,6 +14,9 @@ using FSH.Modules.Tickets;
 using FSH.Modules.Multitenancy.Features.v1.GetTenantStatus;
 using System.Reflection;
 using System.Text.Json.Serialization;
+
+// Initialize static logger for early logging (before DI is built)
+StaticLogger.EnsureInitialized();
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -3,6 +3,7 @@ using System.Reflection;
 using FSH.Framework.Shared.Multitenancy;
 using FSH.Framework.Web;
 using FSH.Framework.Web.Modules;
+using FSH.Framework.Web.Observability.Logging.Serilog;
 using FSH.Modules.Auditing;
 using FSH.Modules.Billing;
 using FSH.Modules.Catalog;
@@ -28,6 +29,9 @@ using Microsoft.Extensions.Logging;
 
 // FSH DbMigrator — one-shot console that migrates every DB to head, optionally seeds, then exits 0/1.
 // Runs as a deployment step (not at API startup) so it can use an elevated-DDL connection string. Verbs: see MigratorCommand.HelpText.
+
+// Initialize static logger for early logging (before DI is built)
+StaticLogger.EnsureInitialized();
 
 var cli = MigratorCommand.Parse(args);
 if (cli.Help)

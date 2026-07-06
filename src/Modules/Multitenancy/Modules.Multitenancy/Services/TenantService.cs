@@ -10,7 +10,6 @@ using FSH.Modules.Multitenancy.Contracts.v1.GetTenants;
 using FSH.Modules.Multitenancy.Data;
 using FSH.Modules.Multitenancy.Features.v1.GetTenants;
 using FSH.Modules.Multitenancy.Provisioning;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -149,6 +148,9 @@ public sealed class TenantService : ITenantService
                 _logger.LogError(
                     ex, "[{Tenant}] FAILED to seed {Module} module",
                     tenant.Id, moduleName);
+                //var s = $"Tenant: {tenant.Id} im module: {moduleName} failed. " + ex;
+                //System.Diagnostics.Debug.WriteLine(s);
+                //await Console.Out.WriteLineAsync(s).ConfigureAwait(false);
                 throw;
             }
         }
