@@ -296,7 +296,32 @@ namespace FSH.Starter.Migrations.PostgreSQL.Chat
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("FSH.Modules.Chat.Domain.MessageAttachment", b =>
+                {
+                    b.HasOne("FSH.Modules.Chat.Domain.Message", null)
+                        .WithMany("Attachments")
+                        .HasForeignKey("MessageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
 
+            modelBuilder.Entity("FSH.Modules.Chat.Domain.MessageMention", b =>
+                {
+                    b.HasOne("FSH.Modules.Chat.Domain.Message", null)
+                        .WithMany("Mentions")
+                        .HasForeignKey("MessageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("FSH.Modules.Chat.Domain.MessageReaction", b =>
+                {
+                    b.HasOne("FSH.Modules.Chat.Domain.Message", null)
+                        .WithMany("Reactions")
+                        .HasForeignKey("MessageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
 
             modelBuilder.Entity("FSH.Modules.Chat.Domain.ChatChannel", b =>
                 {

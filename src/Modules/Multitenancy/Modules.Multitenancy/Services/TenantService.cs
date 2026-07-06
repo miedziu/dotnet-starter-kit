@@ -94,6 +94,7 @@ public sealed class TenantService : ITenantService
 
     public async Task MigrateTenantAsync(AppTenantInfo tenant, CancellationToken cancellationToken)
     {
+        ArgumentNullException.ThrowIfNull(tenant);
         using var scope = _serviceProvider.CreateScope();
 
         scope.ServiceProvider.GetRequiredService<IMultiTenantContextSetter>()
@@ -101,12 +102,30 @@ public sealed class TenantService : ITenantService
 
         foreach (var initializer in scope.ServiceProvider.GetServices<IDbInitializer>())
         {
-            await initializer.MigrateAsync(cancellationToken).ConfigureAwait(false);
+            var moduleName = initializer.GetType().Name.Replace("DbInitializer", string.Empty, StringComparison.Ordinal);
+            try
+            {
+                if (_logger.IsEnabled(LogLevel.Information))
+                {
+                    _logger.LogInformation(
+                        "[{Tenant}] Migrating {Module} module database",
+                        tenant.Id, moduleName);
+                }
+                await initializer.MigrateAsync(cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(
+                    ex, "[{Tenant}] FAILED to migrate {Module} module database",
+                    tenant.Id, moduleName);
+                throw;
+            }
         }
     }
 
     public async Task SeedTenantAsync(AppTenantInfo tenant, CancellationToken cancellationToken)
     {
+        ArgumentNullException.ThrowIfNull(tenant);
         using var scope = _serviceProvider.CreateScope();
 
         scope.ServiceProvider.GetRequiredService<IMultiTenantContextSetter>()
@@ -114,7 +133,24 @@ public sealed class TenantService : ITenantService
 
         foreach (var initializer in scope.ServiceProvider.GetServices<IDbInitializer>())
         {
-            await initializer.SeedAsync(cancellationToken).ConfigureAwait(false);
+            var moduleName = initializer.GetType().Name.Replace("DbInitializer", string.Empty, StringComparison.Ordinal);
+            try
+            {
+                if (_logger.IsEnabled(LogLevel.Information))
+                {
+                    _logger.LogInformation(
+                        "[{Tenant}] Seeding {Module} module",
+                        tenant.Id, moduleName);
+                }
+                await initializer.SeedAsync(cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(
+                    ex, "[{Tenant}] FAILED to seed {Module} module",
+                    tenant.Id, moduleName);
+                throw;
+            }
         }
     }
 

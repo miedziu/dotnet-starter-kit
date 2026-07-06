@@ -22,12 +22,19 @@ internal sealed class IdentityDbInitializer(
 {
     public async Task MigrateAsync(CancellationToken cancellationToken)
     {
-        if ((await context.Database.GetPendingMigrationsAsync(cancellationToken).ConfigureAwait(false)).Any())
+        var pendingMigrations = (await context.Database.GetPendingMigrationsAsync(cancellationToken).ConfigureAwait(false)).ToList();
+        if (pendingMigrations.Count > 0)
         {
+            if (logger.IsEnabled(LogLevel.Information))
+            {
+                logger.LogInformation(
+                    "[{Tenant}] Applying {Count} pending migration(s) for Identity module: {Migrations}",
+                    context.TenantInfo?.Identifier, pendingMigrations.Count, string.Join(", ", pendingMigrations));
+            }
             await context.Database.MigrateAsync(cancellationToken).ConfigureAwait(false);
             if (logger.IsEnabled(LogLevel.Information))
             {
-                logger.LogInformation("[{Tenant}] applied database migrations for identity module", context.TenantInfo?.Identifier);
+                logger.LogInformation("[{Tenant}] Applied database migrations for Identity module", context.TenantInfo?.Identifier);
             }
         }
     }
