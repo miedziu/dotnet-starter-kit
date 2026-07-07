@@ -48,14 +48,6 @@ namespace FSH.Starter.Migrations.PostgreSQL.MultiTenancy
                     b.Property<string>("Name")
                         .HasColumnType("text");
 
-                    b.Property<string>("Plan")
-                        .HasMaxLength(64)
-                        .HasColumnType("character varying(64)");
-
-                    b.Property<string>("QuotaLimits")
-                        .IsRequired()
-                        .HasColumnType("jsonb");
-
                     b.Property<DateTime>("ValidUpto")
                         .HasColumnType("timestamp with time zone");
 
