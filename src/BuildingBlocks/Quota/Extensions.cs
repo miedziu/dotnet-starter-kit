@@ -30,7 +30,7 @@ public static class Extensions
 
         if (!quotaOptions.Enabled)
         {
-            services.AddScoped<IQuotaService, NoopQuotaService>();
+            services.AddSingleton<IQuotaService, NoopQuotaService>();
             services.AddTransient<QuotaEnforcementMiddleware>();
             return services;
         }
@@ -44,13 +44,11 @@ public static class Extensions
                 return ConnectionMultiplexer.Connect(config);
             });
 
-            // Scoped so gauge providers with scoped dependencies (e.g. DbContext) resolve per request.
-            services.AddScoped<IQuotaService, RedisQuotaService>();
+            services.AddSingleton<IQuotaService, RedisQuotaService>();
         }
         else
         {
-            services.AddSingleton<InMemoryQuotaStore>();
-            services.AddScoped<IQuotaService, InMemoryQuotaService>();
+            services.AddSingleton<IQuotaService, InMemoryQuotaService>();
         }
 
         services.AddTransient<QuotaEnforcementMiddleware>();

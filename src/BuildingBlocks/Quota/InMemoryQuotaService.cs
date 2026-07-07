@@ -16,21 +16,19 @@ public sealed class InMemoryQuotaService : IQuotaService
     private readonly Dictionary<QuotaResource, IQuotaGaugeProvider> _gauges;
     private readonly TimeProvider _timeProvider;
 
-    internal InMemoryQuotaService(
-        InMemoryQuotaStore store,
+    public InMemoryQuotaService(
         QuotaOptions options,
         QuotaPlanResolver planResolver,
         IEnumerable<IQuotaGaugeProvider> gauges,
         TimeProvider timeProvider,
         IMultiTenantContextAccessor<AppTenantInfo>? tenantAccessor = null)
     {
-        ArgumentNullException.ThrowIfNull(store);
         ArgumentNullException.ThrowIfNull(options);
         ArgumentNullException.ThrowIfNull(planResolver);
         ArgumentNullException.ThrowIfNull(gauges);
         ArgumentNullException.ThrowIfNull(timeProvider);
 
-        _counters = store.Counters;
+        _options = options;
         _planResolver = planResolver;
         _timeProvider = timeProvider;
         _gauges = gauges.ToDictionary(g => g.Resource);
