@@ -117,7 +117,6 @@ public sealed class InMemoryQuotaService : IQuotaService
     private static bool IsCounterResource(QuotaResource resource) => resource switch
     {
         QuotaResource.ApiCalls => true,
-        QuotaResource.StorageBytes => true,
         _ => false
     };
 
@@ -141,7 +140,7 @@ public sealed class InMemoryQuotaService : IQuotaService
 
     private DateTimeOffset? GetPeriodResetUtc(QuotaResource resource)
     {
-        if (!IsPeriodic(resource))
+        if (!IsCounterResource(resource))
         {
             return null;
         }
