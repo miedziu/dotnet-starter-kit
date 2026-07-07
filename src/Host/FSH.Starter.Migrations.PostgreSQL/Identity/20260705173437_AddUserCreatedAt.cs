@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -19,6 +19,30 @@ namespace FSH.Starter.Migrations.PostgreSQL.Identity
                 nullable: false,
                 defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
 
+            migrationBuilder.AddColumn<short?>(
+                name: "VoivodeshipId",
+                schema: "identity",
+                table: "Users",
+                type: "smallint",
+                nullable: true,
+                comment: "Voivodeship ID (administrative division)");
+
+            migrationBuilder.AddColumn<short?>(
+                name: "DistrictId",
+                schema: "identity",
+                table: "Users",
+                type: "smallint",
+                nullable: true,
+                comment: "District ID (administrative division)");
+
+            migrationBuilder.AddColumn<short?>(
+                name: "CommuneId",
+                schema: "identity",
+                table: "Users",
+                type: "smallint",
+                nullable: true,
+                comment: "Commune ID (administrative division)");
+
             migrationBuilder.CreateIndex(
                 name: "IX_Referrals_NewReferredUserId",
                 schema: "identity",
@@ -33,6 +57,21 @@ namespace FSH.Starter.Migrations.PostgreSQL.Identity
                 name: "IX_Referrals_NewReferredUserId",
                 schema: "identity",
                 table: "Referrals");
+
+            migrationBuilder.DropColumn(
+                name: "CommuneId",
+                schema: "identity",
+                table: "Users");
+
+            migrationBuilder.DropColumn(
+                name: "DistrictId",
+                schema: "identity",
+                table: "Users");
+
+            migrationBuilder.DropColumn(
+                name: "VoivodeshipId",
+                schema: "identity",
+                table: "Users");
 
             migrationBuilder.DropColumn(
                 name: "CreatedAt",

@@ -56,6 +56,9 @@ using FSH.Modules.Identity.Features.v1.Users.GetUserProfile;
 using FSH.Modules.Identity.Features.v1.Users.GetUserRoles;
 using FSH.Modules.Identity.Features.v1.Users.GetUsers;
 using FSH.Modules.Identity.Features.v1.Users.RegisterUser;
+using FSH.Modules.Identity.Features.v1.Users.RegisterUserStep1;
+using FSH.Modules.Identity.Features.v1.Users.RegisterUserStep2;
+using FSH.Modules.Identity.Features.v1.Users.RegisterUserStep3;
 using FSH.Modules.Identity.Features.v1.Users.ResetPassword;
 using FSH.Modules.Identity.Features.v1.Users.SearchUsers;
 using FSH.Modules.Identity.Features.v1.Users.SelfRegistration;
@@ -185,6 +188,11 @@ public class IdentityModule : IModule
 
         // The outbox is dispatched by the framework's OutboxDispatcherHostedService (on by default). A second dispatcher
         // here would race the same rows (no row-level claim) → duplicate handlers + PK_InboxMessages collisions, so this module registers none.
+
+        // Multi-step registration endpoints
+        group.MapRegisterUserStep1Endpoint().AllowAnonymous().RequireRateLimiting("auth");
+        group.MapRegisterUserStep2Endpoint();
+        group.MapRegisterUserStep3Endpoint();
 
         // roles
         group.MapGetRolesEndpoint();

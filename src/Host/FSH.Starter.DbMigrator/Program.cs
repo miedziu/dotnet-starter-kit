@@ -10,6 +10,9 @@ using FSH.Modules.Catalog;
 using FSH.Modules.Identity;
 using FSH.Modules.Identity.Contracts.v1.Tokens.TokenGeneration;
 using FSH.Modules.Identity.Features.v1.Tokens.TokenGeneration;
+using FSH.Modules.Identity.Features.v1.Users.RegisterUserStep1;
+using FSH.Modules.Identity.Features.v1.Users.RegisterUserStep2;
+using FSH.Modules.Identity.Features.v1.Users.RegisterUserStep3;
 using FSH.Modules.Multitenancy;
 using FSH.Modules.Multitenancy.Contracts;
 using FSH.Modules.Multitenancy.Contracts.v1.GetTenantStatus;
@@ -105,6 +108,12 @@ builder.Services.AddMediator(o =>
         typeof(FSH.Modules.Chat.ChatModule),
         typeof(FSH.Modules.Notifications.Contracts.v1.Commands.MarkNotificationReadCommand),
         typeof(FSH.Modules.Notifications.NotificationsModule),
+        typeof(RegisterUserStep1Command),
+        typeof(RegisterUserStep1CommandHandler),
+        typeof(RegisterUserStep2Command),
+        typeof(RegisterUserStep2CommandHandler),
+        typeof(RegisterUserStep3Command),
+        typeof(RegisterUserStep3CommandHandler),
     ];
 });
 

@@ -180,6 +180,18 @@ namespace FSH.Starter.Migrations.PostgreSQL.Identity
                     b.Property<DateTime>("LastPasswordChangeDate")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<short?>("VoivodeshipId")
+                        .HasColumnType("smallint")
+                        .HasComment("Voivodeship ID (administrative division)");
+
+                    b.Property<short?>("DistrictId")
+                        .HasColumnType("smallint")
+                        .HasComment("District ID (administrative division)");
+
+                    b.Property<short?>("CommuneId")
+                        .HasColumnType("smallint")
+                        .HasComment("Commune ID (administrative division)");
+
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("boolean");
 
