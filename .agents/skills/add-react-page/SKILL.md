@@ -1,15 +1,14 @@
 ---
 name: add-react-page
-description: Add a list+create page to a React app (clients/admin or clients/dashboard) — API module, page, lazy route, (admin) permission gate, Playwright test. Use when adding any frontend screen. See .agents/rules/frontend/.
-argument-hint: [admin|dashboard] [Area] [Resource]
+description: Add a list+create page to a React app (clients/dashboard) — API module, page, lazy route, permission gate. Use when adding any frontend screen. See .agents/rules/frontend/.
+argument-hint: [dashboard] [Area] [Resource]
 ---
 
 # Add React Page
 
-The frontend slice. Read `.agents/rules/frontend/shared.md` plus the app file (`frontend/admin.md` /
-`frontend/dashboard.md`) — the two apps **deliberately diverge**:
+The frontend slice. Read `.agents/rules/frontend/shared.md` plus the app file (`frontend/dashboard.md`) — the two apps **deliberately diverge**:
 
-| | **admin** (operator) | **dashboard** (tenant) |
+| | **dashboard** |
 |---|---|---|
 | Query params | PascalCase (`PageNumber`, `Search`) | camelCase (`pageNumber`, `search`) |
 | `PagedResponse<T>` | import from `@/lib/api-types` | re-declare inline in the api module |
@@ -89,33 +88,16 @@ const {Resource}ListPage = lazyNamed(() => import("@/pages/{area}/list"), "{Reso
 { path: "{area}/{resources}", element: withSuspense(<{Resource}ListPage />) },
 ```
 
-## Step 5 — (admin only) mirror the permission
-
-Add the constant to `src/lib/permissions.ts` (`{Module}Permissions.{Resources}.View` = `"Permissions.{Resources}.View"`), and a `PERMISSION_CATALOG` entry if it belongs in the Role editor. See `add-permission`.
-
-## Step 6 — Playwright test (`tests/{area}/{resource}.spec.ts`)
-
-```ts
-test.beforeEach(async ({ page }) => {
-  // admin: seedAuthedSession(page, { ...TEST_USER, permissions: [...ADMIN_PERMS] }); await installAdminShellMocks(page);
-  // dashboard: await seedAuthedSession(page, TEST_USER); await installShellMocks(page);
-  await mockJsonResponse(page, "**/api/v1/{module}/{resources}**", paged([SAMPLE]));   // page mocks AFTER shell mocks
-});
-```
-
-Use `mockProblemDetails(...)` for error states. Dashboard: scope row assertions with `.last()` / dialog scoping (lists render mobile + desktop copies → strict-mode double match).
-
-## Step 7 — Verify
+## Step 5 — Verify
 
 ```bash
-cd clients/{app} && npm run lint && npm run test:e2e
+cd clients/{app} && npm run lint
 ```
 
 ## Checklist
 
-- [ ] API module: hand-written types, `apiFetch`, correct param casing per app (Pascal=admin, camel=dashboard)
+- [ ] API module: hand-written types, `apiFetch`, correct param casing per app (camel=dashboard)
 - [ ] Page is a **named export**; `useQuery` key hierarchical + `placeholderData: keepPreviousData`
 - [ ] Mutation passes data via `mutate(arg)`, invalidates in `onSuccess`
-- [ ] Route via `lazyNamed`; admin wraps in `<RouteGuard perms>`, dashboard in `withSuspense`
+- [ ] Route via `lazyNamed`; dashboard in `withSuspense`
 - [ ] (admin) permission mirrored in `lib/permissions.ts`
-- [ ] Playwright test: seed + shell mocks + page mocks; `lint` + `test:e2e` green

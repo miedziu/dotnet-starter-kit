@@ -1,9 +1,9 @@
 # Frontend — dashboard app (`clients/dashboard`)
 
-Tenant-facing application. Read `frontend/shared.md` first; this file is only the divergences.
+Read `frontend/shared.md` first; this file is only the divergences.
 
 - **Port** 5174 · dev proxy target `https://localhost:7030` (HTTPS, with `ws: true` for the SignalR hub) · localStorage prefix `fsh.dashboard.*` · login header `X-FSH-App: dashboard`.
-- **Env** (`src/env.ts`): `{ apiBase, defaultTenant, demoMode }`.
+- **Env** (`src/env.ts`): `{ apiBase, demoMode }`.
 - Dev-proxy is HTTPS on purpose: routing the bearer token through an HTTP→HTTPS 307 redirect stripped the `Authorization` header.
 
 ## No RHF/zod — hand-rolled forms
@@ -23,7 +23,7 @@ The JWT carries **only role names**. `auth-context.tsx` fetches the effective pe
 
 ## Impersonation
 
-`token-store.ts` has `beginImpersonation` / `endImpersonationWithFreshTokens` / `restoreStashedActor` that stash the operator's tokens under `fsh.dashboard.impersonation.*`. `AuthProvider` exposes `beginImpersonation`/`stopImpersonation` and derives `ImpersonationInfo` from `act_sub` / `act_tenant` / `act_name` claims. Admin triggers the handoff one-way via its `dashboardUrl`.
+`token-store.ts` has `beginImpersonation` / `endImpersonationWithFreshTokens` / `restoreStashedActor` that stash the operator's tokens under `fsh.dashboard.impersonation.*`. `AuthProvider` exposes `beginImpersonation`/`stopImpersonation` and derives `ImpersonationInfo` from `act_sub` / `act_name` claims. Admin triggers the handoff one-way via its `dashboardUrl`.
 
 ## Performance
 

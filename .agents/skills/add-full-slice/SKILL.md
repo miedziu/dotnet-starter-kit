@@ -1,7 +1,7 @@
 ---
 name: add-full-slice
 description: Build a capability end-to-end — backend vertical slice (Contracts→handler→validator→endpoint) AND the React page wired to it. Use when delivering a user-facing feature across API + UI. Composes add-feature + add-react-page.
-argument-hint: [ModuleName] [admin|dashboard] [FeatureName]
+argument-hint: [ModuleName] [dashboard] [FeatureName]
 ---
 
 # Add Full Slice (backend → frontend)
@@ -15,13 +15,12 @@ the order of operations and the **contract** that keeps the two halves in sync.
 1. **Backend slice** — `add-feature` (and `add-entity` first if a new entity is needed):
    - Command/Query + response DTO in `Modules.{X}.Contracts/v1/{Area}/` (+ `Contracts/Dtos/`).
    - Handler (`public sealed`, injects `{X}DbContext`), Validator, Endpoint (`internal static Map…Endpoint`, `.RequirePermission(...)`).
-   - Wire in `{X}Module.MapEndpoints`. Build + test backend green.
+   - Wire in `{X}Module.MapEndpoints`.
 2. **Lock the contract** — note the final **route path**, HTTP method, request shape, and response DTO field names/casing. The React side must match these exactly.
 3. **Frontend page** — `add-react-page` in the chosen app:
    - API module calls the **same path**; hand-write TS types mirroring the **response DTO** (the API serializes C# records as camelCase JSON — TS fields are camelCase even though admin *query params* are PascalCase).
    - Page (`useQuery`/`useMutation`), route (`RouteGuard` for admin / `withSuspense` for dashboard).
 4. **Permission** — if the endpoint is gated, mirror the constant into admin's `lib/permissions.ts` and gate the route (`add-permission`). Dashboard relies on the server 403.
-5. **Tests both sides** — backend handler/validator test (xUnit/Shouldly/NSubstitute) + frontend Playwright spec (route-mocked).
 
 ## The contract (the thing that breaks if you're sloppy)
 
@@ -36,9 +35,9 @@ the order of operations and the **contract** that keeps the two halves in sync.
 ## Verify end-to-end
 
 ```bash
-dotnet build src/FSH.Starter.slnx && dotnet test src/Tests/{X}.Tests
-cd clients/{app} && npm run lint && npm run test:e2e
-# optional manual check: dotnet run --project src/Host/FSH.Starter.AppHost  (brings up API + both apps)
+dotnet build src/FSH.Starter.slnx
+cd clients/{app} && npm run lint
+# optional manual check: dotnet run --project src/Host/FSH.Starter.AppHost  (brings up API + client app)
 ```
 
 ## Checklist
@@ -47,4 +46,3 @@ cd clients/{app} && npm run lint && npm run test:e2e
 - [ ] Contract locked: route, request shape, response DTO field names
 - [ ] Frontend api module path + TS types match the contract (body JSON camelCase)
 - [ ] Page + route added (`add-react-page`); admin permission mirrored + gated (`add-permission`)
-- [ ] Backend test + Playwright test added; both suites green

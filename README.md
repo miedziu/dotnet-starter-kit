@@ -2,9 +2,9 @@
 
 # ⚡ FullStackHero .NET 10 Starter Kit
 
-**A production-ready, modular .NET 10 monolith + two React 19 apps — the fastest way to ship a multi-tenant SaaS.**
+**A production-ready, modular .NET 10 monolith + one React 19 app — the fastest way to ship a SaaS.**
 
-Identity, multitenancy, billing, auditing, webhooks, files, chat, real-time, caching, jobs, storage, OpenAPI and OpenTelemetry — already wired, fully tested, and **100% yours as source** (no black-box packages).
+Identity, billing, auditing, webhooks, files, chat, real-time, caching, jobs, storage, OpenAPI and OpenTelemetry — already wired, and **100% yours as source** (no black-box packages).
 
 [![fsh CLI](https://img.shields.io/nuget/v/FullStackHero.CLI?label=fsh%20cli&color=512BD4)](https://www.nuget.org/packages/FullStackHero.CLI)
 [![template](https://img.shields.io/nuget/v/FullStackHero.NET.StarterKit?label=dotnet%20new%20fsh&color=512BD4)](https://www.nuget.org/packages/FullStackHero.NET.StarterKit)
@@ -21,7 +21,7 @@ Identity, multitenancy, billing, auditing, webhooks, files, chat, real-time, cac
 
 ## Why FullStackHero?
 
-Most starter kits give you a login page and a TODO list. This one gives you the **boring, hard parts already done right** — multitenancy, auth, billing, auditing, background jobs, real-time, file storage, observability — across a clean **Vertical Slice** backend *and* two polished **React 19** front-ends, orchestrated locally with one command via **.NET Aspire**, and deployable to Docker or AWS.
+Most starter kits give you a login page and a TODO list. This one gives you the **boring, hard parts already done right** — auth, billing, auditing, background jobs, real-time, file storage, observability — across a clean **Vertical Slice** backend and one polished **React 19** front-end, orchestrated locally with one command via **.NET Aspire**, and deployable to Docker or AWS.
 
 You scaffold with the `fsh` CLI and get the **complete, detached source** — every BuildingBlock, Module, and Host project with real project references. No hidden NuGet runtime, nothing to "eject" later. Own it, read it, change it.
 
@@ -29,10 +29,10 @@ You scaffold with the `fsh` CLI and get the **complete, detached source** — ev
 dotnet tool install -g FullStackHero.CLI
 fsh new MyApp
 cd MyApp
-dotnet run --project src/Host/MyApp.AppHost   # 🎉 whole stack up: API + 2 React apps + Postgres + Valkey + MinIO
+dotnet run --project src/Host/FSH.Starter.AppHost   # 🎉 whole stack up: API + React app + Postgres + Redis + MinIO
 ```
 
-> Then open the **Aspire dashboard** at `https://localhost:15888`, the **API + Scalar docs** at `https://localhost:7030/scalar`, the **admin** app at `http://localhost:5173`, and the **dashboard** app at `http://localhost:5174`. Sign in with a seeded demo account (e.g. `admin@acme.com` / `Password123!`).
+> Then open the **Aspire dashboard** at `https://localhost:15888`, the **API + Scalar docs** at `https://localhost:7030/scalar`, the **dashboard app** at `http://localhost:5174`. Sign in with a seeded demo account (e.g. `admin@acme.com` / `Password123!`).
 
 ---
 
@@ -40,27 +40,22 @@ dotnet run --project src/Host/MyApp.AppHost   # 🎉 whole stack up: API + 2 Rea
 
 ### Backend — modular monolith, vertical slices
 - **.NET 10 · C# latest · Minimal APIs · [Mediator](https://github.com/martinothamar/Mediator) (source-generated CQRS) · FluentValidation**
-- **EF Core 10** on **PostgreSQL** (Npgsql), with domain events, the specification pattern, soft-delete + audit interceptors, and tenant-isolated `DbContext`s.
+- **EF Core 10** on **PostgreSQL** (Npgsql), with domain events, the specification pattern, soft-delete + audit interceptors, and `DbContext`s.
 - **JWT auth + ASP.NET Identity** — issuance/refresh, roles & fine-grained permissions, rate-limited auth, password policies, sessions, impersonation.
-- **Multitenancy** via [Finbuckle](https://www.finbuckle.com/) — tenant resolution, provisioning, per-tenant migrations & seeding, isolation enforced by default.
-- **Cross-cutting**: HybridCache on **Valkey** (Redis-compatible), **Hangfire** jobs, presigned S3/**MinIO** storage, mailing, idempotency, quotas, rate limiting, API versioning, RFC 9457 `ProblemDetails`.
+- **Cross-cutting**: HybridCache on **Redis**, **Hangfire** jobs, presigned S3/**MinIO** storage, mailing, idempotency, rate limiting, API versioning, RFC 9457 `ProblemDetails`.
 - **Observability**: Serilog structured logging + **OpenTelemetry** traces/metrics/logs, health probes, security/exception auditing.
 - **Docs**: **OpenAPI** + the **Scalar** API reference UI.
 
-### Front-ends — two React 19 apps
-- **`clients/admin`** (operator console) and **`clients/dashboard`** (tenant app): **React 19 + Vite 7 + TypeScript**, **TanStack Query v5**, **React Router 7**, **Radix + Tailwind v4** (shadcn-style), real-time via **SignalR**/**SSE**.
-- Runtime config (`/config.json`, no rebuild per environment), hand-written typed API client, and **Playwright** E2E suites.
+### Front-end — one React 19 app
+- **`clients/dashboard`** (client app): **React 19 + Vite 7 + TypeScript**, **TanStack Query v5**, **React Router 7**, **Radix + Tailwind v4** (shadcn-style), real-time via **SignalR**/**SSE**.
+- Runtime config (`/config.json`, no rebuild per environment), hand-written typed API client.
 
 ### Modules (bounded contexts)
-**Identity · Multitenancy · Billing · Catalog · Tickets · Chat · Files · Webhooks · Auditing · Notifications** — each a runtime project plus a `.Contracts` project (its only public surface), boundaries enforced by architecture tests.
+**Identity · Billing · Catalog · Tickets · Chat · Files · Webhooks · Auditing · Notifications** — each a runtime project plus a `.Contracts` project (its only public surface).
 
 ### Cloud-native & DevOps
-- **.NET Aspire** orchestrates the entire stack locally with one command (Postgres + pgAdmin, Valkey + RedisInsight, MinIO, migrator, demo-seeder, API, and both React apps).
-- **Docker Compose** production stack (`deploy/docker`) and **Terraform** for AWS (`deploy/terraform`); API image published to GHCR.
+- **.NET Aspire** orchestrates the entire stack locally with one command (Redis + RedisInsight, MinIO, migrator, demo-seeder, API, and React app).
 - A one-shot **DbMigrator** (migrations are never run at API startup), and the **`fsh` CLI** + `dotnet new` template for distribution.
-
-### Quality
-**1,600+ backend tests** (xUnit, Shouldly, NSubstitute, AutoFixture, **NetArchTest** boundaries, **Testcontainers** integration) and **200+ front-end E2E tests** (Playwright). Path-scoped CI for backend and frontend; warnings-as-errors.
 
 ---
 
@@ -74,7 +69,7 @@ fsh doctor          # verify your environment (SDK, Docker, Aspire, ports)
 fsh new MyApp       # interactive wizard
 ```
 
-The wizard asks what to include (Aspire AppHost, the React apps). Non-interactive:
+The wizard asks what to include (Aspire AppHost, the React app). Non-interactive:
 
 ```bash
 fsh new MyApp --non-interactive          # full stack, Postgres
@@ -96,7 +91,7 @@ git clone https://github.com/fullstackhero/dotnet-starter-kit.git MyApp && cd My
 dotnet run --project src/Host/FSH.Starter.AppHost
 ```
 
-> **Prerequisites:** [.NET 10 SDK](https://dotnet.microsoft.com/download) · [Docker](https://www.docker.com/) (Postgres/Valkey/MinIO via Aspire) · [Node 20+](https://nodejs.org/) (for the React apps).
+> **Prerequisites:** [.NET 10 SDK](https://dotnet.microsoft.com/download) · [Docker](https://www.docker.com/) (Postgres/Redis/MinIO via Aspire) · [Node 20+](https://nodejs.org/) (for the React app).
 
 **`fsh` commands:** `new` · `doctor` · `info` · `update` · `--version`. Full reference → [fullstackhero.net/docs/cli](https://fullstackhero.net/docs/cli/).
 
@@ -111,12 +106,10 @@ dotnet run --project src/Host/FSH.Starter.AppHost
 | Validation | FluentValidation | Routing | React Router 7 |
 | ORM / DB | EF Core 10 / PostgreSQL | UI | Radix + Tailwind v4 (shadcn) |
 | Auth | JWT + ASP.NET Identity | Realtime | SignalR · SSE |
-| Multitenancy | Finbuckle 10 | Tests | Playwright |
-| Cache / Jobs | Valkey · Hangfire | | |
+| Cache / Jobs | Redis · Hangfire | | |
 | Storage | S3 / MinIO (presigned) | **Infra** | |
 | Docs | OpenAPI + Scalar | Orchestration | .NET Aspire |
-| Observability | Serilog + OpenTelemetry | Deploy | Docker Compose · Terraform |
-| Testing | xUnit · Testcontainers · NetArchTest | | |
+| Observability | Serilog + OpenTelemetry |
 
 ---
 
@@ -124,45 +117,14 @@ dotnet run --project src/Host/FSH.Starter.AppHost
 
 | Path | What |
 |---|---|
-| `src/BuildingBlocks/` | Shared framework libraries (Core, Persistence, Web, Caching, Eventing, Storage, Quota…) |
+| `src/BuildingBlocks/` | Shared framework libraries (Core, Persistence, Web, Caching, Eventing, Eventing.Abstractions, Jobs, Mailing, Storage) |
 | `src/Modules/{Name}/` | Bounded contexts — each with a runtime project + a `.Contracts` project (its public API) |
 | `src/Host/FSH.Starter.Api` | Composition-root Web API host |
-| `src/Host/FSH.Starter.AppHost` | .NET Aspire orchestrator (Postgres, Valkey, MinIO, migrator, API, both React apps) |
+| `src/Host/FSH.Starter.AppHost` | .NET Aspire orchestrator (Postgres, Redis, MinIO, migrator, API, React app) |
 | `src/Host/FSH.Starter.DbMigrator` | One-shot migrate/seed runner (DB is **not** migrated at API startup) |
-| `src/Tools/CLI` | The `fsh` CLI (Spectre.Console) |
-| `clients/admin`, `clients/dashboard` | The two React apps |
-| `deploy/` | Docker Compose, Terraform (AWS), Dokploy |
-| `src/Tests/` | Unit, Architecture (NetArchTest), Integration (Testcontainers) |
+| `clients/dashboard` | The React app |
 
 Architecture deep-dive → [fullstackhero.net/docs/architecture](https://fullstackhero.net/docs/architecture/).
-
----
-
-## ☁️ Deploy
-
-**Single-host via Docker Compose:**
-
-```bash
-cd deploy/docker
-cp .env.example .env   # fsh new pre-generates this with strong secrets
-docker compose up -d --build
-```
-
-**AWS via Terraform** (ECS Fargate + RDS + ElastiCache + S3/CloudFront) lives in `deploy/terraform`.
-
-Guides → [Local orchestration](https://fullstackhero.net/docs/deployment/aspire/) · [Docker](https://fullstackhero.net/docs/deployment/) · [AWS / Terraform](https://fullstackhero.net/docs/deployment/aws-terraform/) · [Database migrations](https://fullstackhero.net/docs/deployment/database-migrations/).
-
----
-
-## 🧪 Testing
-
-```bash
-dotnet test src/FSH.Starter.slnx        # backend: unit + architecture + Testcontainers integration
-cd clients/admin     && npm run test:e2e # Playwright (operator app)
-cd clients/dashboard && npm run test:e2e # Playwright (tenant app)
-```
-
-> Integration tests require Docker (Testcontainers spins real Postgres). Architecture tests enforce module boundaries.
 
 ---
 
@@ -171,7 +133,7 @@ cd clients/dashboard && npm run test:e2e # Playwright (tenant app)
 Full guides, module references, and architecture decisions live at **[fullstackhero.net](https://fullstackhero.net)**:
 
 - [Getting started](https://fullstackhero.net/docs/getting-started/introduction/) — scaffold, run, and the default credentials
-- [Architecture](https://fullstackhero.net/docs/architecture/) — modular monolith + vertical slices, multitenancy deep-dive
+- [Architecture](https://fullstackhero.net/docs/architecture/) — modular monolith + vertical slices
 - [Modules](https://fullstackhero.net/docs/modules/) — Identity, Catalog, Tickets, Chat, and more
 - [Local orchestration with Aspire](https://fullstackhero.net/docs/deployment/aspire/)
 - [CLI reference](https://fullstackhero.net/docs/cli/) · [Changelog](https://fullstackhero.net/docs/changelog/)

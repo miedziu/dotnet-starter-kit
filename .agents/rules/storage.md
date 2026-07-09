@@ -10,17 +10,14 @@
 
 ## Providers
 
-`AddHeroStorage(config)` reads `Storage:Provider` **eagerly at registration**: `"s3"` → `S3StorageService` (supports MinIO via `ServiceUrl` + `ForcePathStyle`), else `LocalStorageService`. When quotas are enabled the service is wrapped in `QuotaMeteredStorageService` (debits `StorageBytes`).
+`AddHeroStorage(config)` reads `Storage:Provider` **eagerly at registration**: `"s3"` → `S3StorageService` (supports MinIO via `ServiceUrl` + `ForcePathStyle`), else `LocalStorageService`.
 
 ## Presigned upload flow (preferred for user uploads)
 
 Don't stream large files through the API. The pattern (see Files module):
-1. `RequestUploadUrl` — server validates category/extension/size + quota pre-check, returns a presigned PUT URL, persists a `PendingUpload` record.
+1. `RequestUploadUrl` — server validates category/extension/size pre-check, returns a presigned PUT URL, persists a `PendingUpload` record.
 2. Client uploads **directly** to storage.
-3. `FinalizeUpload` — flips to `Available`, **debits the quota here** (not at request time), publishes `FileFinalizedIntegrationEvent`.
+3. `FinalizeUpload` — flips to `Available`, **debits the here** (not at request time), publishes `FileFinalizedIntegrationEvent`.
 
 Local/dev without MinIO uses `LocalPresignTokenStore` (in-memory one-shot tokens).
 
-## Test gotcha
-
-`AddHeroStorage` reads `Storage:Provider` **before** a test factory's in-memory config overlay applies, so it wires `LocalStorageService`. Integration tests that need MinIO must **remove the `IStorageService`/`LocalStorageService`/`S3StorageService` descriptors post-registration and re-register the S3 stack** pointed at the MinIO container (see `FshWebApplicationFactory`). See `integration-testing.md`.

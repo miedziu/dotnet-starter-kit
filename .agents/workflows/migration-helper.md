@@ -9,11 +9,11 @@ skill — follow it. This playbook covers the surrounding facts and troubleshoot
 - All migrations live in **one** project, `src/Host/FSH.Starter.Migrations.PostgreSQL`, foldered **per module/context** (`Catalog/`, `Identity/`, …), each with its own `{X}DbContextModelSnapshot`.
 - Startup project is `src/Host/FSH.Starter.Api`. Always pass `--context {X}DbContext` and `--output-dir {X}`.
 - `dotnet-ef` is pinned — `dotnet tool restore` first.
-- **The DB is NOT migrated on API startup.** The `DbMigrator` host applies it: it migrates the tenant catalog (`TenantDbContext`) first, then each tenant's per-module schema, serialized by a Postgres advisory lock. (`UseHeroMultiTenantDatabases()` only registers Finbuckle's tenant resolution — it does not run migrations.)
+- **The DB is NOT migrated on API startup.** The `DbMigrator` host applies it: it migrates the catalog (`DbContext`) first, then per-module schema, serialized by a Postgres advisory lock.
 - **Build before `migrations add`** — it reads the snapshot, which regenerates from a build; a stale snapshot silently loses changes. `migrations remove` rewrites the snapshot, so only ever remove the latest and rebuild after.
 
 ## Context names (real)
-`IdentityDbContext`, `TenantDbContext` (the tenant catalog — **not** "MultitenancyDbContext"), `AuditDbContext`, `BillingDbContext`, `CatalogDbContext`, `TicketsDbContext`, `FilesDbContext`, `ChatDbContext`, `NotificationsDbContext`, `WebhookDbContext`.
+`IdentityDbContext`, `AuditDbContext`, `BillingDbContext`, `CatalogDbContext`, `TicketsDbContext`, `FilesDbContext`, `ChatDbContext`, `NotificationsDbContext`, `WebhookDbContext`.
 
 ## Apply (canonical path)
 ```bash

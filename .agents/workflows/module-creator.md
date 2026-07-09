@@ -19,7 +19,6 @@ an existing domain → use `feature-scaffolder` instead.
 ## Verify it actually loaded (not just compiled)
 ```bash
 dotnet build src/FSH.Starter.slnx                 # 0 warnings
-dotnet test src/Tests/Architecture.Tests          # boundary + tenant-isolation rules
 dotnet run --project src/Host/FSH.Starter.DbMigrator -- list-pending   # new context shows up
 ```
 Then hit one endpoint and confirm the handler runs — a missing Mediator marker compiles fine but the handler is silently undiscovered. Finish with the `architecture-guard` workflow.

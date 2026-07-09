@@ -1,6 +1,6 @@
 # FullStackHero — Dashboard
 
-Tenant-facing dashboard for the FullStackHero .NET Starter Kit. Shows realtime telemetry over Server-Sent Events, current-period usage vs. plan limits (Recharts), and billing history.
+Dashboard for the FullStackHero .NET Starter Kit. Shows realtime telemetry over Server-Sent Events, current-period usage vs. plan limits (Recharts), and billing history.
 
 Built with React 19, Vite 7, TypeScript, TanStack Query, React Router, Tailwind 4 + shadcn/ui, and Recharts. Standalone — not part of a pnpm workspace — so it plugs into .NET Aspire as a plain `ExecutableResource`.
 
@@ -15,7 +15,7 @@ Two options — pick whichever matches how you want to develop.
 
 ### Option A — run everything through Aspire (recommended)
 
-The AppHost launches Postgres, Redis, MinIO, the API, the admin app, **and** this dashboard together, with `VITE_API_BASE_URL` wired via service discovery.
+The AppHost launches Redis, MinIO, the API, with `VITE_API_BASE_URL` wired via service discovery.
 
 ```bash
 npm install --prefix clients/dashboard   # one-time
@@ -50,7 +50,6 @@ The dev server proxies `/api`, `/openapi`, and `/scalar` to `VITE_API_BASE_URL` 
 | Variable              | Default                  | Purpose                                       |
 |-----------------------|--------------------------|-----------------------------------------------|
 | `VITE_API_BASE_URL`   | `http://localhost:5030`  | API origin used by the dev proxy              |
-| `VITE_DEFAULT_TENANT` | `root`                   | Default tenant header for unauthenticated calls |
 
 ## Architecture
 
@@ -81,7 +80,6 @@ EventSource can't send an `Authorization` header, so the flow is:
 This app uses **fetch streaming** (not the native `EventSource` API) so it can:
 
 - Mint a fresh single-use token on every (re)connect without relying on the browser's auto-reconnect, which would replay the already-consumed token and get 401'd.
-- Apply the tenant header to the stream request.
 - Use an explicit exponential backoff (1s → 30s).
 
 The `SseProvider` in `src/sse/sse-context.tsx` is mounted inside `AppShell`, so the stream is active only when authenticated. A bounded ring buffer (200 events) is exposed via `useSse()` and consumed by `LiveFeed` and `SseStatusBadge`.
@@ -94,7 +92,7 @@ The `SseProvider` in `src/sse/sse-context.tsx` is mounted inside `AppShell`, so 
 
 ## Authentication flow
 
-Identical to the admin app: JWT in `localStorage`, `Authorization: Bearer` + `tenant` headers, single-flight refresh on 401 via `POST /api/v1/identity/token/refresh`. Keys are namespaced `fsh.dashboard.*` so both apps can run side-by-side without clobbering each other's session.
+JWT in `localStorage`, `Authorization: Bearer` header, single-flight refresh on 401 via `POST /api/v1/identity/token/refresh`. Keys are namespaced `fsh.dashboard.*`.
 
 ## Production build
 

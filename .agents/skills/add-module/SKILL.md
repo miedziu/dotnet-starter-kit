@@ -75,11 +75,8 @@ public sealed class {Name}DbContext : BaseDbContext
     public const string Schema = "{name}";
 
     public {Name}DbContext(
-        IMultiTenantContextAccessor<AppTenantInfo> multiTenantContextAccessor,
-        DbContextOptions<{Name}DbContext> options,
-        IOptions<DatabaseOptions> settings,
-        IHostEnvironment environment)
-        : base(multiTenantContextAccessor, options, settings, environment) { }
+        DbContextOptions<{Name}DbContext> options)
+        : base(options) { }
 
     public DbSet<{Entity}> {Entities} => Set<{Entity}>();
 
@@ -88,7 +85,7 @@ public sealed class {Name}DbContext : BaseDbContext
         ArgumentNullException.ThrowIfNull(modelBuilder);
         modelBuilder.HasDefaultSchema(Schema);
         modelBuilder.ApplyConfigurationsFromAssembly(typeof({Name}DbContext).Assembly);
-        base.OnModelCreating(modelBuilder);   // MUST be last — applies tenant + soft-delete filters
+        base.OnModelCreating(modelBuilder);   // MUST be last — applies soft-delete filters
     }
 }
 ```
@@ -119,8 +116,6 @@ Miss the Mediator marker → handlers silently undiscovered. Miss the assembly e
 
 ```bash
 dotnet build src/FSH.Starter.slnx                  # 0 warnings
-dotnet test src/Tests/Architecture.Tests           # boundary + tenant-isolation rules must pass
-dotnet test src/FSH.Starter.slnx
 ```
 
 ## Checklist
@@ -132,4 +127,4 @@ dotnet test src/FSH.Starter.slnx
 - [ ] `{Name}Permissions` in Contracts/Authorization
 - [ ] Migrations folder + initial migration (`--context {Name}DbContext`)
 - [ ] **Registered in all four places** (Api + DbMigrator × Mediator + moduleAssemblies)
-- [ ] Build + Architecture.Tests green
+- [ ] Build green

@@ -33,7 +33,7 @@ public static class RegisterUserEndpoint
 
 FluentValidation, auto-registered by `ModuleLoader`. Name `{Command}Validator`. Live in the same feature folder.
 
-- **Every command handler needs a validator; every paginated query handler needs one too.** Enforced by `Architecture.Tests` (`HandlerValidatorPairingTests`). A handler legitimately without rules can be added to that test's known-missing allowlist, but prefer writing the validator.
+- **Every command handler needs a validator; every paginated query handler needs one too.** . A handler legitimately without rules can be added to that test's known-missing allowlist, but prefer writing the validator.
 - Validators run via the `ValidationBehavior<,>` Mediator pipeline before the handler.
 
 ## Exceptions → ProblemDetails
@@ -63,4 +63,3 @@ Use `Specification<T>` (`src/BuildingBlocks/Persistence/Specifications/`) for qu
 2. Handler in `Modules.{Name}/Features/v1/{Area}/{Feature}/`.
 3. Validator in the same folder.
 4. Endpoint in the same folder; wire in module `MapEndpoints()`.
-5. Tests in `Tests/{Name}.Tests/` (+ integration test if it touches DB/IO).
