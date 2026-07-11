@@ -1,10 +1,4 @@
 import {
-  useEffect,
-  useMemo,
-  useState,
-  type FormEvent,
-} from "react";
-import {
   keepPreviousData,
   useMutation,
   useQuery,
@@ -23,6 +17,12 @@ import {
   Search,
   Trash2,
 } from "lucide-react";
+import {
+  useEffect,
+  useMemo,
+  useState,
+  type FormEvent,
+} from "react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import {
@@ -42,6 +42,12 @@ import {
   type ProductDto,
   type UpdateProductInput,
 } from "@/api/catalog";
+import {
+  Combobox,
+  EntityPageHeader,
+  EntityPager,
+  Field,
+} from "@/components/list";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -56,12 +62,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Switch } from "@/components/ui/switch";
-import {
-  Combobox,
-  EntityPageHeader,
-  EntityPager,
-  Field,
-} from "@/components/list";
 import { cn } from "@/lib/cn";
 import {
   describe,

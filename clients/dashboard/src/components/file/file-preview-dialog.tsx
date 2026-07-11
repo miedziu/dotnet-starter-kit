@@ -1,6 +1,4 @@
-import { useEffect, useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { toast } from "sonner";
 import {
   Download,
   ExternalLink,
@@ -11,19 +9,8 @@ import {
   Loader2,
   Trash2,
 } from "lucide-react";
-import {
-  Dialog,
-  DialogBody,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { ErrorBand } from "@/components/list";
-import { Switch } from "@/components/ui/switch";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import {
   FileAssetStatus,
   Visibility,
@@ -35,10 +22,23 @@ import {
   type FileAssetStatusValue,
 } from "@/api/files";
 import { useAuth } from "@/auth/use-auth";
-import { useUserDisplay } from "@/lib/use-user-display";
-import { ApiRequestError } from "@/lib/api-client";
+import { ErrorBand } from "@/components/list";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogBody,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Switch } from "@/components/ui/switch";
 import { formatBytes } from "@/hooks/use-file-upload";
+import { ApiRequestError } from "@/lib/api-client";
 import { cn } from "@/lib/cn";
+import { useUserDisplay } from "@/lib/use-user-display";
 
 type Props = {
   fileAssetId: string | null;

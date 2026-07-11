@@ -1,5 +1,3 @@
-import { useMemo } from "react";
-import { useNavigate } from "react-router-dom";
 import { Command } from "cmdk";
 import {
   Activity,
@@ -28,17 +26,19 @@ import {
   Users,
   UserRound,
 } from "lucide-react";
+import { useMemo } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/auth/use-auth";
+import { accents } from "@/components/theme/appearance-options";
+import { useTheme } from "@/components/theme/theme-provider";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { useAuth } from "@/auth/use-auth";
-import { useTheme } from "@/components/theme/theme-provider";
-import { accents } from "@/components/theme/appearance-options";
-import { ALL_TRASH_PERMISSIONS } from "@/lib/trash-permissions";
 import { cn } from "@/lib/cn";
+import { ALL_TRASH_PERMISSIONS } from "@/lib/trash-permissions";
 
 /**
  * Command palette dialog — separated from the provider so cmdk + the full

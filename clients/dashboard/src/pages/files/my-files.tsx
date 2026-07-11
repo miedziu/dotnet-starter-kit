@@ -1,4 +1,3 @@
-import { useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   ChevronRight,
@@ -13,7 +12,7 @@ import {
   X,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
-import { useAuth } from "@/auth/use-auth";
+import { useMemo, useState } from "react";
 import {
   Visibility,
   listMyFiles,
@@ -21,6 +20,7 @@ import {
   type FileAssetDto,
   type VisibilityValue,
 } from "@/api/files";
+import { useAuth } from "@/auth/use-auth";
 import { FileDropzone } from "@/components/file/file-dropzone";
 import { FilePreviewDialog } from "@/components/file/file-preview-dialog";
 import {
@@ -36,9 +36,9 @@ import {
 } from "@/components/list";
 import { Button } from "@/components/ui/button";
 import { formatBytes } from "@/hooks/use-file-upload";
-import { useUserDisplay } from "@/lib/use-user-display";
-import { formatDate } from "@/lib/list-helpers";
 import { cn } from "@/lib/cn";
+import { formatDate } from "@/lib/list-helpers";
+import { useUserDisplay } from "@/lib/use-user-display";
 
 const MY_FILES_KEY = ["files", "mine"] as const;
 const SHARED_FILES_KEY = ["files", "shared"] as const;

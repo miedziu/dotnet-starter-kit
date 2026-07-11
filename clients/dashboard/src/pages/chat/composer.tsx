@@ -1,15 +1,15 @@
-import { useEffect, useMemo, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ImageIcon, Loader2, Paperclip, Send, X } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { ChannelType, sendMessage, type ChannelTypeValue, type MessageDto } from "@/api/chat";
 import { getFileDownloadUrl, Visibility } from "@/api/files";
 import { searchUsers, type UserDto } from "@/api/identity";
-import { useRealtime } from "@/realtime/realtime-context";
 import { formatBytes, useFileUpload } from "@/hooks/use-file-upload";
 import { cn } from "@/lib/cn";
 import { useUserDisplay } from "@/lib/use-user-display";
 import { MentionPicker } from "@/pages/chat/mention-picker";
+import { useRealtime } from "@/realtime/realtime-context";
 
 type PendingAttachment = {
   fileAssetId: string;

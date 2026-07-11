@@ -1,13 +1,13 @@
-import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { ChevronDown, Pin } from "lucide-react";
+import { useState } from "react";
 import { listPinnedMessages, type MessageDto } from "@/api/chat";
+import { Avatar } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar } from "@/components/ui/avatar";
 import { cn } from "@/lib/cn";
 import { useUserDisplay } from "@/lib/use-user-display";
 import { shortDateTime } from "@/pages/chat/chat-utils";

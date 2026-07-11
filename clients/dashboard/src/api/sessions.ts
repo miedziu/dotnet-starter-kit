@@ -1,5 +1,5 @@
-import { apiFetch } from "@/lib/api-client";
 import type { PagedResponse } from "@/api/catalog";
+import { apiFetch } from "@/lib/api-client";
 
 export type UserSessionDto = {
   id: string;

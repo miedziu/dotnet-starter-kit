@@ -1,7 +1,5 @@
-import { useMemo } from "react";
 import { Activity, Inbox } from "lucide-react";
-import { useSseEvents, useSseStatus, type SseEvent } from "@/sse/sse-context";
-import { Badge } from "@/components/ui/badge";
+import { useMemo } from "react";
 import {
   EntityEmpty,
   EntityListCard,
@@ -11,6 +9,8 @@ import {
   EntityStatusBadge,
   type EntityStatusTone,
 } from "@/components/list";
+import { Badge } from "@/components/ui/badge";
+import { useSseEvents, useSseStatus, type SseEvent } from "@/sse/sse-context";
 
 const timeFmt = new Intl.DateTimeFormat("en-US", {
   hour: "2-digit",

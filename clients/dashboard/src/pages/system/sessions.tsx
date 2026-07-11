@@ -1,4 +1,3 @@
-import { useEffect, useMemo, useState } from "react";
 import {
   keepPreviousData,
   useMutation,
@@ -15,6 +14,7 @@ import {
   Smartphone,
   UserCog,
 } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import {
   adminRevokeAllUserSessions,
@@ -22,7 +22,7 @@ import {
   getTenantSessions,
   type UserSessionDto,
 } from "@/api/sessions";
-import { Button } from "@/components/ui/button";
+import { useAuth } from "@/auth/use-auth";
 import {
   EntityEmpty,
   EntityFilterPill,
@@ -36,7 +36,7 @@ import {
   EntitySearch,
   EntityStatusBadge,
 } from "@/components/list";
-import { useAuth } from "@/auth/use-auth";
+import { Button } from "@/components/ui/button";
 import { ApiRequestError } from "@/lib/api-client";
 import { cn } from "@/lib/cn";
 import { describe, formatRelative } from "@/lib/list-helpers";

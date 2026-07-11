@@ -1,5 +1,5 @@
-import type { ReactNode } from "react";
 import { ShieldCheck } from "lucide-react";
+import type { ReactNode } from "react";
 
 // ────────────────────────────────────────────────────────────────────────
 // AuthShell — calm centered-card chrome for unauthenticated pages

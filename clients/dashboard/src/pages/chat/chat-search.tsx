@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, Search, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { searchMessages, type MessageDto } from "@/api/chat";
 import { Avatar } from "@/components/ui/avatar";
 import { cn } from "@/lib/cn";

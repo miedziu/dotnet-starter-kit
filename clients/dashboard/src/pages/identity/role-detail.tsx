@@ -1,11 +1,8 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
 import {
   useMutation,
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-import { toast } from "sonner";
 import {
   Check,
   ChevronDown,
@@ -18,6 +15,9 @@ import {
   Trash2,
   X,
 } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "sonner";
 import {
   deleteRole,
   getPermissionsCatalog,
@@ -29,19 +29,6 @@ import {
   groupPermissions,
   type PermissionDescriptor,
 } from "@/api/permissions-catalog";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import {
   EntityDetailAvatar,
   EntityDetailBack,
@@ -51,8 +38,21 @@ import {
   ErrorBand,
   Field,
 } from "@/components/list";
-import { describe, pad2 } from "@/lib/list-helpers";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/cn";
+import { describe, pad2 } from "@/lib/list-helpers";
 
 // System roles defined by the framework (RoleConstants.DefaultRoles on the
 // server). These cannot be deleted, renamed, re-described, or have their

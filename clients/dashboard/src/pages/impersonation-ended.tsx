@@ -1,7 +1,7 @@
-import { useLocation, useNavigate } from "react-router-dom";
 import { LogIn, ShieldOff } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/auth/use-auth";
+import { Button } from "@/components/ui/button";
 
 /**
  * ImpersonationEndedPage — calm centered terminal-state card shown when an

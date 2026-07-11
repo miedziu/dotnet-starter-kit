@@ -1,10 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-// Per-route chat chrome — Vite extracts this into the chat-page CSS chunk
-// so other pages stop shipping the unread divider / day rule / reaction
-// chip / jump-pill / mention pill / typing dot rules they'll never use.
-import "./chat.css";
 import {
   ArrowLeft,
   Hash,
@@ -14,6 +8,12 @@ import {
   Settings,
   Users2,
 } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+// Per-route chat chrome — Vite extracts this into the chat-page CSS chunk
+// so other pages stop shipping the unread divider / day rule / reaction
+// chip / jump-pill / mention pill / typing dot rules they'll never use.
+import "./chat.css";
 import { toast } from "sonner";
 import {
   ChannelType,
@@ -24,19 +24,19 @@ import {
   type MessageDto,
 } from "@/api/chat";
 import { useAuth } from "@/auth/use-auth";
+import { cn } from "@/lib/cn";
+import { useUserDisplay } from "@/lib/use-user-display";
 import { ChannelRail } from "@/pages/chat/channel-rail";
 import { ChannelSettingsDialog } from "@/pages/chat/channel-settings";
 import { ChatPinnedBar } from "@/pages/chat/chat-pinned";
 import { ChatSearchOverlay } from "@/pages/chat/chat-search";
+import { channelTitle } from "@/pages/chat/chat-utils";
 import { Composer } from "@/pages/chat/composer";
 import {
   MessageList,
   type MessageListHandle,
 } from "@/pages/chat/message-list";
 import { TypingIndicator } from "@/pages/chat/typing-indicator";
-import { channelTitle } from "@/pages/chat/chat-utils";
-import { cn } from "@/lib/cn";
-import { useUserDisplay } from "@/lib/use-user-display";
 import { useRealtime } from "@/realtime/realtime-context";
 
 /**

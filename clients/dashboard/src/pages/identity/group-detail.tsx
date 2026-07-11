@@ -1,12 +1,9 @@
-import { useEffect, useMemo, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
 import {
   keepPreviousData,
   useMutation,
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-import { toast } from "sonner";
 import {
   Lock,
   Search,
@@ -18,6 +15,9 @@ import {
   Users as UsersIcon,
   X,
 } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { toast } from "sonner";
 import {
   addUsersToGroup,
   deleteGroup,
@@ -31,12 +31,18 @@ import {
   type RoleDto,
   type UserDto,
 } from "@/api/identity";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import {
+  EntityDetailAvatar,
+  EntityDetailBack,
+  EntityDetailHero,
+  EntityDetailSection,
+  EntityDetailStat,
+  ErrorBand,
+  Field,
+} from "@/components/list";
 import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Switch } from "@/components/ui/switch";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogBody,
@@ -47,17 +53,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  EntityDetailAvatar,
-  EntityDetailBack,
-  EntityDetailHero,
-  EntityDetailSection,
-  EntityDetailStat,
-  ErrorBand,
-  Field,
-} from "@/components/list";
-import { describe, pad2 } from "@/lib/list-helpers";
+import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/cn";
+import { describe, pad2 } from "@/lib/list-helpers";
 
 function memberDisplay(m: GroupMemberDto): string {
   const parts = [m.firstName, m.lastName].filter(Boolean);

@@ -1,14 +1,14 @@
+import { useQueryClient } from "@tanstack/react-query";
+import { Hash, Lock, MessageCircle, Users2, X } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Hash, Lock, MessageCircle, Users2, X } from "lucide-react";
 import { ChannelType, type ChannelDto, type MessageDto } from "@/api/chat";
 import { useAuth } from "@/auth/use-auth";
-import { useRealtimeEvent } from "@/realtime/realtime-context";
-import { useUserDisplay } from "@/lib/use-user-display";
 import { Avatar } from "@/components/ui/avatar";
 import { cn } from "@/lib/cn";
+import { useUserDisplay } from "@/lib/use-user-display";
+import { useRealtimeEvent } from "@/realtime/realtime-context";
 
 /**
  * Background listener mounted in AppShell — subscribes to ChatMessageCreated

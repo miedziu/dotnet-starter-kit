@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { useRealtimeEvent } from "@/realtime/realtime-context";
 import { useUserDisplay } from "@/lib/use-user-display";
+import { useRealtimeEvent } from "@/realtime/realtime-context";
 
 /** Auto-clear typing markers after 4s — slightly longer than the hub's 3s throttle. */
 const TYPING_TTL_MS = 4_000;

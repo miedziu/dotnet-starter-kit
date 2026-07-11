@@ -1,10 +1,4 @@
 import {
-  useEffect,
-  useMemo,
-  useState,
-  type FormEvent,
-} from "react";
-import {
   keepPreviousData,
   useMutation,
   useQuery,
@@ -18,6 +12,12 @@ import {
   Tag,
   Trash2,
 } from "lucide-react";
+import {
+  useEffect,
+  useMemo,
+  useState,
+  type FormEvent,
+} from "react";
 import { toast } from "sonner";
 import {
   createBrand,
@@ -28,18 +28,6 @@ import {
   type CreateBrandInput,
   type UpdateBrandInput,
 } from "@/api/catalog";
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogBody,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import {
   EntityEmpty,
   EntityInitialsAvatar,
@@ -53,6 +41,18 @@ import {
   EntitySearch,
   Field,
 } from "@/components/list";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogBody,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/cn";
 import {
   describe,

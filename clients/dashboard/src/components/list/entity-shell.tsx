@@ -1,8 +1,8 @@
-import * as React from "react";
 import { ChevronLeft, ChevronRight, Search } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
-import { cn } from "@/lib/cn";
+import * as React from "react";
 import { ToneIconTile, type ToneIconTileTone } from "./tone-icon-tile";
+import { cn } from "@/lib/cn";
 
 // ───────────────────────────────────────────────────────────────────────
 //  EntityPageHeader — tone-tinted icon tile + Outfit title + count chip

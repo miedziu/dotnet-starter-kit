@@ -1,11 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
 import {
   useMutation,
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-import { toast } from "sonner";
 import {
   CheckCircle2,
   CircleSlash2,
@@ -24,6 +21,9 @@ import {
   UserCog,
   XCircle,
 } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { toast } from "sonner";
 import {
   adminRevokeAllUserSessions,
   adminRevokeUserSession,
@@ -39,19 +39,6 @@ import {
   type UserRoleDto,
 } from "@/api/identity";
 import { useAuth } from "@/auth/use-auth";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Switch } from "@/components/ui/switch";
-import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import {
   EntityDetailAvatar,
   EntityDetailBack,
@@ -61,8 +48,21 @@ import {
   EntityDetailStat,
   ErrorBand,
 } from "@/components/list";
-import { describe } from "@/lib/list-helpers";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/cn";
+import { describe } from "@/lib/list-helpers";
 
 type DialogState =
   | { mode: "closed" }

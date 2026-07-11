@@ -1,7 +1,7 @@
-import { forwardRef, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Download, Eye, Paperclip, Pencil, Pin, PinOff, SmilePlus, Trash2 } from "lucide-react";
+import { forwardRef, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import {
   addReaction,
@@ -15,7 +15,6 @@ import {
   type MessageAttachmentDto,
   type MessageDto,
 } from "@/api/chat";
-import { formatBytes } from "@/hooks/use-file-upload";
 import { useAuth } from "@/auth/use-auth";
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -33,11 +32,12 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { formatBytes } from "@/hooks/use-file-upload";
 import { cn } from "@/lib/cn";
 import { describe } from "@/lib/list-helpers";
 import { useUserByUsername, useUserDisplay } from "@/lib/use-user-display";
-import { usePresence } from "@/realtime/use-presence";
 import { groupReactions, shortTime } from "@/pages/chat/chat-utils";
+import { usePresence } from "@/realtime/use-presence";
 
 const QUICK_REACTIONS = ["👍", "🎉", "❤️", "👀", "🔥", "🚀"] as const;
 

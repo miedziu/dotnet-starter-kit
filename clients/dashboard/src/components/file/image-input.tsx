@@ -1,13 +1,13 @@
-import { useEffect, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { Image as ImageIcon, Loader2, Upload, X, Link as LinkIcon } from "lucide-react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { getFileMetadata, Visibility } from "@/api/files";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/cn";
 import { useFileUpload, formatBytes } from "@/hooks/use-file-upload";
-import { getFileMetadata, Visibility } from "@/api/files";
 import { ApiRequestError } from "@/lib/api-client";
+import { cn } from "@/lib/cn";
 
 type Props = {
   /** Current image URL (or empty). The component is fully controlled. */

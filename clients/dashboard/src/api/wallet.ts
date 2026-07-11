@@ -1,5 +1,5 @@
-import { apiFetch } from "@/lib/api-client";
 import type { PagedResult } from "@/api/billing";
+import { apiFetch } from "@/lib/api-client";
 
 // Wallet transaction kinds. The backend serializes enums as STRINGS
 // (see project_api_string_enums); mirror them as a string union with an

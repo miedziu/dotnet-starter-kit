@@ -1,6 +1,4 @@
-import { RouterProvider } from "react-router-dom";
 import { QueryClientProvider } from "@tanstack/react-query";
-import { Toaster } from "sonner";
 import {
   AlertCircle,
   AlertTriangle,
@@ -8,10 +6,12 @@ import {
   Info,
   Loader2,
 } from "lucide-react";
-import { queryClient } from "@/lib/query-client";
+import { RouterProvider } from "react-router-dom";
+import { Toaster } from "sonner";
 import { AuthProvider } from "@/auth/auth-context";
-import { ThemeProvider, useTheme } from "@/components/theme/theme-provider";
 import { CommandPaletteProvider } from "@/components/command-palette/command-palette";
+import { ThemeProvider, useTheme } from "@/components/theme/theme-provider";
+import { queryClient } from "@/lib/query-client";
 import { router } from "@/routes";
 
 export function App() {

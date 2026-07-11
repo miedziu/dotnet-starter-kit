@@ -1,5 +1,3 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import {
   Check,
@@ -13,10 +11,16 @@ import {
   Sun,
   UserRound,
 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { getMyProfile } from "@/api/identity";
+import { useAuth } from "@/auth/use-auth";
 import { useCommandPalette } from "@/components/command-palette/command-palette";
 import { MobileNavTrigger } from "@/components/layout/mobile-nav";
 import { ChatUnreadBadge } from "@/components/notifications/chat-unread-badge";
 import { NotificationBell } from "@/components/notifications/notification-bell";
+import { useTheme } from "@/components/theme/theme-provider";
+import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -35,12 +39,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar } from "@/components/ui/avatar";
-import { getMyProfile } from "@/api/identity";
-import { useAuth } from "@/auth/use-auth";
-import { useSseStatus } from "@/sse/sse-context";
-import { useTheme } from "@/components/theme/theme-provider";
 import { cn } from "@/lib/cn";
+import { useSseStatus } from "@/sse/sse-context";
 
 // ─────────────────────────────────────────────────────────────────────
 // User dropdown helpers — match the dentalOS sidebar user-block pattern.

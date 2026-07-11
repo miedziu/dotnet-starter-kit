@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import {
   Activity,
@@ -18,6 +18,7 @@ import {
   Tag,
   X,
 } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import {
   AuditEventType,
   AuditSeverity,
@@ -34,12 +35,6 @@ import {
   type AuditDetailDto,
   type AuditSummaryDto,
 } from "@/api/audits";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Switch } from "@/components/ui/switch";
 import {
   EntityEmpty,
   EntityInitialsAvatar,
@@ -52,6 +47,9 @@ import {
   EntitySearch,
   EntityStatusBadge,
 } from "@/components/list";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Dialog,
   DialogClose,
@@ -60,7 +58,9 @@ import {
   DialogPortal,
   DialogTitle,
 } from "@/components/ui/dialog";
-import * as DialogPrimitive from "@radix-ui/react-dialog";
+import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/cn";
 
 const PAGE_SIZE = 25;

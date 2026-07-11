@@ -1,3 +1,6 @@
+import { useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useVirtualizer } from "@tanstack/react-virtual";
+import { ChevronDown } from "lucide-react";
 import {
   forwardRef,
   useCallback,
@@ -7,18 +10,15 @@ import {
   useRef,
   useState,
 } from "react";
-import { useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useVirtualizer } from "@tanstack/react-virtual";
-import { ChevronDown } from "lucide-react";
 import {
   listChannelMessages,
   listMessageReplies,
   type ChannelMemberDto,
   type MessageDto,
 } from "@/api/chat";
-import { useRealtimeEvent } from "@/realtime/realtime-context";
 import { canMerge, dayKey, dayRuleLabel } from "@/pages/chat/chat-utils";
 import { Message } from "@/pages/chat/message";
+import { useRealtimeEvent } from "@/realtime/realtime-context";
 
 export type MessageListHandle = {
   /** Scroll the feed to a message id in the loaded window and flash it.

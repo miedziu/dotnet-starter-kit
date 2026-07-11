@@ -1,7 +1,7 @@
-import { Link, useLocation, useNavigate } from "react-router-dom";
 import { ArrowLeft, FileQuestion, Home, Search } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useCommandPalette } from "@/components/command-palette/command-palette";
+import { Button } from "@/components/ui/button";
 
 /**
  * NotFoundPage — calm centered "page not found" card.

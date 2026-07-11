@@ -1,10 +1,4 @@
 import {
-  useEffect,
-  useState,
-  type FormEvent,
-} from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import {
   useMutation,
   useQuery,
   useQueryClient,
@@ -27,6 +21,12 @@ import {
   Tag,
   Trash2,
 } from "lucide-react";
+import {
+  useEffect,
+  useState,
+  type FormEvent,
+} from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 import {
   adjustProductStock,
@@ -45,6 +45,19 @@ import {
   type ProductDto,
   type UpdateProductInput,
 } from "@/api/catalog";
+import { ProductImageManager } from "@/components/file/product-image-manager";
+import {
+  Combobox,
+  EntityDetailAvatar,
+  EntityDetailBack,
+  EntityDetailHero,
+  EntityDetailMeta,
+  EntityDetailSection,
+  EntityDetailStat,
+  EntityStatusBadge,
+  ErrorBand,
+  Field,
+} from "@/components/list";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -59,19 +72,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Switch } from "@/components/ui/switch";
-import {
-  Combobox,
-  EntityDetailAvatar,
-  EntityDetailBack,
-  EntityDetailHero,
-  EntityDetailMeta,
-  EntityDetailSection,
-  EntityDetailStat,
-  EntityStatusBadge,
-  ErrorBand,
-  Field,
-} from "@/components/list";
-import { ProductImageManager } from "@/components/file/product-image-manager";
 import { cn } from "@/lib/cn";
 import {
   describe,

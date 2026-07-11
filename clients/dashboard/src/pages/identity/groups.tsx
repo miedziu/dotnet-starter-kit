@@ -1,5 +1,3 @@
-import { useEffect, useMemo, useState, type FormEvent } from "react";
-import { Link, useNavigate } from "react-router-dom";
 import {
   useMutation,
   useQuery,
@@ -12,25 +10,14 @@ import {
   Star,
   UsersRound,
 } from "lucide-react";
+import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import {
   createGroup,
   listGroups,
   type GroupDto,
 } from "@/api/identity";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Dialog,
-  DialogBody,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Switch } from "@/components/ui/switch";
 import {
   EntityEmpty,
   EntityInitialsAvatar,
@@ -44,6 +31,19 @@ import {
   EntityStatusBadge,
   Field,
 } from "@/components/list";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogBody,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/cn";
 import { describe } from "@/lib/list-helpers";
 

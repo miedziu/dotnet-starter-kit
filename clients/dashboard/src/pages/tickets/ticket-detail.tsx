@@ -1,10 +1,4 @@
 import {
-  useEffect,
-  useState,
-  type FormEvent,
-} from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import {
   useMutation,
   useQuery,
   useQueryClient,
@@ -26,8 +20,13 @@ import {
   UserCheck,
   UserX,
 } from "lucide-react";
+import {
+  useEffect,
+  useState,
+  type FormEvent,
+} from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
-import { useAuth } from "@/auth/use-auth";
 import {
   addTicketComment,
   assignTicket,
@@ -38,13 +37,19 @@ import {
   TICKET_PRIORITIES,
   type TicketDto,
 } from "@/api/tickets";
-import {
-  PRIORITY_LABEL,
-  PRIORITY_TONE,
-  STATUS_LABEL,
-  STATUS_TONE,
-} from "@/lib/ticket-enums";
+import { useAuth } from "@/auth/use-auth";
 import { UserPicker } from "@/components/identity/user-picker";
+import {
+  EntityDetailAvatar,
+  EntityDetailBack,
+  EntityDetailHero,
+  EntityDetailMeta,
+  EntityDetailSection,
+  EntityDetailStat,
+  EntityStatusBadge,
+  ErrorBand,
+  Field,
+} from "@/components/list";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -57,24 +62,19 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  EntityDetailAvatar,
-  EntityDetailBack,
-  EntityDetailHero,
-  EntityDetailMeta,
-  EntityDetailSection,
-  EntityDetailStat,
-  EntityStatusBadge,
-  ErrorBand,
-  Field,
-} from "@/components/list";
 import { cn } from "@/lib/cn";
-import { useUserDisplay } from "@/lib/use-user-display";
 import {
   describe,
   formatDate,
   formatRelative,
 } from "@/lib/list-helpers";
+import {
+  PRIORITY_LABEL,
+  PRIORITY_TONE,
+  STATUS_LABEL,
+  STATUS_TONE,
+} from "@/lib/ticket-enums";
+import { useUserDisplay } from "@/lib/use-user-display";
 
 type DialogState =
   | { mode: "closed" }

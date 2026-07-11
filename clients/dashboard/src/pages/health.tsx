@@ -1,4 +1,3 @@
-import { useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
   Activity,
@@ -17,9 +16,8 @@ import {
   Timer,
   Zap,
 } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { getReadiness, type HealthEntry, type HealthSnapshot, type HealthStatus } from "@/api/health";
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
 import {
   EntityStatusBadge,
   PageHero,
@@ -27,6 +25,8 @@ import {
   type EntityStatusTone,
   type ToneIconTileTone,
 } from "@/components/list";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/cn";
 
 // ────────────────────────────────────────────────────────────────────────

@@ -1,3 +1,4 @@
+import type { HubConnection } from "@microsoft/signalr";
 import {
   createContext,
   useCallback,
@@ -8,9 +9,8 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import type { HubConnection } from "@microsoft/signalr";
-import { env } from "@/env";
 import { tokenStore } from "@/auth/token-store";
+import { env } from "@/env";
 
 // SignalR is the heaviest single dep in the main shell (~37 KB gzip).
 // We import it dynamically inside the connect() flow so the bundle is

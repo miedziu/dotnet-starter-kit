@@ -1,5 +1,3 @@
-import { useMemo } from "react";
-import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import {
   ArrowUpRight,
@@ -8,6 +6,8 @@ import {
   Gauge,
   Receipt,
 } from "lucide-react";
+import { useMemo } from "react";
+import { Link } from "react-router-dom";
 import {
   getMyInvoices,
   getMyStatus,
@@ -20,8 +20,6 @@ import {
   type TenantStatusDto,
   type UsageSnapshotDto,
 } from "@/api/billing";
-import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
 import {
   EntityDetailSection,
   EntityPageHeader,
@@ -29,8 +27,10 @@ import {
   ErrorBand,
   type EntityStatusTone,
 } from "@/components/list";
-import { describe, formatDate, formatMoney } from "@/lib/list-helpers";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/cn";
+import { describe, formatDate, formatMoney } from "@/lib/list-helpers";
 
 // ────────────────────────────────────────────────────────────────────
 // Pure view helpers — module scope.

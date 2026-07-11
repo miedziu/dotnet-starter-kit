@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Hash, Lock, MessageCircle, Plus, Search, Users2, X } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import {
   ChannelType,
   createChannel,
@@ -9,6 +9,8 @@ import {
   type ChannelDto,
 } from "@/api/chat";
 import { searchUsers, type UserDto } from "@/api/identity";
+import { RealtimeStatusPill } from "@/components/realtime/realtime-status-pill";
+import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -21,13 +23,11 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Avatar } from "@/components/ui/avatar";
-import { RealtimeStatusPill } from "@/components/realtime/realtime-status-pill";
 import { cn } from "@/lib/cn";
 import { useUserDisplay } from "@/lib/use-user-display";
-import { usePresence } from "@/realtime/use-presence";
-import { useRealtimeEvent } from "@/realtime/realtime-context";
 import { channelTitle } from "@/pages/chat/chat-utils";
+import { useRealtimeEvent } from "@/realtime/realtime-context";
+import { usePresence } from "@/realtime/use-presence";
 
 /**
  * Editorial sidebar listing the user's channels grouped by type. Active row

@@ -1,9 +1,9 @@
 import { useCallback } from "react";
-import { useAuth } from "@/auth/use-auth";
-import { env } from "@/env";
 import { markSignedOut } from "@/auth/inactivity";
+import { useAuth } from "@/auth/use-auth";
 import { useInactivityTimeout } from "@/auth/use-inactivity-timeout";
 import { InactivityDialog } from "@/components/auth/inactivity-dialog";
+import { env } from "@/env";
 
 /**
  * InactivityGuard — mounted once inside the authenticated shell. Watches for

@@ -1,3 +1,4 @@
+import { Menu } from "lucide-react";
 import {
   createContext,
   useCallback,
@@ -8,15 +9,14 @@ import {
   type ReactNode,
 } from "react";
 import { useLocation } from "react-router-dom";
-import { Menu } from "lucide-react";
+import { findSectionForPath } from "@/components/layout/nav-data";
+import { SidebarNavBody } from "@/components/layout/sidebar";
 import {
   Sheet,
   SheetContent,
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { SidebarNavBody } from "@/components/layout/sidebar";
-import { findSectionForPath } from "@/components/layout/nav-data";
 import { cn } from "@/lib/cn";
 
 /**

@@ -1,7 +1,7 @@
-import { useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Bell, Check, MessageCircle } from "lucide-react";
+import { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   getUnreadCount,
   listNotifications,
@@ -9,15 +9,15 @@ import {
   markNotificationRead,
   type NotificationDto,
 } from "@/api/notifications";
-import { useRealtimeEvent } from "@/realtime/realtime-context";
+import { RealtimeStatusPill } from "@/components/realtime/realtime-status-pill";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { RealtimeStatusPill } from "@/components/realtime/realtime-status-pill";
 import { cn } from "@/lib/cn";
+import { useRealtimeEvent } from "@/realtime/realtime-context";
 
 /**
  * Bell icon + dropdown inbox. Calm header + scrollable list with a

@@ -1,6 +1,4 @@
-import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
 import {
   AlertCircle,
   Check,
@@ -16,6 +14,23 @@ import {
   Smartphone,
 } from "lucide-react";
 import QRCode from "qrcode";
+import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { toast } from "sonner";
+import {
+  changePassword,
+  disableTwoFactor,
+  enrollTwoFactor,
+  getMyProfile,
+  verifyEnrollTwoFactor,
+  type TwoFactorEnrollmentResponse,
+} from "@/api/identity";
+import {
+  getMySessions,
+  revokeAllOtherSessions,
+  revokeSession,
+  type UserSessionDto,
+} from "@/api/sessions";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -35,22 +50,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  changePassword,
-  disableTwoFactor,
-  enrollTwoFactor,
-  getMyProfile,
-  verifyEnrollTwoFactor,
-  type TwoFactorEnrollmentResponse,
-} from "@/api/identity";
-import {
-  getMySessions,
-  revokeAllOtherSessions,
-  revokeSession,
-  type UserSessionDto,
-} from "@/api/sessions";
 import { ApiRequestError } from "@/lib/api-client";
 import { cn } from "@/lib/cn";
 

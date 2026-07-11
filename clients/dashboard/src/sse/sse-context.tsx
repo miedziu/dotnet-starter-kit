@@ -8,8 +8,8 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { env } from "@/env";
 import { tokenStore } from "@/auth/token-store";
+import { env } from "@/env";
 import { issueSseToken } from "@/sse/sse-api";
 
 // Constant tenant for the tenantless UI

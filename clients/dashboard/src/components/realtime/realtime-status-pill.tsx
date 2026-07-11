@@ -1,5 +1,5 @@
-import { useRealtime } from "@/realtime/realtime-context";
 import { cn } from "@/lib/cn";
+import { useRealtime } from "@/realtime/realtime-context";
 
 const LABEL: Record<string, string> = {
   idle: "Offline",

@@ -1,5 +1,17 @@
-import { useEffect, useMemo, useState } from "react";
 import { Monitor, Moon, Palette, Sun } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import {
+  accents,
+  buildCustomBrandStops,
+  CUSTOM_ACCENT_ID,
+  ensureLazyFontsLoaded,
+  fonts,
+  type AccentOption,
+  type CustomAccentSpec,
+  type FontOption,
+} from "@/components/theme/appearance-options";
+import { useTheme, type ThemeMode } from "@/components/theme/theme-provider";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -16,19 +28,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { useTheme, type ThemeMode } from "@/components/theme/theme-provider";
-import {
-  accents,
-  buildCustomBrandStops,
-  CUSTOM_ACCENT_ID,
-  ensureLazyFontsLoaded,
-  fonts,
-  type AccentOption,
-  type CustomAccentSpec,
-  type FontOption,
-} from "@/components/theme/appearance-options";
 import { cn } from "@/lib/cn";
 
 const themeOptions: Array<{

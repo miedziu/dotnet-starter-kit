@@ -1,11 +1,10 @@
-import { useCallback, useEffect, useState } from "react";
-import { NavLink, useLocation } from "react-router-dom";
 import {
   ChevronDown,
   PanelLeftClose,
   PanelLeftOpen,
 } from "lucide-react";
-import { cn } from "@/lib/cn";
+import { useCallback, useEffect, useState } from "react";
+import { NavLink, useLocation } from "react-router-dom";
 import { useAuth } from "@/auth/use-auth";
 import {
   findSectionForPath,
@@ -16,6 +15,7 @@ import {
   type NavSection,
   type NavSpec,
 } from "@/components/layout/nav-data";
+import { cn } from "@/lib/cn";
 
 const COLLAPSED_KEY = "fsh.sidebar.collapsed";
 

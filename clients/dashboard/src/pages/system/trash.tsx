@@ -1,5 +1,3 @@
-import { useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   FileText,
@@ -10,6 +8,8 @@ import {
   Ticket,
   Trash2,
 } from "lucide-react";
+import { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import {
   listTrashedBrands,
@@ -24,20 +24,26 @@ import {
   type ProductDto,
 } from "@/api/catalog";
 import {
-  listTrashedTickets,
-  restoreTicket,
-  type TicketDto,
-} from "@/api/tickets";
-import {
   listTrashedFiles,
   restoreFile,
   type FileAssetDto,
 } from "@/api/files";
+import {
+  listTrashedTickets,
+  restoreTicket,
+  type TicketDto,
+} from "@/api/tickets";
 import { useAuth } from "@/auth/use-auth";
 import {
-  TRASH_TAB_PERMISSIONS,
-  type TrashTabKey,
-} from "@/lib/trash-permissions";
+  EntityEmpty,
+  EntityInitialsAvatar,
+  EntityListCard,
+  EntityListHeader,
+  EntityListLoading,
+  EntityListRow,
+  EntityPageHeader,
+  EntityPager,
+} from "@/components/list";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -50,20 +56,14 @@ import {
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/cn";
 import {
-  EntityEmpty,
-  EntityInitialsAvatar,
-  EntityListCard,
-  EntityListHeader,
-  EntityListLoading,
-  EntityListRow,
-  EntityPageHeader,
-  EntityPager,
-} from "@/components/list";
-import {
   describe,
   formatDateMono,
   formatRelative,
 } from "@/lib/list-helpers";
+import {
+  TRASH_TAB_PERMISSIONS,
+  type TrashTabKey,
+} from "@/lib/trash-permissions";
 
 const PAGE_SIZE = 20;
 const DESKTOP_COLS = "grid-cols-[1.5fr_140px_140px_100px]";

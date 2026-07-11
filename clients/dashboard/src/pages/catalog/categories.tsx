@@ -1,10 +1,4 @@
 import {
-  useEffect,
-  useMemo,
-  useState,
-  type FormEvent,
-} from "react";
-import {
   keepPreviousData,
   useMutation,
   useQuery,
@@ -20,6 +14,12 @@ import {
   Search,
   Trash2,
 } from "lucide-react";
+import {
+  useEffect,
+  useMemo,
+  useState,
+  type FormEvent,
+} from "react";
 import { toast } from "sonner";
 import {
   createCategory,
@@ -32,18 +32,6 @@ import {
   type CreateCategoryInput,
   type UpdateCategoryInput,
 } from "@/api/catalog";
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogBody,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import {
   Combobox,
   EntityEmpty,
@@ -58,6 +46,18 @@ import {
   EntitySearch,
   Field,
 } from "@/components/list";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogBody,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/cn";
 import {
   describe,

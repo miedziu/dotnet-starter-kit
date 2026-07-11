@@ -1,18 +1,18 @@
 import { Outlet } from "react-router-dom";
-import { Sidebar } from "@/components/layout/sidebar";
-import { Topbar } from "@/components/layout/topbar";
-import { ImpersonationBanner } from "@/components/layout/impersonation-banner";
+import { InactivityGuard } from "@/components/auth/inactivity-guard";
+import { CommandPaletteRoot } from "@/components/command-palette/command-palette";
 import { ExpiryBanner } from "@/components/layout/expiry-banner";
+import { ImpersonationBanner } from "@/components/layout/impersonation-banner";
 import {
   MobileNavProvider,
   MobileNavRoot,
 } from "@/components/layout/mobile-nav";
-import { SseProvider } from "@/sse/sse-context";
-import { RealtimeProvider } from "@/realtime/realtime-context";
+import { Sidebar } from "@/components/layout/sidebar";
+import { Topbar } from "@/components/layout/topbar";
 import { ChatGlobalNotifier } from "@/components/notifications/chat-global-notifier";
-import { CommandPaletteRoot } from "@/components/command-palette/command-palette";
-import { InactivityGuard } from "@/components/auth/inactivity-guard";
 import { cn } from "@/lib/cn";
+import { RealtimeProvider } from "@/realtime/realtime-context";
+import { SseProvider } from "@/sse/sse-context";
 
 export function AppShell() {
   return (

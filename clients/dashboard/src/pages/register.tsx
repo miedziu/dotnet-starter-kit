@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import {
   AlertCircle,
   ArrowRight,
@@ -8,7 +8,7 @@ import {
   Loader2,
   UserPlus,
 } from "lucide-react";
-import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import {
   registerUserStep1,
@@ -20,7 +20,6 @@ import { AuthHeadline, AuthShell } from "@/components/auth/auth-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { setPendingReferralHighlight } from "@/hooks/use-referral";
 import { ApiRequestError } from "@/lib/api-client";
 import { cn } from "@/lib/cn";
 
@@ -76,7 +75,6 @@ const STRENGTH_META: Record<Strength, { label: string; fill: string; bar: string
 export function RegisterPage() {
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
 
   // Step tracking
   const [currentStep, setCurrentStep] = useState<RegistrationStep>(1);

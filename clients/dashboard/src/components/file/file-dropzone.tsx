@@ -1,10 +1,10 @@
-import { useCallback, useRef, useState } from "react";
 import { AlertCircle, CheckCircle2, CloudUpload, Loader2, X } from "lucide-react";
+import { useCallback, useRef, useState } from "react";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/cn";
-import { useFileUpload, formatBytes, type UploadOptions } from "@/hooks/use-file-upload";
 import type { FileAssetDto } from "@/api/files";
+import { Button } from "@/components/ui/button";
+import { useFileUpload, formatBytes, type UploadOptions } from "@/hooks/use-file-upload";
+import { cn } from "@/lib/cn";
 
 type Props = {
   /** Server-side category that decides allowed extensions + size cap (e.g. Image, Document, Archive). */

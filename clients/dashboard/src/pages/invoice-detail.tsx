@@ -1,8 +1,8 @@
+import { useQuery } from "@tanstack/react-query";
+import { Download, FileText, Receipt } from "lucide-react";
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Download, FileText, Receipt } from "lucide-react";
 import {
   downloadInvoicePdf,
   getMyInvoice,
@@ -10,8 +10,6 @@ import {
   type InvoiceLineItemDto,
   type InvoiceStatus,
 } from "@/api/billing";
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
 import {
   EntityDetailBack,
   EntityDetailSection,
@@ -19,6 +17,8 @@ import {
   ErrorBand,
   type EntityStatusTone,
 } from "@/components/list";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { describe, formatDate, formatMoney } from "@/lib/list-helpers";
 
 // ────────────────────────────────────────────────────────────────────
