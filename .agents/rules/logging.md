@@ -8,7 +8,7 @@
 
 ```csharp
 // good
-_logger.LogInformation("Cleaned up {Count} expired sessions for tenant {TenantId}", count, tenantId);
+_logger.LogInformation("Cleaned up {Count} expired sessions", count);
 // also good (hot path) — see OutboxDispatcher, InMemoryEventBus, AppHub
 [LoggerMessage(Level = LogLevel.Warning, Message = "Outbox message {MessageId} dead-lettered")]
 private partial void LogDeadLettered(Guid messageId);
@@ -20,11 +20,11 @@ Build runs with `TreatWarningsAsErrors` — interpolated log calls won't even co
 
 ## Serilog
 
-`AddHeroLogging()` reads the `Serilog` config section (Console sink by default), attaches `HttpRequestContextEnricher` (adds `RequestMethod`/`RequestPath`/`UserAgent` + `UserId`/`Tenant`/`UserEmail` when authenticated), overrides Microsoft/EF/Hangfire/Finbuckle to higher levels, and excludes the `ExceptionHandlerMiddleware` source (the global handler logs exceptions itself — don't double-log).
+`AddHeroLogging()` reads the `Serilog` config section (Console sink by default), attaches `HttpRequestContextEnricher` (adds `RequestMethod`/`RequestPath`/`UserAgent` + `UserId`/`UserEmail` when authenticated), overrides Microsoft/EF/Hangfire to higher levels, and excludes the `ExceptionHandlerMiddleware` source (the global handler logs exceptions itself — don't double-log).
 
 ## Correlation
 
-`X-Correlation-ID` request header (falls back to `HttpContext.TraceIdentifier`), surfaced in every ProblemDetails and pushed to the Serilog `LogContext`. `CurrentUserMiddleware` tags the current `Activity` with `fsh.user_id` / `fsh.tenant_id` / `fsh.correlation_id`.
+`X-Correlation-ID` request header (falls back to `HttpContext.TraceIdentifier`), surfaced in every ProblemDetails and pushed to the Serilog `LogContext`. `CurrentUserMiddleware` tags the current `Activity` with `fsh.user_id` / `fsh.correlation_id`.
 
 ## OpenTelemetry
 

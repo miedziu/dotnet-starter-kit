@@ -64,6 +64,45 @@ export type UpsertRoleInput = {
   description?: string;
 };
 
+// Multi-step registration types
+
+export type RegisterUserStep1Input = {
+  email: string;
+  password: string;
+  confirmPassword: string;
+  referralUsernames?: string[];
+};
+
+export type RegisterUserStep1Response = {
+  userId: string;
+  message?: string;
+};
+
+export type RegisterUserStep2Input = {
+  userId: string;
+  voivodeshipId?: number | null;
+  districtId?: number | null;
+  communeId?: number | null;
+};
+
+export type RegisterUserStep2Response = {
+  userId: string;
+  requiresProfileCompletion: boolean;
+};
+
+export type RegisterUserStep3Input = {
+  userId: string;
+  firstName: string;
+  lastName: string;
+  userName: string;
+};
+
+export type RegisterUserStep3Response = {
+  userId: string;
+  userName: string;
+  message?: string;
+};
+
 // -----------------------------
 // Users
 // -----------------------------
@@ -155,6 +194,30 @@ export async function registerUser(input: RegisterUserInput): Promise<RegisterUs
   return apiFetch<RegisterUserResponse>(`/api/v1/identity/register`, {
     method: "POST",
     skipAuth: true,
+    body: JSON.stringify(input),
+  });
+}
+
+// Multi-step registration functions
+
+export async function registerUserStep1(input: RegisterUserStep1Input): Promise<RegisterUserStep1Response> {
+  return apiFetch<RegisterUserStep1Response>(`/api/v1/identity/register/step1`, {
+    method: "POST",
+    skipAuth: true,
+    body: JSON.stringify(input),
+  });
+}
+
+export async function registerUserStep2(input: RegisterUserStep2Input): Promise<RegisterUserStep2Response> {
+  return apiFetch<RegisterUserStep2Response>(`/api/v1/identity/register/step2`, {
+    method: "PUT",
+    body: JSON.stringify(input),
+  });
+}
+
+export async function registerUserStep3(input: RegisterUserStep3Input): Promise<RegisterUserStep3Response> {
+  return apiFetch<RegisterUserStep3Response>(`/api/v1/identity/register/step3`, {
+    method: "PUT",
     body: JSON.stringify(input),
   });
 }

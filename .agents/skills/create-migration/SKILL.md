@@ -54,7 +54,7 @@ table, and renames surfacing as drop+add (data loss). Adjust the model or hand-e
 
 ## Step 4 — apply
 
-Preferred (the canonical path — migrates the tenant catalog then each tenant's per-module schema):
+Preferred (the canonical path — migrates the catalog then each module schema):
 
 ```bash
 dotnet run --project src/Host/FSH.Starter.DbMigrator -- apply

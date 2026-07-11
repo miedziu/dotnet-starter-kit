@@ -192,6 +192,8 @@ namespace FSH.Starter.Migrations.PostgreSQL.Identity
                     RefreshToken = table.Column<string>(type: "text", nullable: true),
                     RefreshTokenExpiryTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     ObjectId = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    DistrictId = table.Column<short>(type: "smallint", nullable: true),
+                    CommuneId = table.Column<short>(type: "smallint", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     LastPasswordChangeDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UserName = table.Column<string>(type: "text", nullable: true),

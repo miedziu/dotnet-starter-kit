@@ -1,7 +1,6 @@
 # FSH DbMigrator
 
-One-shot console application that applies EF Core migrations across the
-tenant catalog and every tenant's per-module databases, then exits.
+One-shot console application that applies EF Core migrations across the catalog and every module databases, then exits.
 
 ## Why a separate project
 
@@ -22,13 +21,10 @@ runtime app starts. This project is that step.
 ## Usage
 
 ```bash
-# Default — apply pending migrations for the tenant catalog + every tenant.
+# Default — apply pending migrations for the catalog.
 dotnet run --project src/Host/FSH.Starter.DbMigrator -- apply
 
-# Apply only to one tenant.
-dotnet run --project src/Host/FSH.Starter.DbMigrator -- apply --tenant root
-
-# Apply only the tenant catalog (no per-tenant pass).
+# Apply only the catalog.
 dotnet run --project src/Host/FSH.Starter.DbMigrator -- apply --catalog-only
 
 # Preview what would run without touching the database.
@@ -40,7 +36,7 @@ dotnet run --project src/Host/FSH.Starter.DbMigrator -- apply --seed
 # Just the seed step (assumes schema is already current).
 dotnet run --project src/Host/FSH.Starter.DbMigrator -- seed
 
-# Dev only — provision the demo tenants (acme, globex) with users,
+# Dev only — provision the users,
 # custom roles, sample catalog, tickets, and chat. Hard-refuses outside
 # Development. Idempotent: safe to re-run.
 DOTNET_ENVIRONMENT=Development \
@@ -141,17 +137,14 @@ schema OR data. The two convenient ways to run it locally are:
   dotnet run --project src/Host/FSH.Starter.Api
   ```
 
-`seed-demo` is the **only** way to get the demo tenants and their
-users / catalog / tickets / chat. Fresh tenants created via
-`POST /api/v1/tenants` come up with just a tenant admin user — no
-catalogue, no demo content. This matches production behaviour.
+`seed-demo` is the **only** way to get the demo users / catalog / tickets / chat.
 
 ## API behavior when schema is behind
 
 If the API boots against a database whose schema is behind the running
-build, the `db:tenants-migrations` health check returns `Unhealthy`
+build, the `db:migrations` health check returns `Unhealthy`
 and `GET /health/ready` returns `503 Service Unavailable` with the
-list of pending tenants + migration names in the response body.
+list of pending  migration names in the response body.
 `GET /health/live` continues to return `200 OK` because the process
 itself is alive — so Kubernetes will not crash-loop the pod, but the
 readiness probe will keep it out of rotation until DbMigrator runs.
@@ -164,17 +157,11 @@ errors per request.
 
 1. Builds the same DI container the API does (every module's
    `ConfigureServices`), with web-only concerns (CORS, OpenAPI, jobs,
-   mailing, SSE, realtime, OpenTelemetry, quotas, idempotency)
+   mailing, SSE, realtime, OpenTelemetry, idempotency)
    disabled.
 2. Removes every `IHostedService` so background workers don't fight
    with the migrator.
-3. Applies `TenantDbContext` migrations and seeds the root tenant if
-   missing.
-4. Reads every `AppTenantInfo` from the catalog and, for each, calls
-   `ITenantService.MigrateTenantAsync` (and `SeedTenantAsync` if
-   `--seed` is set) which walks every registered `IDbInitializer`
-   inside a scoped multi-tenant context.
+3. Applies migrations and seeds the root if missing.
 
-The per-tenant pass reuses `TenantService.MigrateTenantAsync` — the
-exact code path the runtime app uses today — so behavior is identical
+The exact code path the runtime app uses today — so behavior is identical
 between the migrator and the API's startup pass when both are enabled.

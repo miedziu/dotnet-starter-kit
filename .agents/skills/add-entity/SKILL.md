@@ -11,17 +11,15 @@ events. DB conventions: `.agents/rules/database.md`.
 
 ## Entity — `AggregateRoot<Guid>` (or `BaseEntity<Guid>`)
 
-`BaseEntity<TId>` gives only `Id` + domain-event machinery. Audit/tenant/soft-delete are **opt-in via
+`BaseEntity<TId>` gives only `Id` + domain-event machinery. Audit/soft-delete are **opt-in via
 marker interfaces** (the base does NOT carry those fields). New ids use **`Guid.CreateVersion7()`**.
 
 ```csharp
-public sealed class {Entity} : AggregateRoot<Guid>, IHasTenant, IAuditableEntity, ISoftDeletable
+public sealed class {Entity} : AggregateRoot<Guid>, IAuditableEntity, ISoftDeletable
 {
     public string Name { get; private set; } = default!;
     public Money Price { get; private set; } = default!;
 
-    // IHasTenant
-    public string TenantId { get; private set; } = default!;
     // IAuditableEntity
     public DateTimeOffset CreatedOnUtc { get; set; }
     public string? CreatedBy { get; set; }
@@ -53,8 +51,7 @@ public sealed class {Entity} : AggregateRoot<Guid>, IHasTenant, IAuditableEntity
 }
 ```
 
-Notes: setters are `private set`; `TenantId`/audit/soft-delete members are settable by the framework
-(interceptor + Finbuckle) so they aren't `private set`. Use `Guid.CreateVersion7()`, never `Guid.NewGuid()`.
+Notes: setters are `private set`; Use `Guid.CreateVersion7()`, never `Guid.NewGuid()`.
 
 ## Domain event — inherit `DomainEvent` (abstract record)
 
@@ -93,7 +90,7 @@ public sealed class {Entity}Configuration : IEntityTypeConfiguration<{Entity}>
 }
 ```
 
-- **Do NOT add a manual `HasQueryFilter` for soft-delete or tenant** — `BaseDbContext` applies both automatically.
+- **Do NOT add a manual `HasQueryFilter` for soft-delete** — `BaseDbContext` applies both automatically.
 - A child entity reached only via a parent nav-collection needs `builder.Property(x => x.Id).ValueGeneratedNever()` in **its** config, or EF inserts it as `Modified` → 0-row UPDATE. See `database.md`.
 
 ## Register in the module DbContext
@@ -119,7 +116,7 @@ dotnet ef migrations add Add{Entity} \
 
 ## Checklist
 
-- [ ] `sealed`, `AggregateRoot<Guid>` (+ `IHasTenant`/`IAuditableEntity`/`ISoftDeletable` as needed), private ctor, static `Create` using `Guid.CreateVersion7()`
+- [ ] `sealed`, `AggregateRoot<Guid>` (+ `IAuditableEntity`/`ISoftDeletable` as needed), private ctor, static `Create` using `Guid.CreateVersion7()`
 - [ ] Domain event inherits `DomainEvent`; raised via `DomainEvent.Create` + `AddDomainEvent`
-- [ ] EF config: no manual soft-delete/tenant filter; `ValueGeneratedNever()` on nav-collection children
+- [ ] EF config: no manual soft-delete filter; `ValueGeneratedNever()` on nav-collection children
 - [ ] `DbSet` added; build green; migration created with `--context {X}DbContext`

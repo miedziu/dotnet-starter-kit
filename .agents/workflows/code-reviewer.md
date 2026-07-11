@@ -14,21 +14,21 @@ playbook is the review procedure, not a second copy of the rules.
 
 ## Checklist (high-signal)
 **Boundaries / structure**
-- Cross-module references go only through `.Contracts` (never another module's runtime). Enforced by `Architecture.Tests`.
+- Cross-module references go only through `.Contracts` (never another module's runtime).
 - `src/BuildingBlocks/**` not modified without explicit approval (flag if it is).
 - New module → registered in **all four** places (Mediator + `moduleAssemblies` in Api **and** DbMigrator).
 
 **CQRS / Mediator (not MediatR)**
 - Command/Query in the Contracts project; `using Mediator;` (`ICommand<T>`/`IQuery<T>`).
 - Handler `public sealed`, `ICommandHandler<,>`/`IQueryHandler<,>`, returns `ValueTask<T>`, `.ConfigureAwait(false)`, injects the `{X}DbContext` (no generic repository).
-- Every command + paginated query has a `{Name}Validator` (Architecture.Tests enforces).
+- Every command + paginated query has a `{Name}Validator`.
 
 **Endpoints**
 - `internal static …Map{Feature}Endpoint`; `.RequirePermission(...)` (or deliberate `.AllowAnonymous()`); `.WithName`/`.WithSummary`. Returns `Results.Ok(...)`/`TypedResults`. `.WithIdempotency()` on replay-safe POSTs. No duplicate `IRequiredPermissionMetadata`.
 
 **Data**
 - Entities: `sealed`, `Guid.CreateVersion7()`, private ctor + factory, behavior via methods. Marker interfaces use `CreatedOnUtc`/`IsDeleted`/`DeletedOnUtc`.
-- DbContext extends `BaseDbContext`, `base.OnModelCreating` last; **no manual tenant/soft-delete query filter**. Nav-collection children need `ValueGeneratedNever()`. `AsNoTracking` on read-only queries only (not read-then-save).
+- DbContext extends `BaseDbContext`, `base.OnModelCreating` last; **no manual soft-delete query filter**. Nav-collection children need `ValueGeneratedNever()`. `AsNoTracking` on read-only queries only (not read-then-save).
 
 **Cross-cutting**
 - **Structured logging only** — no `$"..."` interpolation in log calls.
@@ -62,5 +62,4 @@ dotnet build src/FSH.Starter.slnx 2>&1 | grep -E "warning|error"               #
 
 ### Verification
 dotnet build src/FSH.Starter.slnx   → expect 0 warnings
-dotnet test src/FSH.Starter.slnx    (integration tests need Docker)
 ```

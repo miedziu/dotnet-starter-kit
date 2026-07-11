@@ -67,7 +67,7 @@ public sealed class Search{Entities}QueryHandler({X}DbContext dbContext)
 }
 ```
 
-Tenant + soft-delete filters apply automatically — don't re-filter them. Project to a DTO (`.ToDto()` mapper); never return entities.
+Soft-delete filters apply automatically — don't re-filter them. Project to a DTO (`.ToDto()` mapper); never return entities.
 
 ## Single-entity query
 
@@ -102,7 +102,7 @@ endpoints.MapGet("/{entities}/{id:guid}", async (Guid id,
     .WithName("Get{Entity}").RequirePermission({X}Permissions.{Entities}.View);
 ```
 
-A paginated query **needs a validator** (`Search{Entities}QueryValidator`: `PageNumber >= 1`, `PageSize` in `[1,100]`) — enforced by `Architecture.Tests`.
+A paginated query **needs a validator** (`Search{Entities}QueryValidator`: `PageNumber >= 1`, `PageSize` in `[1,100]`).
 
 ## When to use a Specification instead
 

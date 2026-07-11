@@ -30,8 +30,4 @@ These are the model for background loops: stay alive, log with context, never sw
 
 ## Tokens / sessions
 
-Login `POST /api/v1/identity/token/issue` (header `X-FSH-App` enforces the operator/tenant app boundary). Refresh `POST /api/v1/identity/token/refresh` cross-checks subject. Session rows are written best-effort during login — failures log a warning and login still succeeds. Admin can't demote/deactivate the last admin or the root-tenant seed admin (guards in `UserRoleService`/`UserStatusService`).
-
-## Tests
-
-`Identity.Tests` is the largest unit suite. When asserting a forwarded `CancellationToken`, assert the specific token (see `testing.md`).
+Login `POST /api/v1/identity/token/issue` (header `X-FSH-App` enforces the operator app boundary). Refresh `POST /api/v1/identity/token/refresh` cross-checks subject. Session rows are written best-effort during login — failures log a warning and login still succeeds. Admin can't demote/deactivate the last admin or the seed admin (guards in `UserRoleService`/`UserStatusService`).

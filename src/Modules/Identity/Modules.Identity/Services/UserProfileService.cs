@@ -45,6 +45,8 @@ internal sealed class UserProfileService(
             EmailConfirmed = user.EmailConfirmed,
             PhoneNumber = user.PhoneNumber,
             TwoFactorEnabled = user.TwoFactorEnabled,
+            DistrictId = user.DistrictId,
+            CommuneId = user.CommuneId,
         };
     }
 
@@ -65,7 +67,9 @@ internal sealed class UserProfileService(
                 FirstName = user.FirstName,
                 LastName = user.LastName,
                 ImageUrl = ResolveImageUrl(user.ImageUrl),
-                IsActive = user.IsActive
+                IsActive = user.IsActive,
+                DistrictId = user.DistrictId,
+                CommuneId = user.CommuneId
             });
         }
 

@@ -17,6 +17,10 @@ public class FshUser : IdentityUser, IHasDomainEvents
 
     public string? ObjectId { get; set; }
 
+    // Address fields
+    public short? DistrictId { get; set; }
+    public short? CommuneId { get; set; }
+
     public DateTime CreatedAt { get; set; } = TimeProvider.System.GetUtcNow().UtcDateTime;
 
     /// <summary>Timestamp when the user last changed their password</summary>

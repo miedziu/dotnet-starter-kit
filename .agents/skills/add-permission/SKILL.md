@@ -1,6 +1,6 @@
 ---
 name: add-permission
-description: Add a new permission end-to-end — server constant + endpoint gate, and (admin app) mirror it into the permissions catalog + route guard. Use when a new endpoint needs authorization. See modules/identity.md + frontend/admin.md.
+description: Add a new permission end-to-end — server constant + endpoint gate, and (admin app) mirror it into the permissions catalog + route guard. Use when a new endpoint needs authorization. See modules/identity.md .
 argument-hint: [ModuleName] [Resource] [Action]
 ---
 
@@ -36,28 +36,12 @@ The module already calls `PermissionConstants.Register({X}Permissions.All)` in `
 
 ⚠️ `RequiredPermissionAttribute` implements `IRequiredPermissionMetadata`. **Never let a second/duplicate of that interface exist** — it silently disables **all** `.RequirePermission()` gates app-wide. (See `.agents/rules/modules/identity.md`.)
 
-## Step 3 — (admin only) mirror it
-
-`clients/admin/src/lib/permissions.ts` — add the matching string to the frozen tree (no runtime catalog endpoint exists; mirror by hand):
-
-```ts
-export const {Module}Permissions = Object.freeze({
-  {Resources}: { View: "Permissions.{Resources}.View", Create: "Permissions.{Resources}.Create" },
-} as const);
-```
-
-If it should appear in the Role editor UI, add a `PERMISSION_CATALOG` entry (`{ name, description, root?, basic? }` under the right category group).
-
-## Step 4 — (admin only) gate the route
+## Step 3 — (admin only) gate the route
 
 ```tsx
 { path: "{resources}/new",
   element: <RouteGuard perms={[{Module}Permissions.{Resources}.Create]}><Create{Resource}Page /></RouteGuard> },
 ```
-
-## Step 5 — (admin only) seed it in tests
-
-So `RouteGuard` passes on first paint, add the new permission to the test seed set (`ADMIN_PERMS` in `clients/admin/tests/helpers/shell-mocks.ts`, used by `seedAuthedSession`).
 
 ## Dashboard
 
@@ -68,5 +52,4 @@ No mirror, no `RouteGuard`. The JWT carries only role names — the app fetches 
 - [ ] Server constant added to `{X}Permissions` **and** its `All` collection
 - [ ] Endpoint gated with `.RequirePermission(...)`; no duplicate `IRequiredPermissionMetadata`
 - [ ] (admin) mirrored in `lib/permissions.ts` (+ `PERMISSION_CATALOG` if role-editor-visible)
-- [ ] (admin) route wrapped in `<RouteGuard perms={[…]}>`; permission added to `ADMIN_PERMS` test seed
-- [ ] Build green; admin `test:e2e` green
+- [ ] (admin) route wrapped in `<RouteGuard perms={[…]}>`; permission added to `ADMIN_PERMS` seed

@@ -5,6 +5,7 @@ using FSH.Framework.Jobs.Services;
 using FSH.Framework.Mailing;
 using FSH.Framework.Mailing.Services;
 using FSH.Framework.Shared.Constants;
+using FSH.Modules.Identity.Contracts.DTOs;
 using FSH.Modules.Identity.Contracts.Events;
 using FSH.Modules.Identity.Contracts.Services;
 using FSH.Modules.Identity.Data;
@@ -27,6 +28,153 @@ internal sealed class UserRegistrationService(
     IMailService mailService,
     IOutboxStore outboxStore) : IUserRegistrationService
 {
+    public async Task<string> RegisterStep1Async(
+        string email,
+        string password,
+        string confirmPassword,
+        string origin,
+        string[]? referralUsernames = null,
+        CancellationToken cancellationToken = default)
+    {
+        ValidatePasswordMatch(password, confirmPassword);
+
+        // Check if email already exists
+        if (await userManager.FindByEmailAsync(email) is not null)
+        {
+            throw new CustomException(
+                "An error occurred while registering the user.",
+                ["Email is already in use."],
+                HttpStatusCode.BadRequest);
+        }
+
+        // Use explicit transaction to ensure all operations are atomic
+        await using var transaction = await db.Database.BeginTransactionAsync(cancellationToken);
+
+        FshUser? user = null;
+        try
+        {
+            // Create user with UserManager - this saves the user immediately
+            user = await CreateUserWithPasswordAsync(email, password);
+
+            // Assign role and groups within transaction
+            await AssignDefaultRoleAndGroupsAsync(user, "System", cancellationToken);
+
+            // Process referral usernames
+            if (referralUsernames?.Length > 0)
+            {
+                await ProcessReferralsAsync(user.Id, referralUsernames, cancellationToken);
+            }
+
+            // Send confirmation email (background job - not part of transaction)
+            await SendConfirmationEmailAsync(user, origin, cancellationToken);
+
+            // Record registration and add outbox message
+            await PublishUserRegisteredAsync(user, "Identity", cancellationToken);
+
+            await db.SaveChangesAsync(cancellationToken);
+            await transaction.CommitAsync(cancellationToken);
+
+            return user.Id;
+        }
+        catch
+        {
+            // Rollback transaction
+            await transaction.RollbackAsync(cancellationToken);
+
+            // Compensation: delete the user if it was created
+            if (user is not null)
+            {
+                var deleteResult = await userManager.DeleteAsync(user);
+                if (!deleteResult.Succeeded)
+                {
+                    // Log the cleanup failure but don't throw - the original exception is more important
+                    // In production, you'd want to log this to an error tracking system
+                }
+            }
+
+            throw;
+        }
+    }
+
+    public async Task<bool> UpdateUserAddressAsync(
+        string userId,
+        short? districtId,
+        short? communeId,
+        CancellationToken cancellationToken = default)
+    {
+        var user = await userManager.Users
+            .FirstOrDefaultAsync(u => u.Id == userId, cancellationToken);
+
+        if (user is null)
+        {
+            throw new NotFoundException($"User {userId} was not found.");
+        }
+
+        user.DistrictId = districtId;
+        user.CommuneId = communeId;
+
+        var result = await userManager.UpdateAsync(user);
+        if (!result.Succeeded)
+        {
+            var errors = result.Errors.Select(e => e.Description).ToList();
+            throw new CustomException(
+                "Failed to update user address.",
+                errors,
+                HttpStatusCode.BadRequest);
+        }
+
+        // Return true if profile is complete (has all required fields)
+        return !string.IsNullOrEmpty(user.FirstName) &&
+               !string.IsNullOrEmpty(user.LastName) &&
+               !string.IsNullOrEmpty(user.UserName);
+    }
+
+    public async Task<UserDto> UpdateUserProfileAsync(
+        string userId,
+        string firstName,
+        string lastName,
+        string userName,
+        CancellationToken cancellationToken = default)
+    {
+        var user = await userManager.Users
+            .FirstOrDefaultAsync(u => u.Id == userId, cancellationToken);
+
+        if (user is null)
+        {
+            throw new NotFoundException($"User {userId} was not found.");
+        }
+
+        user.FirstName = firstName;
+        user.LastName = lastName;
+        user.UserName = userName;
+
+        var result = await userManager.UpdateAsync(user);
+        if (!result.Succeeded)
+        {
+            var errors = result.Errors.Select(e => e.Description).ToList();
+            throw new CustomException(
+                "Failed to update user profile.",
+                errors,
+                HttpStatusCode.BadRequest);
+        }
+
+        return new UserDto
+        {
+            Id = user.Id,
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            UserName = user.UserName,
+            Email = user.Email,
+            IsActive = user.IsActive,
+            EmailConfirmed = user.EmailConfirmed,
+            PhoneNumber = user.PhoneNumber,
+            ImageUrl = user.ImageUrl?.ToString(),
+            TwoFactorEnabled = user.TwoFactorEnabled,
+            DistrictId = user.DistrictId,
+            CommuneId = user.CommuneId
+        };
+    }
+
     public async Task<string> GetOrCreateFromPrincipalAsync(ClaimsPrincipal principal, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(principal);
@@ -70,7 +218,7 @@ internal sealed class UserRegistrationService(
             user = await CreateUserWithPasswordAsync(firstName, lastName, email, userName, password, phoneNumber);
 
             // Assign role and groups within transaction
-        	await AssignDefaultRoleAndGroupsAsync(user, "System", cancellationToken);
+            await AssignDefaultRoleAndGroupsAsync(user, "System", cancellationToken);
 
             // Process referral usernames
             if (referralUsernames?.Length > 0)
@@ -329,6 +477,32 @@ internal sealed class UserRegistrationService(
             // Identity create failures (duplicate email/username, password policy, …) are
             // client-input errors, not server faults — surface them as 400 with the specific
             // reasons so the caller sees *why* registration failed, not a bare 500.
+            var errors = result.Errors.Select(error => error.Description).ToList();
+            throw new CustomException(
+                "Unable to register the user.",
+                errors,
+                HttpStatusCode.BadRequest);
+        }
+
+        return user;
+    }
+
+    private async Task<FshUser> CreateUserWithPasswordAsync(
+        string email,
+        string password)
+    {
+        var user = new FshUser
+        {
+            Email = email,
+            CreatedAt = TimeProvider.System.GetUtcNow().UtcDateTime,
+            IsActive = true,
+            EmailConfirmed = false,
+            PhoneNumberConfirmed = false,
+        };
+
+        var result = await userManager.CreateAsync(user, password);
+        if (!result.Succeeded)
+        {
             var errors = result.Errors.Select(error => error.Description).ToList();
             throw new CustomException(
                 "Unable to register the user.",

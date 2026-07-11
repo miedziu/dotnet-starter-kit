@@ -8,7 +8,7 @@ Slack-style messaging: 1:1 DMs, group DMs, named channels, threads, reactions, m
 ## Gotchas
 
 - **EF value-generation for nav children** — `MessageConfiguration` sets `Property(x => x.Id).ValueGeneratedNever()` for child collections (attachments/mentions/reactions). The domain assigns `Guid.CreateVersion7()` in factories; without this EF treats nav-collection children as `Modified` → 0-row UPDATE instead of INSERT. See `database.md`.
-- `ChatDbContext` calls **`base.OnModelCreating` LAST** so tenant auto-apply sees the configured child types.
+- `ChatDbContext` calls **`base.OnModelCreating` LAST** so auto-apply sees the configured child types.
 - **`ChannelAuthorization`** (`Features/v1/Internal/`): `RequireMember` throws **NotFound (404)** (not 403) so non-members can't probe channel existence; `RequireAdmin` throws `ForbiddenException`. Use these in every channel/message handler.
 - **SignalR via `IHubContext<AppHub>`** (the shared hub in BuildingBlocks), groups `channel:{id}`. The hub reads the user via `Context.User`, not `ICurrentUser` (see `realtime.md`). Chat registers `IChannelMembershipChecker`/`IUserChannelLookup` adapters so the shared hub can authorize channel groups.
 - SendMessage publishes `MentionedInChannelIntegrationEvent` **per distinct mentioned user**; Notifications consumes it.

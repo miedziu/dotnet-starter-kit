@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FSH.Starter.Migrations.PostgreSQL.Identity
 {
     [DbContext(typeof(IdentityDbContext))]
-    [Migration("20260711201407_InitialIdentity")]
+    [Migration("20260711225448_InitialIdentity")]
     partial class InitialIdentity
     {
         /// <inheritdoc />
@@ -145,11 +145,17 @@ namespace FSH.Starter.Migrations.PostgreSQL.Identity
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("integer");
 
+                    b.Property<short?>("CommuneId")
+                        .HasColumnType("smallint");
+
                     b.Property<string>("ConcurrencyStamp")
                         .HasColumnType("text");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<short?>("DistrictId")
+                        .HasColumnType("smallint");
 
                     b.Property<string>("Email")
                         .HasColumnType("text");

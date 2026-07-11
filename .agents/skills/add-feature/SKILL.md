@@ -38,8 +38,8 @@ Read/list DTOs go in `Modules.{X}.Contracts/Dtos/`. Paginated queries return `Pa
 ## Step 2 — Handler (runtime `Features/`) — inject the DbContext, NOT a repository
 
 There is **no generic `IRepository<T>`**. Inject the module's `{X}DbContext`. `public sealed`, primary
-ctor, `ValueTask<T>`, `.ConfigureAwait(false)`, guard first. Tenant/audit fields are auto-stamped — only
-inject `ICurrentUser` if you need the acting user (`GetUserId()` / `GetTenant()`).
+ctor, `ValueTask<T>`, `.ConfigureAwait(false)`, guard first. Audit fields are auto-stamped — only
+inject `ICurrentUser` if you need the acting user (`GetUserId()`).
 
 ```csharp
 public sealed class Create{Entity}CommandHandler(CatalogDbContext dbContext)
@@ -72,8 +72,6 @@ public sealed class Create{Entity}CommandValidator : AbstractValidator<Create{En
 }
 ```
 
-`Architecture.Tests` fails the build if a command/paginated-query handler has no `{Name}Validator`.
-
 ## Step 4 — Endpoint (same folder)
 
 ```csharp
@@ -100,7 +98,6 @@ group.MapCreate{Entity}Endpoint();   // group = endpoints.MapGroup("api/v{versio
 
 ```bash
 dotnet build src/FSH.Starter.slnx          # 0 warnings (TreatWarningsAsErrors)
-dotnet test src/Tests/{X}.Tests            # + add a handler/validator test (see testing-guide)
 ```
 
 ## Checklist
@@ -110,4 +107,4 @@ dotnet test src/Tests/{X}.Tests            # + add a handler/validator test (see
 - [ ] `{Name}Validator` exists
 - [ ] Endpoint `internal static …Map{Feature}Endpoint`, `.RequirePermission(...)`, `.WithName/.WithSummary`
 - [ ] Wired in `{X}Module.MapEndpoints`
-- [ ] Build 0 warnings; test added
+- [ ] Build 0 warnings;

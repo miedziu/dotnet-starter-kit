@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using FSH.Modules.Identity.Contracts.DTOs;
 
 namespace FSH.Modules.Identity.Contracts.Services;
 
@@ -8,7 +9,19 @@ namespace FSH.Modules.Identity.Contracts.Services;
 public interface IUserRegistrationService
 {
     /// <summary>
-    /// Registers a new user with password.
+    /// Registers a new user with password - Step 1 of multi-step registration.
+    /// Creates user with email and password, sends confirmation email.
+    /// </summary>
+    Task<string> RegisterStep1Async(
+        string email,
+        string password,
+        string confirmPassword,
+        string origin,
+        string[]? referralUsernames = null,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Registers a new user with full profile - legacy single-step registration.
     /// </summary>
     Task<string> RegisterAsync(
         string firstName,
@@ -20,6 +33,25 @@ public interface IUserRegistrationService
         string phoneNumber,
         string origin,
         string[]? referralUsernames = null,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Updates user address information - Step 2 of multi-step registration.
+    /// </summary>
+    Task<bool> UpdateUserAddressAsync(
+        string userId,
+        short? districtId,
+        short? communeId,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Updates user profile information - Step 3 of multi-step registration.
+    /// </summary>
+    Task<UserDto> UpdateUserProfileAsync(
+        string userId,
+        string firstName,
+        string lastName,
+        string userName,
         CancellationToken cancellationToken = default);
 
     /// <summary>

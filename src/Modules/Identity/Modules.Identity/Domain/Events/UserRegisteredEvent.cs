@@ -10,8 +10,7 @@ public sealed record UserRegisteredEvent(
     string Email,
     string? FirstName,
     string? LastName,
-    string? CorrelationId = null
-) : DomainEvent(EventId, OccurredOnUtc, CorrelationId)
+    string? CorrelationId = null) : DomainEvent(EventId, OccurredOnUtc, CorrelationId)
 {
     public static UserRegisteredEvent Create(string userId, string email, string? firstName = null, string? lastName = null, string? correlationId = null)
         => new(Guid.NewGuid(), DateTimeOffset.UtcNow, userId, email, firstName, lastName, correlationId);

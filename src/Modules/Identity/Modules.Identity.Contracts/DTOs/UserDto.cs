@@ -1,4 +1,4 @@
-﻿namespace FSH.Modules.Identity.Contracts.DTOs;
+namespace FSH.Modules.Identity.Contracts.DTOs;
 
 public class UserDto
 {
@@ -22,4 +22,8 @@ public class UserDto
 
     /// <summary>Whether the user has enrolled in TOTP-based two-factor authentication.</summary>
     public bool TwoFactorEnabled { get; set; }
+
+    // Address fields
+    public short? DistrictId { get; set; }
+    public short? CommuneId { get; set; }
 }

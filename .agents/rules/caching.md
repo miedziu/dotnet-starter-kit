@@ -20,7 +20,7 @@ var perms = await cache.GetOrCreateAsync(
     cancellationToken: ct);
 ```
 
-- **Keys & tags live in `CacheKeys.cs`** — add new keys/tags there, don't inline strings. Existing: `UserPermissions(userId)`, `TenantTheme(tenantId)`, `IdempotencyEntry(tenantId,key)`, `ImpersonationGrantStatus(jti)`; tags `Permissions`, `Themes`, `Idempotency`, `Tenant(id)`, `User(id)`.
+- **Keys & tags live in `CacheKeys.cs`** — add new keys/tags there, don't inline strings. Existing: `UserPermissions(userId)`, `Theme()`, `IdempotencyEntry(key)`, `ImpersonationGrantStatus(jti)`; tags `Permissions`, `Themes`, `Idempotency`, `User(id)`.
 - Invalidate with `RemoveAsync(key)` or `RemoveByTagAsync(tag)` in the relevant mutation handler.
 - `GetOrCreateAsync` gives **stampede protection** for free (factory runs once per key).
 
