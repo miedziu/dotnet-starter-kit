@@ -30,7 +30,7 @@ public sealed class FileAssetConfiguration : IEntityTypeConfiguration<FileAsset>
         builder.Property(x => x.DeletedOnUtc);
         builder.Property(x => x.DeletedBy).HasMaxLength(64);
 
-        // Schema-per-tenant (BaseDbContext) makes per-tenant narrowing implicit, so only an
+        // Schema-per-tenant (BaseDbContext) makes narrowing implicit, so only an
         // Owner index is needed (not the row-level (TenantId, OwnerType, OwnerId)).
         builder.HasIndex(x => new { x.OwnerType, x.OwnerId })
             .HasDatabaseName("IX_FileAsset_Owner");

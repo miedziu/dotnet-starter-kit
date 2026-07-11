@@ -4,7 +4,7 @@ using FSH.Modules.Billing.Contracts;
 namespace FSH.Modules.Billing.Domain;
 
 /// <summary>
-/// An invoice for a tenant covering a single monthly period. Starts as Draft, transitions to
+/// An invoice for a single monthly period. Starts as Draft, transitions to
 /// Issued when sent to the customer, then to Paid or Void. Totals are recomputed every time a
 /// line is added so callers don't have to.
 /// </summary>
@@ -17,8 +17,7 @@ public sealed class Invoice : AggregateRoot<Guid>
     public int PeriodMonth { get; private set; }
 
     /// <summary>
-    /// What this invoice bills. <see cref="InvoicePurpose.Subscription"/> covers a plan term (created
-    /// on tenant create/renew); <see cref="InvoicePurpose.Usage"/> covers metered overage for a month
+    /// What this invoice bills. <see cref="InvoicePurpose.Subscription"/> covers a plan term; <see cref="InvoicePurpose.Usage"/> covers metered overage for a month
     /// (created by the monthly job). The two streams never collide on idempotency keys.
     /// </summary>
     public InvoicePurpose Purpose { get; private set; } = InvoicePurpose.Usage;

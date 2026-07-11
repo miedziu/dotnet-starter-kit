@@ -60,23 +60,8 @@ public static class Extensions
 
     private static PartitionedRateLimiter<HttpContext> CreateChainedGlobalLimiter(RateLimitingOptions settings) =>
         PartitionedRateLimiter.CreateChained(
-            CreateTenantLimiter(settings),
             CreateUserLimiter(settings),
             CreateIpLimiter(settings));
-
-    private static PartitionedRateLimiter<HttpContext> CreateTenantLimiter(RateLimitingOptions settings) =>
-        PartitionedRateLimiter.Create<HttpContext, string>(context =>
-        {
-            if (IsHealthPath(context.Request.Path))
-            {
-                return RateLimitPartition.GetNoLimiter(HealthPartitionKey);
-            }
-
-            var tenant = context.User?.FindFirst(ClaimConstants.Tenant)?.Value;
-            return string.IsNullOrWhiteSpace(tenant)
-                ? RateLimitPartition.GetNoLimiter(AnonymousPartitionKey)
-                : CreateFixedWindowPartition($"tenant:{tenant}", settings.Tenant);
-        });
 
     private static PartitionedRateLimiter<HttpContext> CreateUserLimiter(RateLimitingOptions settings) =>
         PartitionedRateLimiter.Create<HttpContext, string>(context =>

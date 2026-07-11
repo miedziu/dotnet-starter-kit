@@ -1,5 +1,3 @@
-using FSH.Framework.Quota;
-using FSH.Framework.Shared.Quota;
 using FSH.Framework.Storage.Services;
 using FSH.Modules.Files.Data;
 using Hangfire;
@@ -16,7 +14,6 @@ namespace FSH.Modules.Files.Jobs;
 public sealed class PurgeDeletedFilesJob(
     FilesDbContext db,
     IStorageService storage,
-    IQuotaService quotas,
     IOptions<FilesOptions> options,
     ILogger<PurgeDeletedFilesJob> logger)
 {
@@ -52,19 +49,6 @@ public sealed class PurgeDeletedFilesJob(
         // Quota refund — group bytes once per tenant. In schema-per-tenant the resolved tenant
         // matches every row's logical tenant; the framework's QuotaService is tenant-scoped via DI.
         var totalBytes = candidates.Sum(f => f.SizeBytes);
-        if (totalBytes > 0)
-        {
-            // Empty tenant id satisfies the contract; QuotaService resolves the tenant from DI.
-            // Falls back gracefully with no tenant (the refund is simply lost).
-            try
-            {
-                await quotas.RecordAsync(QuotaResource.StorageBytes, -totalBytes, cancellationToken).ConfigureAwait(false);
-            }
-            catch (Exception ex)
-            {
-                logger.LogWarning(ex, "Quota refund failed for {Bytes} bytes", totalBytes);
-            }
-        }
 
         var ids = candidates.Select(f => f.Id).ToList();
         await db.FileAssets

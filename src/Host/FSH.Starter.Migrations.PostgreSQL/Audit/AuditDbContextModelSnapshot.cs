@@ -17,7 +17,7 @@ namespace FSH.Starter.Migrations.PostgreSQL.Audit
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.7")
+                .HasAnnotation("ProductVersion", "10.0.9")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "pg_trgm");
@@ -74,6 +74,10 @@ namespace FSH.Starter.Migrations.PostgreSQL.Audit
                     b.HasIndex("CorrelationId")
                         .HasDatabaseName("IX_AuditRecords_CorrelationId");
 
+                    b.HasIndex("OccurredAtUtc")
+                        .IsDescending()
+                        .HasDatabaseName("IX_AuditRecords_OccurredAt");
+
                     b.HasIndex("PayloadJson")
                         .HasDatabaseName("IX_AuditRecords_PayloadJson_gin");
 
@@ -95,17 +99,11 @@ namespace FSH.Starter.Migrations.PostgreSQL.Audit
                     NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("UserName"), "gin");
                     NpgsqlIndexBuilderExtensions.HasOperators(b.HasIndex("UserName"), new[] { "gin_trgm_ops" });
 
-                    b.HasIndex("OccurredAtUtc")
-                        .IsDescending(true)
-                        .HasDatabaseName("IX_AuditRecords_Tenant_OccurredAt");
-
                     b.HasIndex("EventType", "OccurredAtUtc")
                         .IsDescending(false, true)
-                        .HasDatabaseName("IX_AuditRecords_Tenant_EventType_OccurredAt");
+                        .HasDatabaseName("IX_AuditRecords_EventType_OccurredAt");
 
                     b.ToTable("AuditRecords", "audit");
-
-                    b.HasAnnotation("Finbuckle:MultiTenant", true);
                 });
 #pragma warning restore 612, 618
         }

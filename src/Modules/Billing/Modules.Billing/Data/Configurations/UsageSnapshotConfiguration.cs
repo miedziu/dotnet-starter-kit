@@ -11,11 +11,10 @@ public sealed class UsageSnapshotConfiguration : IEntityTypeConfiguration<UsageS
         ArgumentNullException.ThrowIfNull(builder);
         builder.ToTable("UsageSnapshots");
         builder.HasKey(x => x.Id);
-        builder.Property(x => x.Resource).HasConversion<int>();
 
-        builder.HasIndex(x => new { x.PeriodYear, x.PeriodMonth, x.Resource })
+        builder.HasIndex(x => new { x.PeriodYear, x.PeriodMonth })
             .IsUnique()
-            .HasDatabaseName("ux_usage_snapshots_period_resource");
+            .HasDatabaseName("ux_usage_snapshots_period");
 
         builder.Ignore(x => x.DomainEvents);
     }

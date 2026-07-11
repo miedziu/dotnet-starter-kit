@@ -1,9 +1,6 @@
-using System.Net;
-using Finbuckle.MultiTenant.Abstractions;
 using FSH.Framework.Core.Context;
 using FSH.Framework.Core.Exceptions;
 using FSH.Framework.Shared.Constants;
-using FSH.Framework.Shared.Multitenancy;
 using FSH.Framework.Shared.Persistence;
 using FSH.Modules.Identity.Contracts.DTOs;
 using FSH.Modules.Identity.Contracts.Services;
@@ -11,12 +8,12 @@ using FSH.Modules.Identity.Data;
 using FSH.Modules.Identity.Domain;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Net;
 
 namespace FSH.Modules.Identity.Features.v1.Roles;
 
 public sealed class RoleService(RoleManager<FshRole> roleManager,
     IdentityDbContext context,
-    IMultiTenantContextAccessor<AppTenantInfo> multiTenantContextAccessor,
     ICurrentUser currentUser,
     IUserPermissionService userPermissionService) : IRoleService
 {
@@ -189,14 +186,8 @@ public sealed class RoleService(RoleManager<FshRole> roleManager,
         }
     }
 
-    private void FilterRootPermissions(List<string> permissions)
+    private static void FilterRootPermissions(List<string> permissions)
     {
-        if (multiTenantContextAccessor?.MultiTenantContext?.TenantInfo?.Id == MultitenancyConstants.Root.Id)
-        {
-            // The root operator may manage root-only permissions.
-            return;
-        }
-
         // Strip every permission flagged IsRoot in the registry. (A prior prefix check on "Permissions.Root."
         // was a no-op — no root perm uses that prefix — letting a tenant admin grant themselves root perms.)
         var rootOnly = PermissionConstants.Root.Select(p => p.Name).ToHashSet(StringComparer.Ordinal);

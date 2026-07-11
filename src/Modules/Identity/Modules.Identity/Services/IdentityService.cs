@@ -1,7 +1,5 @@
-using Finbuckle.MultiTenant.Abstractions;
 using FSH.Framework.Core.Exceptions;
 using FSH.Framework.Shared.Constants;
-using FSH.Framework.Shared.Multitenancy;
 using FSH.Modules.Identity.Contracts.Services;
 using FSH.Modules.Identity.Data;
 using FSH.Modules.Identity.Domain;
@@ -15,34 +13,19 @@ using System.Security.Claims;
 
 namespace FSH.Modules.Identity.Services;
 
-public sealed class IdentityService : IIdentityService
+public sealed class IdentityService(
+    UserManager<FshUser> userManager,
+    ILogger<IdentityService> logger,
+    IGroupRoleService groupRoleService,
+    TimeProvider timeProvider,
+    IdentityDbContext dbContext)
+    : IIdentityService
 {
-    private readonly UserManager<FshUser> _userManager;
-    private readonly ILogger<IdentityService> _logger;
-    private readonly IMultiTenantContextAccessor<AppTenantInfo>? _multiTenantContextAccessor;
-    private readonly IGroupRoleService _groupRoleService;
-    private readonly TimeProvider _timeProvider;
-    private readonly IdentityDbContext _dbContext;
-    private readonly int _gracePeriodDays;
-
-    public IdentityService(
-        UserManager<FshUser> userManager,
-        IMultiTenantContextAccessor<AppTenantInfo>? multiTenantContextAccessor,
-        ILogger<IdentityService> logger,
-        IGroupRoleService groupRoleService,
-        TimeProvider timeProvider,
-        IdentityDbContext dbContext,
-        IOptions<TenantGraceOptions> graceOptions)
-    {
-        ArgumentNullException.ThrowIfNull(graceOptions);
-        _userManager = userManager;
-        _multiTenantContextAccessor = multiTenantContextAccessor;
-        _logger = logger;
-        _groupRoleService = groupRoleService;
-        _timeProvider = timeProvider;
-        _dbContext = dbContext;
-        _gracePeriodDays = graceOptions.Value.GracePeriodDays;
-    }
+    private readonly UserManager<FshUser> _userManager = userManager;
+    private readonly ILogger<IdentityService> _logger = logger;
+    private readonly IGroupRoleService _groupRoleService = groupRoleService;
+    private readonly TimeProvider _timeProvider = timeProvider;
+    private readonly IdentityDbContext _dbContext = dbContext;
 
     public async Task<(string Subject, IEnumerable<Claim> Claims)?>
         ValidateCredentialsAsync(string email, string password, string? twoFactorCode = null, CancellationToken ct = default)
@@ -50,11 +33,9 @@ public sealed class IdentityService : IIdentityService
         ArgumentNullException.ThrowIfNull(email);
         ArgumentNullException.ThrowIfNull(password);
 
-        var tenant = GetValidatedTenant();
         var user = await FindAndValidateUserByCredentialsAsync(email, password);
 
         ValidateUserStatus(user);
-        ValidateTenantStatus(tenant);
 
         if (user.TwoFactorEnabled)
         {
@@ -83,19 +64,17 @@ public sealed class IdentityService : IIdentityService
         if (!valid)
         {
             _logger.LogWarning("Invalid two-factor code for user {UserId}", user.Id);
-            throw new UnauthorizedException("two_factor_invalid: The authenticator code is invalid or expired.");
+            throw new UnauthorizedAccessException("two_factor_invalid: The authenticator code is invalid or expired.");
         }
     }
 
     public async Task<(string Subject, IEnumerable<Claim> Claims)?>
         ValidateRefreshTokenAsync(string refreshToken, CancellationToken ct = default)
     {
-        var tenant = GetValidatedTenant();
         var user = await FindUserByRefreshTokenAsync(refreshToken, ct);
 
         ValidateRefreshTokenExpiry(user);
         ValidateUserStatus(user);
-        ValidateTenantStatus(tenant);
 
         var claims = await BuildUserClaimsAsync(user, ct);
         return (user.Id, claims);
@@ -115,7 +94,7 @@ public sealed class IdentityService : IIdentityService
 
         if (updated == 0)
         {
-            throw new UnauthorizedException("user not found");
+            throw new UnauthorizedAccessException("user not found");
         }
 
         if (_logger.IsEnabled(LogLevel.Debug))
@@ -131,7 +110,7 @@ public sealed class IdentityService : IIdentityService
     {
         ArgumentNullException.ThrowIfNull(userId);
 
-        // Users are global (shared across tenants) - no tenant filter needed
+        // Users are global - no tenant filter needed
         var user = await _userManager.Users
             .FirstOrDefaultAsync(u => u.Id == userId, ct);
 
@@ -160,20 +139,54 @@ public sealed class IdentityService : IIdentityService
             claims.AddRange(roleNames.Select(r => new Claim(ClaimTypes.Role, r)));
         }
 
+        await AddRoleClaimsAsync(claims, user, ct);
+
         return (user.Id, claims);
     }
 
-    private AppTenantInfo GetValidatedTenant()
+    /// <inheritdoc />
+    public async Task<UserInfo?> FindByEmailAsync(string email, CancellationToken ct = default)
     {
-        var tenant = _multiTenantContextAccessor!.MultiTenantContext.TenantInfo
-            ?? throw new UnauthorizedException();
-
-        if (string.IsNullOrWhiteSpace(tenant.Id))
+        var user = await _userManager.FindByEmailAsync(email.Trim().Normalize());
+        if (user is null)
         {
-            throw new UnauthorizedException();
+            return null;
         }
 
-        return tenant;
+        return new UserInfo(
+            user.Id,
+            user.Email,
+            user.FirstName,
+            user.LastName);
+    }
+
+    /// <inheritdoc />
+    public async Task<List<Claim>> GetUserClaimsAsync(string userId, CancellationToken ct = default)
+    {
+        // Find the user
+        var user = await _userManager.Users
+            .FirstOrDefaultAsync(u => u.Id == userId, ct);
+
+        if (user is null)
+        {
+            return [];
+        }
+
+        // Get claims
+        return await BuildUserClaimsAsync(user, ct);
+    }
+
+    private static void ValidateUserStatus(FshUser user)
+    {
+        if (!user.IsActive)
+        {
+            throw new UnauthorizedAccessException("user is deactivated");
+        }
+
+        if (!user.EmailConfirmed)
+        {
+            throw new UnauthorizedAccessException("email not confirmed");
+        }
     }
 
     private async Task<FshUser> FindAndValidateUserByCredentialsAsync(string email, string password)
@@ -182,7 +195,7 @@ public sealed class IdentityService : IIdentityService
         if (user is null)
         {
             // Generic 401 — never confirm or deny account existence from this path.
-            throw new UnauthorizedException();
+            throw new UnauthorizedAccessException();
         }
 
         // Lockout check runs BEFORE password check so an attacker can't tell a locked
@@ -208,7 +221,7 @@ public sealed class IdentityService : IIdentityService
                         user.Id);
                 }
             }
-            throw new UnauthorizedException();
+            throw new UnauthorizedAccessException();
         }
 
         // Successful authentication resets the failed-attempt counter.
@@ -237,7 +250,7 @@ public sealed class IdentityService : IIdentityService
         if (user is null)
         {
             _logger.LogWarning("No user found with matching refresh token hash");
-            throw new UnauthorizedException("refresh token is invalid or expired");
+            throw new UnauthorizedAccessException("refresh token is invalid or expired");
         }
 
         return user;
@@ -251,40 +264,7 @@ public sealed class IdentityService : IIdentityService
             _logger.LogWarning(
                 "Refresh token expired for user {UserId}. Expired at: {ExpiryTime}, Current time: {CurrentTime}",
                 user.Id, user.RefreshTokenExpiryTime, now);
-            throw new UnauthorizedException("refresh token is invalid or expired");
-        }
-    }
-
-    private static void ValidateUserStatus(FshUser user)
-    {
-        if (!user.IsActive)
-        {
-            throw new UnauthorizedException("user is deactivated");
-        }
-
-        if (!user.EmailConfirmed)
-        {
-            throw new UnauthorizedException("email not confirmed");
-        }
-    }
-
-    private void ValidateTenantStatus(AppTenantInfo tenant)
-    {
-        if (tenant.Id == MultitenancyConstants.Root.Id)
-        {
-            return;
-        }
-
-        if (!tenant.IsActive)
-        {
-            throw new UnauthorizedException($"tenant {tenant.Id} is deactivated");
-        }
-
-        // Honor the billing grace period: a lapsed tenant can still authenticate until
-        // ValidUpto + grace (matching the request-time guard in MultitenancyModule).
-        if (_timeProvider.GetUtcNow().UtcDateTime > tenant.ValidUpto.AddDays(_gracePeriodDays))
-        {
-            throw new UnauthorizedException($"tenant {tenant.Id} validity has expired");
+            throw new UnauthorizedAccessException("refresh token is invalid or expired");
         }
     }
 

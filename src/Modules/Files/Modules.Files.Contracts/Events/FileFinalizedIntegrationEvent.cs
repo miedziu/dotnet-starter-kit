@@ -10,7 +10,6 @@ namespace FSH.Modules.Files.Contracts.Events;
 public sealed record FileFinalizedIntegrationEvent(
     Guid Id,
     DateTime OccurredOnUtc,
-    string? TenantId,
     string CorrelationId,
     string Source,
     Guid FileAssetId,

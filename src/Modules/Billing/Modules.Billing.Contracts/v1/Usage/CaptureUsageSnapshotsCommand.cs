@@ -4,7 +4,7 @@ using Mediator;
 namespace FSH.Modules.Billing.Contracts.v1.Usage;
 
 /// <summary>
-/// Ops command that captures one usage snapshot per <c>QuotaResource</c> for a period.
+/// Ops command that captures one usage snapshot for a period.
 /// Wraps <c>IUsageReporter.CaptureForPeriodAsync</c>. Idempotent: re-running for the same
 /// (period) returns the existing snapshots without creating duplicates.
 /// </summary>

@@ -17,7 +17,7 @@ public interface IUserService
     Task<string> RegisterAsync(string firstName, string lastName, string email, string userName, string password, string confirmPassword, string phoneNumber, string origin, string[]? referralUsernames = null, CancellationToken cancellationToken = default);
     Task UpdateAsync(string userId, string firstName, string lastName, string phoneNumber, FileUploadRequest image, bool deleteCurrentImage, CancellationToken cancellationToken = default);
     Task DeleteAsync(string userId, CancellationToken cancellationToken = default);
-    Task<string> ConfirmEmailAsync(string userId, string code, string tenant, CancellationToken cancellationToken);
+    Task<string> ConfirmEmailAsync(string userId, string code, CancellationToken cancellationToken);
     Task AdminConfirmEmailAsync(string userId, CancellationToken cancellationToken = default);
     Task ResendConfirmationEmailAsync(string userId, string origin, CancellationToken cancellationToken = default);
     Task<string> ConfirmPhoneNumberAsync(string userId, string code, CancellationToken cancellationToken = default);

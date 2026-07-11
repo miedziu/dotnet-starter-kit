@@ -10,7 +10,6 @@ namespace FSH.Modules.Chat.Contracts.Events;
 public sealed record MentionedInChannelIntegrationEvent(
     Guid Id,
     DateTime OccurredOnUtc,
-    string? TenantId,
     string CorrelationId,
     string Source,
     Guid ChannelId,

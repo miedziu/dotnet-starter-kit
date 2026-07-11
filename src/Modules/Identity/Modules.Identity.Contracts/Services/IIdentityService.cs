@@ -2,6 +2,10 @@ using System.Security.Claims;
 
 namespace FSH.Modules.Identity.Contracts.Services;
 
+/// <summary>
+/// Basic user info returned by OAuth flows when creating/linking accounts.
+/// </summary>
+public record UserInfo(string Id, string? Email, string? FirstName, string? LastName);
 public interface IIdentityService
 {
     /// <summary>
@@ -33,4 +37,15 @@ public interface IIdentityService
     /// </summary>
     Task<(string Subject, IEnumerable<Claim> Claims)?>
         BuildClaimsForUserAsync(string userId, CancellationToken ct = default);
+        
+    /// <summary>
+    /// Finds a user by their email address. Used for OAuth login to link external providers.
+    /// Returns basic user info without exposing domain entities to the Contracts layer.
+    /// </summary>
+    Task<UserInfo?> FindByEmailAsync(string email, CancellationToken ct = default);
+
+    /// <summary>
+    /// Gets user claims for the specified user ID. Used for OAuth token generation.
+    /// </summary>
+    Task<List<Claim>> GetUserClaimsAsync(string userId, CancellationToken ct = default);
 }

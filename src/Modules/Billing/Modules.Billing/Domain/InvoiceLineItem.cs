@@ -1,5 +1,4 @@
 using FSH.Framework.Core.Domain;
-using FSH.Framework.Shared.Quota;
 using FSH.Modules.Billing.Contracts;
 
 namespace FSH.Modules.Billing.Domain;
@@ -12,7 +11,6 @@ public sealed class InvoiceLineItem : BaseEntity<Guid>
 {
     public Guid InvoiceId { get; private set; }
     public InvoiceLineItemKind Kind { get; private set; }
-    public QuotaResource? Resource { get; private set; }
     public string Description { get; private set; } = default!;
     public decimal Quantity { get; private set; }
     public decimal UnitPrice { get; private set; }
@@ -50,6 +48,4 @@ public sealed class InvoiceLineItem : BaseEntity<Guid>
             Amount = new Money(quantity * unitPrice, currency).Round(2)
         };
     }
-
-    internal void AttachResource(QuotaResource resource) => Resource = resource;
 }

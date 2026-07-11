@@ -52,10 +52,10 @@ public sealed class IdempotencyEndpointFilter : IEndpointFilter
         var hybridCache = httpContext.RequestServices.GetRequiredService<HybridCache>();
         var logger = httpContext.RequestServices.GetRequiredService<ILogger<IdempotencyEndpointFilter>>();
 
-        // Include tenant context in cache key for isolation
-        var tenantId = httpContext.User.FindFirst("tenant")?.Value ?? "global";
-        var cacheKey = CacheKeys.IdempotencyEntry(tenantId, idempotencyKey);
-        var tags = new[] { CacheKeys.Tags.Idempotency, CacheKeys.Tags.Tenant(tenantId) };
+        // Include user context in cache key for isolation
+        var userId = httpContext.User.FindFirst("uid")?.Value ?? "anonymous";
+        var cacheKey = CacheKeys.IdempotencyEntry(userId, idempotencyKey);
+        var tags = new[] { CacheKeys.Tags.Idempotency, CacheKeys.Tags.User(userId) };
 
         // Probe-only read via IDistributedCache (real GetAsync, null on miss — unlike HybridCache's
         // factory). Bypasses L1: replays are rare vs first-calls, so L1 warmth has little value.

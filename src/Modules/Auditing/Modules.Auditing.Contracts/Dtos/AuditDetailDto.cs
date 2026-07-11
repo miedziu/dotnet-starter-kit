@@ -15,8 +15,6 @@ public sealed class AuditDetailDto
 
     public AuditSeverity Severity { get; set; }
 
-    public string? TenantId { get; set; }
-
     public string? UserId { get; set; }
 
     public string? UserName { get; set; }

@@ -1,9 +1,7 @@
-using Finbuckle.MultiTenant.Abstractions;
 using FSH.Framework.Core.Exceptions;
 using FSH.Framework.Jobs.Services;
 using FSH.Framework.Mailing;
 using FSH.Framework.Mailing.Services;
-using FSH.Framework.Shared.Multitenancy;
 using FSH.Modules.Identity.Contracts.Services;
 using FSH.Modules.Identity.Data;
 using FSH.Modules.Identity.Domain;
@@ -19,14 +17,11 @@ internal sealed class UserPasswordService(
     IdentityDbContext db,
     IJobService jobService,
     IMailService mailService,
-    IMultiTenantContextAccessor<AppTenantInfo> multiTenantContextAccessor,
     IPasswordHistoryService passwordHistoryService,
     IPasswordExpiryService passwordExpiryService) : IUserPasswordService
 {
     public async Task ForgotPasswordAsync(string email, string origin, CancellationToken cancellationToken)
     {
-        EnsureValidTenant();
-
         var user = await userManager.FindByEmailAsync(email);
 
         // Anti-enumeration: respond identically regardless of registration — a real user gets the
@@ -48,8 +43,7 @@ internal sealed class UserPasswordService(
             new Dictionary<string, string?>
             {
                 ["token"] = token,
-                ["email"] = email,
-                ["tenant"] = multiTenantContextAccessor?.MultiTenantContext?.TenantInfo?.Id,
+                ["email"] = email
             });
         var mailRequest = new MailRequest(
             new Collection<string> { user.Email },
@@ -61,8 +55,6 @@ internal sealed class UserPasswordService(
 
     public async Task ResetPasswordAsync(string email, string password, string token, CancellationToken cancellationToken)
     {
-        EnsureValidTenant();
-
         var user = await userManager.FindByEmailAsync(email);
         if (user == null)
         {
@@ -79,8 +71,7 @@ internal sealed class UserPasswordService(
         }
 
         // Raise domain event for password reset
-        var tenantId = multiTenantContextAccessor?.MultiTenantContext?.TenantInfo?.Id;
-        user.RecordPasswordChanged(wasReset: true, tenantId);
+        user.RecordPasswordChanged(wasReset: true);
         await db.SaveChangesAsync(cancellationToken);
     }
 
@@ -99,8 +90,7 @@ internal sealed class UserPasswordService(
         }
 
         // Raise domain event for password change
-        var tenantId = multiTenantContextAccessor?.MultiTenantContext?.TenantInfo?.Id;
-        user.RecordPasswordChanged(wasReset: false, tenantId);
+        user.RecordPasswordChanged(wasReset: false);
         await db.SaveChangesAsync(cancellationToken);
 
         // Update password expiry date
@@ -108,13 +98,5 @@ internal sealed class UserPasswordService(
 
         // Save to history
         await passwordHistoryService.SavePasswordHistoryAsync(userId, cancellationToken);
-    }
-
-    private void EnsureValidTenant()
-    {
-        if (string.IsNullOrWhiteSpace(multiTenantContextAccessor?.MultiTenantContext?.TenantInfo?.Id))
-        {
-            throw new UnauthorizedException("invalid tenant");
-        }
     }
 }

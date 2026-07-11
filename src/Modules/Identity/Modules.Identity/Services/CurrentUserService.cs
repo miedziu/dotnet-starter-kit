@@ -35,9 +35,6 @@ internal sealed class CurrentUserService : ICurrentUserService
     public IEnumerable<Claim>? GetUserClaims() =>
         _user?.Claims;
 
-    public string? GetTenant() =>
-        IsAuthenticated() ? _user?.GetTenant() : string.Empty;
-
     public void SetCurrentUser(ClaimsPrincipal user)
     {
         if (_user != null)

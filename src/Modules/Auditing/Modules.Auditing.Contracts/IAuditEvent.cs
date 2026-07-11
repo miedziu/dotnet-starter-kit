@@ -11,9 +11,6 @@ public interface IAuditEvent
     /// <summary>UTC time when the event actually occurred.</summary>
     DateTime OccurredAtUtc { get; }
 
-    /// <summary>Tenant identifier (optional in per-tenant DBs; still useful for exports).</summary>
-    string? TenantId { get; }
-
     /// <summary>Subject/User id and display name (when available).</summary>
     string? UserId { get; }
     string? UserName { get; }

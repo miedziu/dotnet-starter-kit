@@ -86,7 +86,6 @@ public sealed partial class RabbitMqEventBus : IEventBus, IAsyncDisposable
                     Headers = new Dictionary<string, object?>
                     {
                         ["event-type"] = eventType.AssemblyQualifiedName,
-                        ["tenant-id"] = @event.TenantId,
                         ["source"] = @event.Source
                     }
                 };

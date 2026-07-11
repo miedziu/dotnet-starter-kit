@@ -23,13 +23,7 @@ public interface ICurrentUser
     /// </summary>
     /// <returns>The user's email address, or null if not available.</returns>
     string? GetUserEmail();
-
-    /// <summary>
-    /// Gets the tenant identifier that the current user belongs to.
-    /// </summary>
-    /// <returns>The tenant identifier, or null if not in a multi-tenant context.</returns>
-    string? GetTenant();
-
+    
     /// <summary>
     /// Determines whether the current user is authenticated.
     /// </summary>

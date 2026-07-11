@@ -1,20 +1,17 @@
-using System.Net;
-using Finbuckle.MultiTenant.Abstractions;
 using FSH.Framework.Core.Context;
 using FSH.Framework.Core.Exceptions;
 using FSH.Framework.Shared.Constants;
-using FSH.Framework.Shared.Multitenancy;
 using FSH.Modules.Auditing.Contracts;
 using FSH.Modules.Identity.Contracts.Services;
 using FSH.Modules.Identity.Domain;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Net;
 
 namespace FSH.Modules.Identity.Services;
 
 internal sealed class UserStatusService(
     UserManager<FshUser> userManager,
-    IMultiTenantContextAccessor<AppTenantInfo> multiTenantContextAccessor,
     ICurrentUser currentUser,
     IAuditClient auditClient) : IUserStatusService
 {
@@ -25,8 +22,6 @@ internal sealed class UserStatusService(
 
     public async Task ToggleStatusAsync(bool activateUser, string userId, CancellationToken cancellationToken)
     {
-        EnsureValidTenant();
-
         var context = await BuildToggleContextAsync(userId, activateUser, cancellationToken);
 
         await ValidateTogglePermissionsAsync(context, cancellationToken);
@@ -34,14 +29,6 @@ internal sealed class UserStatusService(
         ApplyStatusChange(context);
 
         await SaveAndAuditAsync(context, cancellationToken);
-    }
-
-    private void EnsureValidTenant()
-    {
-        if (string.IsNullOrWhiteSpace(multiTenantContextAccessor?.MultiTenantContext?.TenantInfo?.Id))
-        {
-            throw new UnauthorizedException("invalid tenant");
-        }
     }
 
     private async Task<ToggleStatusContext> BuildToggleContextAsync(
@@ -67,8 +54,7 @@ internal sealed class UserStatusService(
             ActorId: actorId,
             Actor: actor,
             TargetUser: targetUser,
-            ActivateUser: activateUser,
-            TenantId: multiTenantContextAccessor?.MultiTenantContext?.TenantInfo?.Id);
+            ActivateUser: activateUser);
     }
 
     private async Task ValidateTogglePermissionsAsync(
@@ -107,7 +93,7 @@ internal sealed class UserStatusService(
         if (!activeAdmins.Any(u => u.IsActive))
         {
             await AuditPolicyFailureAsync(context, "NoActiveAdmins", cancellationToken);
-            throw new CustomException("Tenant must have at least one active administrator.", Array.Empty<string>(), HttpStatusCode.BadRequest);
+            throw new CustomException("Application must have at least one active administrator.", Array.Empty<string>(), HttpStatusCode.BadRequest);
         }
     }
 
@@ -115,11 +101,11 @@ internal sealed class UserStatusService(
     {
         if (context.ActivateUser)
         {
-            context.TargetUser.Activate(context.ActorId.ToString(), context.TenantId);
+            context.TargetUser.Activate(context.ActorId.ToString());
         }
         else
         {
-            context.TargetUser.Deactivate(context.ActorId.ToString(), "Status toggled by administrator", context.TenantId);
+            context.TargetUser.Deactivate(context.ActorId.ToString(), "Status toggled by administrator");
         }
     }
 
@@ -141,7 +127,7 @@ internal sealed class UserStatusService(
             captured: BodyCapture.None,
             requestSize: 0,
             responseSize: 0,
-            requestPreview: new { actorId = context.ActorId.ToString(), targetUserId = context.TargetUser.Id, action = context.ActivateUser ? "activate" : "deactivate", tenant = context.TenantId ?? "unknown" },
+            requestPreview: new { actorId = context.ActorId.ToString(), targetUserId = context.TargetUser.Id, action = context.ActivateUser ? "activate" : "deactivate" },
             responsePreview: new { outcome = "success" },
             severity: AuditSeverity.Information,
             source: "Identity",
@@ -157,7 +143,6 @@ internal sealed class UserStatusService(
         {
             ["actorId"] = context.ActorId.ToString(),
             ["targetUserId"] = context.TargetUser.Id,
-            ["tenant"] = context.TenantId ?? "unknown",
             ["action"] = context.ActivateUser ? "activate" : "deactivate"
         };
 
@@ -175,6 +160,5 @@ internal sealed class UserStatusService(
         Guid ActorId,
         FshUser Actor,
         FshUser TargetUser,
-        bool ActivateUser,
-        string? TenantId);
+        bool ActivateUser);
 }

@@ -1,9 +1,7 @@
 using FSH.Framework.Core.Context;
-using FSH.Framework.Core.Exceptions;
 using FSH.Framework.Persistence;
 using FSH.Framework.Shared.Persistence;
 using FSH.Modules.Auditing.Contracts;
-using FSH.Modules.Auditing.Contracts.Authorization;
 using FSH.Modules.Auditing.Contracts.Dtos;
 using FSH.Modules.Auditing.Contracts.v1.GetAudits;
 using FSH.Modules.Auditing.Persistence;
@@ -30,8 +28,6 @@ public sealed class GetAuditsQueryHandler : IQueryHandler<GetAuditsQuery, PagedR
     public static readonly TimeSpan DefaultWindow = TimeSpan.FromDays(7);
 
     private readonly AuditDbContext _dbContext;
-    private readonly ICurrentUser _currentUser;
-    private readonly IUserPermissionService _permissions;
     private readonly TimeProvider _timeProvider;
 
     public GetAuditsQueryHandler(
@@ -41,8 +37,6 @@ public sealed class GetAuditsQueryHandler : IQueryHandler<GetAuditsQuery, PagedR
         TimeProvider timeProvider)
     {
         _dbContext = dbContext;
-        _currentUser = currentUser;
-        _permissions = permissions;
         _timeProvider = timeProvider;
     }
 
@@ -52,7 +46,7 @@ public sealed class GetAuditsQueryHandler : IQueryHandler<GetAuditsQuery, PagedR
 
         var (fromUtc, toUtc) = ResolveWindow(query.FromUtc, query.ToUtc);
 
-        var audits = await BuildBaseQueryAsync(query, cancellationToken).ConfigureAwait(false);
+        var audits = await BuildBaseQueryAsync().ConfigureAwait(false);
 
         audits = audits.Where(a => a.OccurredAtUtc >= fromUtc && a.OccurredAtUtc <= toUtc);
 
@@ -136,32 +130,9 @@ public sealed class GetAuditsQueryHandler : IQueryHandler<GetAuditsQuery, PagedR
     /// TenantId predicate so we never accidentally return rows for *all*
     /// tenants.
     /// </summary>
-    private async Task<IQueryable<AuditRecord>> BuildBaseQueryAsync(GetAuditsQuery query, CancellationToken ct)
+    private async Task<IQueryable<AuditRecord>> BuildBaseQueryAsync()
     {
-        var currentTenant = _currentUser.GetTenant();
-        var requested = string.IsNullOrWhiteSpace(query.TenantId) ? null : query.TenantId;
-
-        bool wantsCrossTenant =
-            requested is not null
-            && !string.Equals(requested, currentTenant, StringComparison.OrdinalIgnoreCase);
-
-        if (!wantsCrossTenant)
-        {
-            return _dbContext.AuditRecords.AsNoTracking();
-        }
-
-        var userId = _currentUser.GetUserId().ToString();
-        var allowed = await _permissions
-            .HasPermissionAsync(userId, AuditingPermissions.AuditTrails.ViewCrossTenant, ct)
-            .ConfigureAwait(false);
-        if (!allowed)
-        {
-            throw new ForbiddenException("Cross-tenant audit access requires Permissions.AuditTrails.ViewCrossTenant.");
-        }
-
-        return _dbContext.AuditRecords
-            .AsNoTracking()
-            .IgnoreQueryFilters();
+        return _dbContext.AuditRecords.AsNoTracking();
     }
 
     /// <summary>

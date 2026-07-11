@@ -5,13 +5,10 @@ using FSH.Modules.Auditing;
 using FSH.Modules.Identity;
 using FSH.Modules.Identity.Contracts.v1.Tokens.TokenGeneration;
 using FSH.Modules.Identity.Features.v1.Tokens.TokenGeneration;
-using FSH.Modules.Multitenancy;
-using FSH.Modules.Multitenancy.Contracts.v1.GetTenantStatus;
 using FSH.Modules.Webhooks;
 using FSH.Modules.Billing;
 using FSH.Modules.Catalog;
 using FSH.Modules.Tickets;
-using FSH.Modules.Multitenancy.Features.v1.GetTenantStatus;
 using System.Reflection;
 using System.Text.Json.Serialization;
 
@@ -49,8 +46,6 @@ builder.Services.AddMediator(o =>
     o.Assemblies = [
         typeof(GenerateTokenCommand),
         typeof(GenerateTokenCommandHandler),
-        typeof(GetTenantStatusQuery),
-        typeof(GetTenantStatusQueryHandler),
         typeof(FSH.Modules.Auditing.Contracts.AuditEnvelope),
         typeof(FSH.Modules.Auditing.Persistence.AuditDbContext),
         typeof(FSH.Modules.Webhooks.Contracts.v1.CreateWebhookSubscription.CreateWebhookSubscriptionCommand),
@@ -72,7 +67,6 @@ builder.Services.AddMediator(o =>
 var moduleAssemblies = new Assembly[]
 {
     typeof(IdentityModule).Assembly,
-    typeof(MultitenancyModule).Assembly,
     typeof(AuditingModule).Assembly,
     typeof(FSH.Modules.Files.FilesModule).Assembly,
     typeof(WebhooksModule).Assembly,
@@ -88,7 +82,6 @@ builder.AddHeroPlatform(o =>
     o.EnableCaching = true;
     o.EnableMailing = true;
     o.EnableJobs = true;
-    o.EnableQuotas = true;
     o.EnableSse = true;
     o.EnableRealtime = true;
 });
@@ -104,12 +97,10 @@ builder.Services.AddHostedService<FSH.Starter.Api.OrphanedOutboxRecurringJobClea
 
 var app = builder.Build();
 
-app.UseHeroMultiTenantDatabases();
 app.UseHeroPlatform(p =>
 {
     p.MapModules = true;
     p.ServeStaticFiles = true;
-    p.UseQuotas = true;
     p.MapSseEndpoints = true;
     p.MapRealtime = true;
 });

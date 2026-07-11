@@ -60,7 +60,7 @@ public sealed class AuditingSaveChangesInterceptor : SaveChangesInterceptor
                     receivedAtUtc: now,
                     eventType: AuditEventType.EntityChange,
                     severity: AuditSeverity.Information,
-                    tenantId: null, userId: null, userName: null,
+                    userId: null, userName: null,
                     traceId: null, spanId: null, correlationId: null, requestId: null,
                     source: ctx.GetType().Name,
                     tags: AuditTag.None,

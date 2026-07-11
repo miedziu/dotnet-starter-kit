@@ -2,10 +2,9 @@ namespace FSH.Modules.Files.Contracts;
 
 /// <summary>
 /// Per-OwnerType authorization for FileAssets. Each owning module (Catalog, Tickets, ...) registers
-/// its own implementation via <c>services.AddFileAccessPolicy&lt;TPolicy&gt;()</c>. The Files module
+/// its own implementation via <c>services.AddFileAccessPolicy{TPolicy}()</c>. The Files module
 /// ships a uploader-only default for the built-in <c>MyFiles</c> and <c>User</c> owner types.
-/// Tenant scoping is enforced by the framework's BaseDbContext (schema-per-tenant) and is NOT
-/// delegated to policies. Policies receive a primitive <c>currentUserId</c> rather than a
+/// Policies receive a primitive <c>currentUserId</c> rather than a
 /// <c>ClaimsPrincipal</c> so the contract stays free of ASP.NET Core types — owning modules that
 /// need richer authz can inject their own dependencies.
 /// </summary>

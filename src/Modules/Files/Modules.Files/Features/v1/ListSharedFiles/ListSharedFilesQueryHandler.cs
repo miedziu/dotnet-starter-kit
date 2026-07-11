@@ -11,15 +11,16 @@ using Microsoft.EntityFrameworkCore;
 namespace FSH.Modules.Files.Features.v1.ListSharedFiles;
 
 /// <summary>
-/// Returns Public, Available files belonging to the built-in tenant-wide owner types so the SPA
-/// can render a "Shared in tenant" surface alongside "My files". Tenant scoping is handled by
-/// the framework's BaseDbContext (schema-per-tenant), not by a WHERE clause here.
+/// Returns Public, Available files belonging to the built-in owner types so the SPA
+/// can render a "Shared files" surface alongside "My files". Scoping is handled by
+/// the framework's BaseDbContext, not by a WHERE clause here.
 /// </summary>
 public sealed class ListSharedFilesQueryHandler(FilesDbContext db, IStorageService storage)
     : IQueryHandler<ListSharedFilesQuery, ReadOnlyCollection<FileAssetDto>>
 {
-    // Free-standing tenant files (not bound to a domain entity). Catalog/Tickets/Chat attachments
-    // are excluded — their visibility follows the owning entity's access policy, not a share decision.
+    // Owner types that represent "free-standing" files (not bound to a domain entity).
+    // Catalog/Tickets/Chat attachments are intentionally excluded — their visibility is a
+    // function of their owning entity's access policy, not a free-standing share decision.
     private static readonly string[] SharedOwnerTypes = ["MyFiles", "User"];
 
     public async ValueTask<ReadOnlyCollection<FileAssetDto>> Handle(ListSharedFilesQuery q, CancellationToken cancellationToken)

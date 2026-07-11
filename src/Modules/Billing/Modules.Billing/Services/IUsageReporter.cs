@@ -10,7 +10,7 @@ namespace FSH.Modules.Billing.Services;
 public interface IUsageReporter
 {
     /// <summary>
-    /// Captures one <see cref="UsageSnapshot"/> per <c>QuotaResource</c> for the given period.
+    /// Captures one <see cref="UsageSnapshot"/> for the given period.
     /// Idempotent: if a snapshot already exists for (period, resource) the existing record is
     /// returned instead of a new one.
     /// </summary>

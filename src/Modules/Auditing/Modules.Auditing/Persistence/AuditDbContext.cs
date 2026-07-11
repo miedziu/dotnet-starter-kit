@@ -1,27 +1,17 @@
-﻿using System.Linq.Expressions;
-using System.Reflection;
-using Finbuckle.MultiTenant.Abstractions;
-using FSH.Framework.Persistence.Context;
-using FSH.Framework.Shared.Multitenancy;
-using FSH.Framework.Shared.Persistence;
+﻿using FSH.Framework.Persistence.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
+using System.Linq.Expressions;
+using System.Reflection;
 
 namespace FSH.Modules.Auditing.Persistence;
 
-public sealed class AuditDbContext : BaseDbContext
+public sealed class AuditDbContext(DbContextOptions<AuditDbContext> options)
+    : BaseDbContext(options)
 {
-    public AuditDbContext(
-    IMultiTenantContextAccessor<AppTenantInfo> multiTenantContextAccessor,
-    DbContextOptions<AuditDbContext> options,
-    IOptions<DatabaseOptions> settings,
-    IHostEnvironment environment) : base(multiTenantContextAccessor, options, settings, environment) { }
-
     public DbSet<AuditRecord> AuditRecords => Set<AuditRecord>();
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -3,11 +3,11 @@ using Microsoft.Extensions.Caching.Distributed;
 
 namespace FSH.Framework.Web.Sse;
 
-public sealed record SsePrincipal(string UserId, string? TenantId);
+public sealed record SsePrincipal(string UserId);
 
 public interface ISseTokenService
 {
-    Task<Guid> IssueAsync(string userId, string? tenantId, CancellationToken cancellationToken);
+    Task<Guid> IssueAsync(string userId, CancellationToken cancellationToken);
 
     Task<SsePrincipal?> ConsumeAsync(Guid token, CancellationToken cancellationToken);
 }
@@ -15,7 +15,7 @@ public interface ISseTokenService
 /// <summary>
 /// Short-lived single-use token for authenticating SSE streams. Browsers' EventSource API cannot
 /// attach Authorization headers, so clients exchange their JWT at /sse/token for an opaque token,
-/// then open the stream at /sse/stream?token=&lt;guid&gt;. The token is deleted on first consume and
+/// then open the stream at /sse/stream?token=GUID. The token is deleted on first consume and
 /// expires in 30 seconds otherwise. Backed by IDistributedCache (Redis in production) — single-use
 /// tokens don't benefit from HybridCache's L1, and IDistributedCache is the right primitive since
 /// we need true read-or-miss semantics without factory-populated nulls.
@@ -29,10 +29,10 @@ internal sealed class SseTokenService(IDistributedCache cache) : ISseTokenServic
         AbsoluteExpirationRelativeToNow = TokenLifetime,
     };
 
-    public async Task<Guid> IssueAsync(string userId, string? tenantId, CancellationToken cancellationToken)
+    public async Task<Guid> IssueAsync(string userId, CancellationToken cancellationToken)
     {
         var token = Guid.CreateVersion7();
-        var payload = JsonSerializer.SerializeToUtf8Bytes(new SsePrincipal(userId, tenantId));
+        var payload = JsonSerializer.SerializeToUtf8Bytes(new SsePrincipal(userId));
         await cache.SetAsync(KeyFor(token), payload, EntryOptions, cancellationToken).ConfigureAwait(false);
         return token;
     }

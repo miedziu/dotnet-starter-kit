@@ -12,7 +12,4 @@ public sealed class AuditSummaryAggregateDto
 
     public IDictionary<string, long> EventsBySource { get; init; } =
         new Dictionary<string, long>(StringComparer.OrdinalIgnoreCase);
-
-    public IDictionary<string, long> EventsByTenant { get; init; } =
-        new Dictionary<string, long>(StringComparer.OrdinalIgnoreCase);
 }

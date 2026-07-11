@@ -34,8 +34,8 @@ internal sealed class UserService(
     public Task<string> GetOrCreateFromPrincipalAsync(ClaimsPrincipal principal, CancellationToken cancellationToken = default)
         => registrationService.GetOrCreateFromPrincipalAsync(principal, cancellationToken);
 
-    public Task<string> ConfirmEmailAsync(string userId, string code, string tenant, CancellationToken cancellationToken)
-        => registrationService.ConfirmEmailAsync(userId, code, tenant, cancellationToken);
+    public Task<string> ConfirmEmailAsync(string userId, string code, CancellationToken cancellationToken)
+        => registrationService.ConfirmEmailAsync(userId, code, cancellationToken);
 
     public Task AdminConfirmEmailAsync(string userId, CancellationToken cancellationToken = default)
         => registrationService.AdminConfirmEmailAsync(userId, cancellationToken);

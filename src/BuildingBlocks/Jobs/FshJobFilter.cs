@@ -1,7 +1,5 @@
-﻿using Finbuckle.MultiTenant.Abstractions;
-using FSH.Framework.Core.Common;
+﻿using FSH.Framework.Core.Common;
 using FSH.Framework.Shared.Identity.Claims;
-using FSH.Framework.Shared.Multitenancy;
 using Hangfire.Client;
 using Hangfire.Logging;
 using Microsoft.AspNetCore.Http;
@@ -21,7 +19,7 @@ public class FshJobFilter : IClientFilter
     {
         ArgumentNullException.ThrowIfNull(context);
 
-        Logger.InfoFormat("Set TenantId and UserId parameters to job {0}.{1}...",
+        Logger.InfoFormat("Set UserId parameters to job {0}.{1}...",
             context.Job.Method.ReflectedType?.FullName, context.Job.Method.Name);
 
         using var scope = _services.CreateScope();
@@ -31,17 +29,10 @@ public class FshJobFilter : IClientFilter
 
         if (httpContext is null)
         {
-            // No HTTP context (e.g. recurring/background job creation) – skip setting tenant/user.
-            Logger.WarnFormat("No HttpContext available for job {0}.{1}; skipping tenant/user parameters.",
+            // No HTTP context (e.g. recurring/background job creation) – skip setting user.
+            Logger.WarnFormat("No HttpContext available for job {0}.{1}; skipping user parameters.",
                 context.Job.Method.ReflectedType?.FullName, context.Job.Method.Name);
             return;
-        }
-
-        var mtAccessor = scope.ServiceProvider.GetService<IMultiTenantContextAccessor>();
-        var tenantInfo = mtAccessor?.MultiTenantContext?.TenantInfo;
-        if (tenantInfo is not null)
-        {
-            context.SetJobParameter(MultitenancyConstants.Identifier, tenantInfo);
         }
 
         var userId = httpContext.User.GetUserId();

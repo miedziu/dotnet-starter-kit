@@ -2,11 +2,10 @@
 
 /// <summary>
 /// Ambient context for the current operation/request. 
-/// Implementations typically pull from HttpContext, Tenant provider, and Activity.Current.
+/// Implementations typically pull from HttpContext, Activity.Current.
 /// </summary>
 public interface IAuditScope
 {
-    string? TenantId { get; }
     string? UserId { get; }
     string? UserName { get; }
     string? TraceId { get; }
@@ -23,7 +22,6 @@ public interface IAuditScope
 
     /// <summary>Clone the scope overriding select fields (use null to keep existing).</summary>
     IAuditScope WithProperties(
-        string? tenantId = null,
         string? userId = null,
         string? userName = null,
         string? traceId = null,

@@ -10,9 +10,9 @@ public static class ConfirmEmailEndpoint
 {
     internal static RouteHandlerBuilder MapConfirmEmailEndpoint(this IEndpointRouteBuilder endpoints)
     {
-        return endpoints.MapGet("/confirm-email", async (string userId, string code, string tenant, IMediator mediator, CancellationToken cancellationToken) =>
+        return endpoints.MapGet("/confirm-email", async (string userId, string code, IMediator mediator, CancellationToken cancellationToken) =>
         {
-            var result = await mediator.Send(new ConfirmEmailCommand(userId, code, tenant), cancellationToken);
+            var result = await mediator.Send(new ConfirmEmailCommand(userId, code), cancellationToken);
             return TypedResults.Ok(result);
         })
         .WithName("ConfirmEmail")

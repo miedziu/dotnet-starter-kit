@@ -1,8 +1,6 @@
-using FSH.Framework.Core.Domain;
-
 namespace FSH.Modules.Auditing;
 
-public sealed class AuditRecord : IGlobalEntity
+public sealed class AuditRecord
 {
     public Guid Id { get; set; }
     public DateTime OccurredAtUtc { get; set; }

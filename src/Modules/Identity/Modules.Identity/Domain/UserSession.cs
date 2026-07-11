@@ -77,7 +77,7 @@ public class UserSession : IHasDomainEvents
         LastActivityAt = TimeProvider.System.GetUtcNow().UtcDateTime;
     }
 
-    public void Revoke(string? revokedBy = null, string? reason = null, string? tenantId = null)
+    public void Revoke(string? revokedBy = null, string? reason = null)
     {
         if (IsRevoked) return;
         IsRevoked = true;
@@ -89,7 +89,6 @@ public class UserSession : IHasDomainEvents
             userId: UserId,
             sessionId: Id,
             revokedBy: revokedBy,
-            reason: reason,
-            tenantId: tenantId));
+            reason: reason));
     }
 }

@@ -102,7 +102,6 @@ public sealed class SendMessageCommandHandler(
         if (notifyUserIds.Count > 0)
         {
             var correlationId = Activity.Current?.TraceId.ToString() ?? Guid.NewGuid().ToString();
-            var tenantId = currentUser.GetTenant();
             var preview = MakePreview(message.Body ?? string.Empty);
             foreach (var mentionedUserId in notifyUserIds)
             {
@@ -110,7 +109,6 @@ public sealed class SendMessageCommandHandler(
                     new MentionedInChannelIntegrationEvent(
                         Id: Guid.NewGuid(),
                         OccurredOnUtc: DateTime.UtcNow,
-                        TenantId: tenantId,
                         CorrelationId: correlationId,
                         Source: "Chat",
                         ChannelId: channel.Id,
@@ -127,7 +125,10 @@ public sealed class SendMessageCommandHandler(
         return dto;
     }
 
-    /// <summary>Truncate the body for inbox display. Keeps things to a single line, &lt;= 140 chars.</summary>
+    /// <summary>
+    /// Truncate the body for inbox display. Keeps things to a single line,
+    /// at most 140 characters.
+    /// </summary>
     private static string MakePreview(string body)
     {
         var collapsed = body.Replace('\r', ' ').Replace('\n', ' ').Trim();

@@ -1,6 +1,7 @@
 using Asp.Versioning;
 using FSH.Framework.Core.Context;
 using FSH.Framework.Eventing;
+using FSH.Framework.Eventing.Outbox;
 using FSH.Framework.Persistence;
 using FSH.Framework.Storage;
 using FSH.Framework.Web.Modules;
@@ -31,8 +32,8 @@ using FSH.Modules.Identity.Features.v1.Roles.UpdateRolePermissions;
 using FSH.Modules.Identity.Features.v1.Roles.UpsertRole;
 using FSH.Modules.Identity.Features.v1.Sessions.AdminRevokeAllSessions;
 using FSH.Modules.Identity.Features.v1.Sessions.AdminRevokeSession;
+using FSH.Modules.Identity.Features.v1.Sessions.GetAllSessions;
 using FSH.Modules.Identity.Features.v1.Sessions.GetMySessions;
-using FSH.Modules.Identity.Features.v1.Sessions.GetTenantSessions;
 using FSH.Modules.Identity.Features.v1.Sessions.GetUserSessions;
 using FSH.Modules.Identity.Features.v1.Sessions.RevokeAllSessions;
 using FSH.Modules.Identity.Features.v1.Sessions.RevokeSession;
@@ -41,11 +42,10 @@ using FSH.Modules.Identity.Features.v1.Tokens.TokenGeneration;
 using FSH.Modules.Identity.Features.v1.TwoFactor.Disable;
 using FSH.Modules.Identity.Features.v1.TwoFactor.Enroll;
 using FSH.Modules.Identity.Features.v1.TwoFactor.VerifyEnroll;
+using FSH.Modules.Identity.Features.v1.Users.AdminConfirmEmail;
 using FSH.Modules.Identity.Features.v1.Users.AssignUserRoles;
 using FSH.Modules.Identity.Features.v1.Users.ChangePassword;
-using FSH.Modules.Identity.Features.v1.Users.AdminConfirmEmail;
 using FSH.Modules.Identity.Features.v1.Users.ConfirmEmail;
-using FSH.Modules.Identity.Features.v1.Users.ResendConfirmationEmail;
 using FSH.Modules.Identity.Features.v1.Users.DeleteUser;
 using FSH.Modules.Identity.Features.v1.Users.ForgotPassword;
 using FSH.Modules.Identity.Features.v1.Users.GetUserById;
@@ -55,6 +55,7 @@ using FSH.Modules.Identity.Features.v1.Users.GetUserProfile;
 using FSH.Modules.Identity.Features.v1.Users.GetUserRoles;
 using FSH.Modules.Identity.Features.v1.Users.GetUsers;
 using FSH.Modules.Identity.Features.v1.Users.RegisterUser;
+using FSH.Modules.Identity.Features.v1.Users.ResendConfirmationEmail;
 using FSH.Modules.Identity.Features.v1.Users.ResetPassword;
 using FSH.Modules.Identity.Features.v1.Users.SearchUsers;
 using FSH.Modules.Identity.Features.v1.Users.SelfRegistration;
@@ -62,6 +63,8 @@ using FSH.Modules.Identity.Features.v1.Users.SetProfileImage;
 using FSH.Modules.Identity.Features.v1.Users.ToggleUserStatus;
 using FSH.Modules.Identity.Features.v1.Users.UpdateUser;
 using FSH.Modules.Identity.Services;
+using Hangfire;
+using Hangfire.Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -155,6 +158,13 @@ public class IdentityModule : IModule
            .AddEntityFrameworkStores<IdentityDbContext>()
            .AddDefaultTokenProviders();
 
+        // Identity's EF stores default the role-claim entity to IdentityRoleClaim<string>, but this module
+        // models role claims as FshRoleClaim (a subclass). Without this override the RoleStore calls
+        // Context.Set<IdentityRoleClaim<string>>() and EF throws "Cannot create a DbSet for
+        // 'IdentityRoleClaim<string>' because this type is not included in the model for the context".
+        // Supplying FshRoleClaim as the role-claim type routes claim reads/writes through the mapped entity.
+        services.AddScoped<IRoleStore<FshRole>, Microsoft.AspNetCore.Identity.EntityFrameworkCore.RoleStore<FshRole, IdentityDbContext, string, Microsoft.AspNetCore.Identity.IdentityUserRole<string>, FshRoleClaim>>();
+
         //metrics
         services.AddSingleton<IdentityMetrics>();
 
@@ -181,6 +191,16 @@ public class IdentityModule : IModule
 
         // The outbox is dispatched by the framework's OutboxDispatcherHostedService (on by default). A second dispatcher
         // here would race the same rows (no row-level claim) → duplicate handlers + PK_InboxMessages collisions, so this module registers none.
+
+        var jobManager = endpoints.ServiceProvider.GetService<IRecurringJobManager>();
+        if (jobManager is not null)
+        {
+            jobManager.AddOrUpdate(
+                "identity-outbox-dispatcher",
+                Job.FromExpression<OutboxDispatcher>(d => d.DispatchAsync(CancellationToken.None)),
+                Cron.Minutely(),
+                new RecurringJobOptions());
+        }
 
         // roles
         group.MapGetRolesEndpoint();
@@ -221,7 +241,7 @@ public class IdentityModule : IModule
         group.MapRevokeAllSessionsEndpoint();
 
         // sessions - admin endpoints
-        group.MapGetTenantSessionsEndpoint();
+        group.MapGetAllSessionsEndpoint();
         group.MapGetUserSessionsEndpoint();
         group.MapAdminRevokeSessionEndpoint();
         group.MapAdminRevokeAllSessionsEndpoint();

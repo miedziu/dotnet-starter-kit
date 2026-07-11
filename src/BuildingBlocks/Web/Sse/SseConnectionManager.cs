@@ -7,7 +7,7 @@ namespace FSH.Framework.Web.Sse;
 /// <summary>
 /// Manages active SSE connections keyed by a per-connection <see cref="Guid"/> so a single user with
 /// multiple tabs keeps every stream open. Supports targeted sends (by userId — fans out to all of the
-/// user's active connections) and tenant-wide broadcasts. Thread-safe via ConcurrentDictionary.
+/// user's active connections). Thread-safe via ConcurrentDictionary.
 /// </summary>
 public sealed class SseConnectionManager
 {
@@ -23,7 +23,7 @@ public sealed class SseConnectionManager
     /// Registers a new connection and returns a stable connectionId plus the channel reader the
     /// endpoint will consume.
     /// </summary>
-    public (Guid ConnectionId, ChannelReader<SseEvent> Reader) Connect(string userId, string? tenantId = null)
+    public (Guid ConnectionId, ChannelReader<SseEvent> Reader) Connect(string userId)
     {
         var connectionId = Guid.CreateVersion7();
         var channel = Channel.CreateBounded<SseEvent>(new BoundedChannelOptions(100)
@@ -33,12 +33,12 @@ public sealed class SseConnectionManager
             SingleWriter = false,
         });
 
-        _connections[connectionId] = new Connection(userId, tenantId, channel);
+        _connections[connectionId] = new Connection(userId, channel);
 
         if (_logger.IsEnabled(LogLevel.Debug))
         {
-            _logger.LogDebug("SSE client connected: connection={ConnectionId} user={UserId} tenant={TenantId}",
-                connectionId, userId, tenantId ?? "none");
+            _logger.LogDebug("SSE client connected: connection={ConnectionId} user={UserId}",
+                connectionId, userId);
         }
 
         return (connectionId, channel.Reader);
@@ -81,25 +81,7 @@ public sealed class SseConnectionManager
     }
 
     /// <summary>
-    /// Broadcasts an event to all connections in the specified tenant.
-    /// </summary>
-    public int Broadcast(string tenantId, SseEvent sseEvent)
-    {
-        var sent = 0;
-        foreach (var (_, connection) in _connections)
-        {
-            if (string.Equals(connection.TenantId, tenantId, StringComparison.Ordinal)
-                && connection.Channel.Writer.TryWrite(sseEvent))
-            {
-                sent++;
-            }
-        }
-
-        return sent;
-    }
-
-    /// <summary>
-    /// Broadcasts an event to every connected client (cross-tenant).
+    /// Broadcasts an event to every connected client.
     /// </summary>
     public int BroadcastAll(SseEvent sseEvent)
     {
@@ -118,5 +100,5 @@ public sealed class SseConnectionManager
     /// <summary>Number of active connections across all users.</summary>
     public int ActiveConnections => _connections.Count;
 
-    private sealed record Connection(string UserId, string? TenantId, Channel<SseEvent> Channel);
+    private sealed record Connection(string UserId, Channel<SseEvent> Channel);
 }

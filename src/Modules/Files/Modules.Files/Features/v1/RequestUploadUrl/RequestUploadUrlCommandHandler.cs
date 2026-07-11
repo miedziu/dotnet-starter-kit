@@ -1,7 +1,5 @@
 using FSH.Framework.Core.Context;
 using FSH.Framework.Core.Exceptions;
-using FSH.Framework.Quota;
-using FSH.Framework.Shared.Quota;
 using FSH.Framework.Storage.Services;
 using FSH.Modules.Files.Contracts.v1.Commands;
 using FSH.Modules.Files.Contracts.v1.DTOs;
@@ -18,7 +16,6 @@ public sealed class RequestUploadUrlCommandHandler(
     FilesDbContext db,
     IStorageService storage,
     FileAccessPolicyRegistry policies,
-    IQuotaService quotas,
     ICurrentUser currentUser,
     IOptions<FilesOptions> options)
     : ICommandHandler<RequestUploadUrlCommand, PresignedUploadResponse>
@@ -27,7 +24,6 @@ public sealed class RequestUploadUrlCommandHandler(
     {
         ArgumentNullException.ThrowIfNull(cmd);
 
-        var tenantId = currentUser.GetTenant() ?? throw new UnauthorizedException("invalid tenant");
         var userId = currentUser.GetUserId();
         if (userId == Guid.Empty)
         {
@@ -66,19 +62,9 @@ public sealed class RequestUploadUrlCommandHandler(
             throw new ForbiddenException("Not allowed to attach files to this owner.");
         }
 
-        // Quota pre-check (no debit yet — debit happens on finalize with actual bytes).
-        var quotaCheck = await quotas.CheckAsync(QuotaResource.StorageBytes, cmd.SizeBytes, cancellationToken).ConfigureAwait(false);
-        if (!quotaCheck.Allowed)
-        {
-            throw new CustomException(
-                $"Storage quota exceeded ({quotaCheck.CurrentUsage}/{quotaCheck.Limit} bytes).",
-                (IEnumerable<string>?)null,
-                (HttpStatusCode)507);
-        }
-
         // Generate id + storage key + presigned URL.
         var id = Guid.CreateVersion7();
-        var storageKey = StorageKeyBuilder.Build(tenantId, cmd.OwnerType, id, cmd.FileName, DateTimeOffset.UtcNow);
+        var storageKey = StorageKeyBuilder.Build(cmd.OwnerType, id, cmd.FileName, DateTimeOffset.UtcNow);
         var ttl = TimeSpan.FromMinutes(options.Value.UploadUrlTtlMinutes);
         var presigned = await storage.GenerateUploadUrlAsync(storageKey, cmd.ContentType, category.MaxBytes, ttl, cancellationToken).ConfigureAwait(false);
 

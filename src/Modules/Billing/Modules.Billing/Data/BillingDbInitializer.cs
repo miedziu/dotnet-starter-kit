@@ -21,7 +21,7 @@ public sealed class BillingDbInitializer(
 
     public async Task SeedAsync(CancellationToken cancellationToken)
     {
-        // Plans are a global catalogue (IGlobalEntity); seed defaults once. "free" backs the trial
+        // Plans are a global catalogue; seed defaults once. "free" backs the trial
         // fallback; keys align with QuotaOptions plan keys so quota limits resolve.
         if (await dbContext.Plans.AnyAsync(cancellationToken).ConfigureAwait(false))
         {

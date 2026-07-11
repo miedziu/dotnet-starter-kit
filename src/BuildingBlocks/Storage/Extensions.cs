@@ -60,13 +60,26 @@ public static class Extensions
                     : new AmazonS3Client(config);
             });
 
-            services.AddTransient<IStorageService, S3StorageService>();
+            services.AddTransient<S3StorageService>();
+            RegisterStorageService<S3StorageService>(services, ServiceLifetime.Transient);
         }
         else
         {
-            services.AddScoped<IStorageService, LocalStorageService>();
+            services.AddScoped<LocalStorageService>();
+            RegisterStorageService<LocalStorageService>(services, ServiceLifetime.Scoped);
         }
 
         return services;
+    }
+
+    private static void RegisterStorageService<TInner>(
+    IServiceCollection services,
+    ServiceLifetime innerLifetime)
+    where TInner : class, IStorageService
+    {
+        services.Add(new ServiceDescriptor(
+            typeof(IStorageService),
+            sp => sp.GetRequiredService<TInner>(),
+            innerLifetime));
     }
 }

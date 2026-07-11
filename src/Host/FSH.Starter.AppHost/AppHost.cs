@@ -86,13 +86,14 @@ var minioApiEndpoint = minio.GetEndpoint("api");
 var migrator = builder.AddProject<Projects.FSH_Starter_DbMigrator>($"{appPrefix}-db-migrator")
     .WithReference(postgres)
     .WaitFor(postgres)
+    .WithEnvironment("DOTNET_ENVIRONMENT", "Development")
     .WithEnvironment("DatabaseOptions__Provider", "POSTGRESQL")
     .WithEnvironment("DatabaseOptions__ConnectionString", postgres.Resource.ConnectionStringExpression)
     .WithEnvironment("DatabaseOptions__MigrationsAssembly", "FSH.Starter.Migrations.PostgreSQL")
     .WithEnvironment("Seed__DefaultAdminPassword", "123Pa$$word!")
     .WithArgs("apply", "--seed");
 
-// Demo seeder (dev-only): provisions the acme/globex tenants + demo-login users via seed-demo. DOTNET_ENVIRONMENT=Development is required (console host ignores ASPNETCORE_ENVIRONMENT) or seed-demo refuses to run.
+// Demo seeder (dev-only): provisions the demo-login users via seed-demo. DOTNET_ENVIRONMENT=Development is required (console host ignores ASPNETCORE_ENVIRONMENT) or seed-demo refuses to run.
 var demoSeeder = builder.AddProject<Projects.FSH_Starter_DbMigrator>($"{appPrefix}-demo-seeder")
     .WithReference(postgres)
     .WaitFor(postgres)
@@ -107,6 +108,7 @@ var demoSeeder = builder.AddProject<Projects.FSH_Starter_DbMigrator>($"{appPrefi
 // API Service
 var api = builder.AddProject<Projects.FSH_Starter_Api>($"{appPrefix}-api")
     .WithReference(postgres)
+    //.WithReference(redis)
     .WaitFor(postgres)
     .WaitFor(redis)
     .WaitForCompletion(minioInit)

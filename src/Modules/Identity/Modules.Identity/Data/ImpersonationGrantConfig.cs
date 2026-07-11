@@ -13,9 +13,6 @@ public class ImpersonationGrantConfig : IEntityTypeConfiguration<ImpersonationGr
         builder
             .ToTable("ImpersonationGrants", IdentityModuleConstants.SchemaName);
 
-        // NOT multitenant — cross-tenant impersonations would be filtered out
-        // by Finbuckle. Tenant filtering happens in the query layer.
-
         builder.HasKey(g => g.Id);
 
         builder.Property(g => g.Jti)

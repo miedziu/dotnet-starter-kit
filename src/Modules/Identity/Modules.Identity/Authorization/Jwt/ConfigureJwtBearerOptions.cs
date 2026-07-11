@@ -187,6 +187,7 @@ public class ConfigureJwtBearerOptions : IConfigureNamedOptions<JwtBearerOptions
                     context.Fail("impersonation grant revoked or ended");
                 }
             },
+            //OnTokenValidated = context => Task.CompletedTask,
             OnForbidden = _ => throw new ForbiddenException(),
             OnMessageReceived = context =>
             {

@@ -4,9 +4,7 @@ using FSH.Modules.Billing.Contracts;
 namespace FSH.Modules.Billing.Domain;
 
 /// <summary>
-/// Binds a tenant to a billing plan over a time window. At most one subscription is Active per
-/// tenant at a time — assignment replaces the prior active subscription (which is Cancelled with
-/// EndUtc set to the new one's StartUtc).
+/// Binds to a billing plan over a time window.
 /// </summary>
 public sealed class Subscription : BaseEntity<Guid>
 {

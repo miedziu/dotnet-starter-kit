@@ -138,9 +138,10 @@ public sealed class AuditHttpMiddleware
         RequestCaptureContext requestContext,
         object? respPreview,
         int respSize,
+        int respMaskedFields,
         Stopwatch sw)
     {
-        await Audit.ForActivity(Contracts.ActivityKind.Http, ctx.Request.Path)
+        var builder = Audit.ForActivity(Contracts.ActivityKind.Http, ctx.Request.Path)
             .WithActivityResult(
                 statusCode: ctx.Response.StatusCode,
                 durationMs: (int)sw.Elapsed.TotalMilliseconds,
@@ -152,8 +153,19 @@ public sealed class AuditHttpMiddleware
             .WithSource(AuditSourceResolver.Resolve(ctx))
             .WithUser(_publisher.CurrentScope?.UserId, _publisher.CurrentScope?.UserName)
             .WithCorrelation(_publisher.CurrentScope?.CorrelationId ?? ctx.TraceIdentifier)
-            .WithRequestId(_publisher.CurrentScope?.RequestId ?? ctx.TraceIdentifier)
-            .WriteAsync(ctx.RequestAborted);
+            .WithRequestId(_publisher.CurrentScope?.RequestId ?? ctx.TraceIdentifier);
+
+        var tags = AuditTag.None;
+        if (requestContext.MaskedFields > 0 || respMaskedFields > 0)
+        {
+            tags |= AuditTag.PiiMasked;
+        }
+        if (tags != AuditTag.None)
+        {
+            builder.WithTags(tags);
+        }
+
+        await builder.WriteAsync(ctx.RequestAborted);
     }
 
     private async Task WriteExceptionAuditAsync(HttpContext ctx, Exception ex)
@@ -166,7 +178,6 @@ public sealed class AuditHttpMiddleware
 
         await Audit.ForException(ex, ExceptionArea.Api, routeOrLocation: ctx.Request.Path, severity: sev)
             .WithSource(AuditSourceResolver.Resolve(ctx))
-            .WithTenant(_publisher.CurrentScope?.TenantId)
             .WithUser(_publisher.CurrentScope?.UserId, _publisher.CurrentScope?.UserName)
             .WithCorrelation(_publisher.CurrentScope?.CorrelationId ?? ctx.TraceIdentifier)
             .WithRequestId(_publisher.CurrentScope?.RequestId ?? ctx.TraceIdentifier)

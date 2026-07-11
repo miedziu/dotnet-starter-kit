@@ -9,10 +9,9 @@ public sealed record UserDeactivatedEvent(
     string UserId,
     string? DeactivatedBy,
     string? Reason,
-    string? CorrelationId = null,
-    string? TenantId = null
-) : DomainEvent(EventId, OccurredOnUtc, CorrelationId, TenantId)
+    string? CorrelationId = null
+) : DomainEvent(EventId, OccurredOnUtc, CorrelationId)
 {
-    public static UserDeactivatedEvent Create(string userId, string? deactivatedBy = null, string? reason = null, string? correlationId = null, string? tenantId = null)
-        => new(Guid.NewGuid(), DateTimeOffset.UtcNow, userId, deactivatedBy, reason, correlationId, tenantId);
+    public static UserDeactivatedEvent Create(string userId, string? deactivatedBy = null, string? reason = null, string? correlationId = null)
+        => new(Guid.NewGuid(), DateTimeOffset.UtcNow, userId, deactivatedBy, reason, correlationId);
 }

@@ -22,7 +22,6 @@ public sealed class CaptureUsageSnapshotsCommandHandler(
                 s.Id,
                 s.PeriodYear,
                 s.PeriodMonth,
-                s.Resource,
                 s.UsedUnits,
                 s.LimitUnits,
                 s.Overage,

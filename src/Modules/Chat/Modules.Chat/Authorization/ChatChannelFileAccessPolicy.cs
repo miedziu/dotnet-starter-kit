@@ -12,8 +12,6 @@ namespace FSH.Modules.Chat.Authorization;
 /// - Delete: uploader-only. Channel admins can already moderate the message itself
 ///   (Messages.DeleteAny), which cascades to attachments through the message FK.
 ///
-/// Tenant scoping is enforced upstream by Finbuckle; this policy only needs to gate by
-/// channel membership.
 /// </summary>
 public sealed class ChatChannelFileAccessPolicy(ChatDbContext db) : IFileAccessPolicy
 {

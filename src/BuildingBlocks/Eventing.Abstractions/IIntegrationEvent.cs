@@ -10,11 +10,6 @@ public interface IIntegrationEvent
     DateTime OccurredOnUtc { get; }
 
     /// <summary>
-    /// Tenant identifier for tenant-scoped events. Null for global events.
-    /// </summary>
-    string? TenantId { get; }
-
-    /// <summary>
     /// Correlation identifier to tie events to requests and traces.
     /// </summary>
     string CorrelationId { get; }

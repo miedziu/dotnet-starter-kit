@@ -1,7 +1,5 @@
-using Finbuckle.MultiTenant.Abstractions;
 using FSH.Framework.Core.Context;
 using FSH.Framework.Core.Exceptions;
-using FSH.Framework.Shared.Multitenancy;
 using FSH.Modules.Identity.Contracts.DTOs;
 using FSH.Modules.Identity.Contracts.Services;
 using FSH.Modules.Identity.Data;
@@ -16,7 +14,6 @@ public sealed class SessionService : ISessionService
 {
     private readonly IdentityDbContext _db;
     private readonly ICurrentUser _currentUser;
-    private readonly IMultiTenantContextAccessor<AppTenantInfo> _multiTenantContextAccessor;
     private readonly ILogger<SessionService> _logger;
     private readonly TimeProvider _timeProvider;
     private readonly Parser _uaParser;
@@ -24,24 +21,14 @@ public sealed class SessionService : ISessionService
     public SessionService(
         IdentityDbContext db,
         ICurrentUser currentUser,
-        IMultiTenantContextAccessor<AppTenantInfo> multiTenantContextAccessor,
         ILogger<SessionService> logger,
         TimeProvider timeProvider)
     {
         _db = db;
         _currentUser = currentUser;
-        _multiTenantContextAccessor = multiTenantContextAccessor;
         _logger = logger;
         _timeProvider = timeProvider;
         _uaParser = Parser.GetDefault();
-    }
-
-    private void EnsureValidTenant()
-    {
-        if (string.IsNullOrWhiteSpace(_multiTenantContextAccessor?.MultiTenantContext?.TenantInfo?.Id))
-        {
-            throw new UnauthorizedException("Invalid tenant");
-        }
     }
 
     public async Task<UserSessionDto> CreateSessionAsync(
@@ -52,8 +39,6 @@ public sealed class SessionService : ISessionService
         DateTime expiresAt,
         CancellationToken cancellationToken = default)
     {
-        EnsureValidTenant();
-
         var clientInfo = _uaParser.Parse(userAgent);
 
         var session = UserSession.Create(
@@ -83,8 +68,6 @@ public sealed class SessionService : ISessionService
         string userId,
         CancellationToken cancellationToken = default)
     {
-        EnsureValidTenant();
-
         var currentUserId = _currentUser.GetUserId().ToString();
         if (!string.Equals(userId, currentUserId, StringComparison.OrdinalIgnoreCase))
         {
@@ -105,8 +88,6 @@ public sealed class SessionService : ISessionService
         string userId,
         CancellationToken cancellationToken = default)
     {
-        EnsureValidTenant();
-
         var now = _timeProvider.GetUtcNow().UtcDateTime;
         var sessions = await _db.UserSessions
             .AsNoTracking()
@@ -118,16 +99,14 @@ public sealed class SessionService : ISessionService
         return sessions.Select(s => MapToDto(s, isCurrentSession: false)).ToList();
     }
 
-    public async Task<(List<UserSessionDto> Items, long TotalCount)> GetTenantSessionsAsync(
+    public async Task<(List<UserSessionDto> Items, long TotalCount)> GetAllSessionsAsync(
         bool includeInactive,
         string? search,
         int skip,
         int take,
         CancellationToken cancellationToken = default)
     {
-        EnsureValidTenant();
-
-        // Cap server-side so an over-eager client can't pull a tenant's full
+        // Cap server-side so an over-eager client can't pull the full
         // session table in one round-trip.
         if (take is < 1 or > 200) take = 50;
         if (skip < 0) skip = 0;
@@ -167,8 +146,6 @@ public sealed class SessionService : ISessionService
         Guid sessionId,
         CancellationToken cancellationToken = default)
     {
-        EnsureValidTenant();
-
         var session = await _db.UserSessions
             .AsNoTracking()
             .Include(s => s.User)
@@ -183,8 +160,6 @@ public sealed class SessionService : ISessionService
         string? reason = null,
         CancellationToken cancellationToken = default)
     {
-        EnsureValidTenant();
-
         var session = await _db.UserSessions
             .FirstOrDefaultAsync(s => s.Id == sessionId && !s.IsRevoked, cancellationToken);
 
@@ -199,8 +174,7 @@ public sealed class SessionService : ISessionService
             throw new UnauthorizedAccessException("Cannot revoke session for another user");
         }
 
-        var tenantId = _multiTenantContextAccessor?.MultiTenantContext?.TenantInfo?.Id;
-        session.Revoke(revokedBy, reason ?? "User requested", tenantId);
+        session.Revoke(revokedBy, reason ?? "User requested");
 
         await _db.SaveChangesAsync(cancellationToken);
 
@@ -219,8 +193,6 @@ public sealed class SessionService : ISessionService
         string? reason = null,
         CancellationToken cancellationToken = default)
     {
-        EnsureValidTenant();
-
         var currentUserId = _currentUser.GetUserId().ToString();
         if (!string.Equals(userId, currentUserId, StringComparison.OrdinalIgnoreCase))
         {
@@ -237,10 +209,9 @@ public sealed class SessionService : ISessionService
 
         var sessions = await query.ToListAsync(cancellationToken);
 
-        var tenantId = _multiTenantContextAccessor?.MultiTenantContext?.TenantInfo?.Id;
         foreach (var session in sessions)
         {
-            session.Revoke(revokedBy, reason ?? "User requested logout from all devices", tenantId);
+            session.Revoke(revokedBy, reason ?? "User requested logout from all devices");
         }
 
         await _db.SaveChangesAsync(cancellationToken);
@@ -259,16 +230,13 @@ public sealed class SessionService : ISessionService
         string? reason = null,
         CancellationToken cancellationToken = default)
     {
-        EnsureValidTenant();
-
         var sessions = await _db.UserSessions
             .Where(s => s.UserId == userId && !s.IsRevoked)
             .ToListAsync(cancellationToken);
 
-        var tenantId = _multiTenantContextAccessor?.MultiTenantContext?.TenantInfo?.Id;
         foreach (var session in sessions)
         {
-            session.Revoke(revokedBy, reason ?? "Admin requested", tenantId);
+            session.Revoke(revokedBy, reason ?? "Admin requested");
         }
 
         await _db.SaveChangesAsync(cancellationToken);
@@ -288,8 +256,6 @@ public sealed class SessionService : ISessionService
         string? reason = null,
         CancellationToken cancellationToken = default)
     {
-        EnsureValidTenant();
-
         var session = await _db.UserSessions
             .FirstOrDefaultAsync(s => s.Id == sessionId && !s.IsRevoked, cancellationToken);
 
@@ -298,8 +264,7 @@ public sealed class SessionService : ISessionService
             return false;
         }
 
-        var tenantId = _multiTenantContextAccessor?.MultiTenantContext?.TenantInfo?.Id;
-        session.Revoke(revokedBy, reason ?? "Admin requested", tenantId);
+        session.Revoke(revokedBy, reason ?? "Admin requested");
 
         await _db.SaveChangesAsync(cancellationToken);
 
@@ -315,8 +280,6 @@ public sealed class SessionService : ISessionService
         string refreshTokenHash,
         CancellationToken cancellationToken = default)
     {
-        EnsureValidTenant();
-
         var session = await _db.UserSessions
             .FirstOrDefaultAsync(s => s.RefreshTokenHash == refreshTokenHash && !s.IsRevoked, cancellationToken);
 
@@ -333,8 +296,6 @@ public sealed class SessionService : ISessionService
         DateTime newExpiresAt,
         CancellationToken cancellationToken = default)
     {
-        EnsureValidTenant();
-
         var session = await _db.UserSessions
             .FirstOrDefaultAsync(s => s.RefreshTokenHash == oldRefreshTokenHash && !s.IsRevoked, cancellationToken);
 
@@ -354,8 +315,6 @@ public sealed class SessionService : ISessionService
         string refreshTokenHash,
         CancellationToken cancellationToken = default)
     {
-        EnsureValidTenant();
-
         var session = await _db.UserSessions
             .AsNoTracking()
             .FirstOrDefaultAsync(s => s.RefreshTokenHash == refreshTokenHash, cancellationToken);
@@ -372,8 +331,6 @@ public sealed class SessionService : ISessionService
         string refreshTokenHash,
         CancellationToken cancellationToken = default)
     {
-        EnsureValidTenant();
-
         var session = await _db.UserSessions
             .AsNoTracking()
             .FirstOrDefaultAsync(s => s.RefreshTokenHash == refreshTokenHash && !s.IsRevoked, cancellationToken);

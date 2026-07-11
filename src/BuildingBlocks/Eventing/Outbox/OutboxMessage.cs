@@ -8,7 +8,7 @@ namespace FSH.Framework.Eventing.Outbox;
 /// Outbox message entity used to persist integration events alongside domain changes.
 ///
 /// </summary>
-public class OutboxMessage : IGlobalEntity
+public class OutboxMessage
 {
     public Guid Id { get; set; }
 

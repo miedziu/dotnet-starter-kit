@@ -1,10 +1,8 @@
-using FSH.Framework.Shared.Multitenancy;
 using FSH.Framework.Web.Idempotency;
 using FSH.Modules.Identity.Contracts.v1.Users.RegisterUser;
 using Mediator;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 
 namespace FSH.Modules.Identity.Features.v1.Users.SelfRegistration;
@@ -14,7 +12,6 @@ public static class SelfRegisterUserEndpoint
     internal static RouteHandlerBuilder MapSelfRegisterUserEndpoint(this IEndpointRouteBuilder endpoints)
     {
         return endpoints.MapPost("/self-register", async (RegisterUserCommand command,
-            [FromHeader(Name = MultitenancyConstants.Identifier)] string tenant,
             HttpContext context,
             IMediator mediator,
             CancellationToken cancellationToken) =>
@@ -26,7 +23,7 @@ public static class SelfRegisterUserEndpoint
         })
         .WithName("SelfRegisterUser")
         .WithSummary("Self register user")
-        .WithDescription("Allow a user to self-register. Anonymous; tenant identified via the tenant header.")
+        .WithDescription("Allow a user to self-register. Anonymous;")
         .AllowAnonymous()
         .WithIdempotency()
         .Produces<RegisterUserResponse>(StatusCodes.Status201Created)

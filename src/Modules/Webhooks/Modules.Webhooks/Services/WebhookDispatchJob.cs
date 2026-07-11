@@ -1,8 +1,3 @@
-using System.Net.Http.Headers;
-using System.Text;
-using Finbuckle.MultiTenant;
-using Finbuckle.MultiTenant.Abstractions;
-using FSH.Framework.Shared.Multitenancy;
 using FSH.Modules.Webhooks.Data;
 using FSH.Modules.Webhooks.Domain;
 using Hangfire;
@@ -10,6 +5,8 @@ using Hangfire.Server;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using System.Net.Http.Headers;
+using System.Text;
 
 namespace FSH.Modules.Webhooks.Services;
 
@@ -49,33 +46,18 @@ public sealed class WebhookDispatchJob
         OnAttemptsExceeded = AttemptsExceededAction.Fail)]
     public async Task DispatchAsync(
         Guid subscriptionId,
-        string tenantId,
         string eventType,
         string payloadJson,
         PerformContext? context,
         CancellationToken cancellationToken)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(tenantId);
         ArgumentException.ThrowIfNullOrWhiteSpace(eventType);
         ArgumentException.ThrowIfNullOrWhiteSpace(payloadJson);
 
         // Like SqlAuditSink: fresh scope, set tenant context first, then resolve the DbContext so its
         // Finbuckle filter reads a real TenantInfo instead of a null one from the outer scope.
         using var scope = _scopeFactory.CreateScope();
-        var store = scope.ServiceProvider.GetRequiredService<IMultiTenantStore<AppTenantInfo>>();
-        var tenant = await store.GetAsync(tenantId).ConfigureAwait(false);
-        if (tenant is null)
-        {
-            _logger.LogWarning(
-                "Skipping webhook dispatch for subscription {SubscriptionId}: tenant '{TenantId}' not found.",
-                subscriptionId, tenantId);
-            return;
-        }
-        scope.ServiceProvider.GetRequiredService<IMultiTenantContextSetter>()
-            .MultiTenantContext = new MultiTenantContext<AppTenantInfo>(tenant);
-
         var dbContext = scope.ServiceProvider.GetRequiredService<WebhookDbContext>();
-
         var subscription = await dbContext.Subscriptions
             .AsNoTracking()
             .FirstOrDefaultAsync(s => s.Id == subscriptionId, cancellationToken)

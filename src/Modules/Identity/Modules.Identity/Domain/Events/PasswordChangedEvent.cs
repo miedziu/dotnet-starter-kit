@@ -8,10 +8,9 @@ public sealed record PasswordChangedEvent(
     DateTimeOffset OccurredOnUtc,
     string UserId,
     bool WasReset,
-    string? CorrelationId = null,
-    string? TenantId = null
-) : DomainEvent(EventId, OccurredOnUtc, CorrelationId, TenantId)
+    string? CorrelationId = null
+) : DomainEvent(EventId, OccurredOnUtc, CorrelationId)
 {
-    public static PasswordChangedEvent Create(string userId, bool wasReset = false, string? correlationId = null, string? tenantId = null)
-        => new(Guid.NewGuid(), DateTimeOffset.UtcNow, userId, wasReset, correlationId, tenantId);
+    public static PasswordChangedEvent Create(string userId, bool wasReset = false, string? correlationId = null)
+        => new(Guid.NewGuid(), DateTimeOffset.UtcNow, userId, wasReset, correlationId);
 }

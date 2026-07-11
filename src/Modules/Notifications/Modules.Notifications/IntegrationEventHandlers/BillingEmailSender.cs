@@ -28,7 +28,7 @@ internal static class BillingEmailSender
         {
             // Do not log the recipient address — it is PII and the log is an external sink
             // (CodeQL cs/exposure-of-sensitive-information). The context identifies the operation.
-            logger.LogWarning(ex, "Failed to send {Context} email", context);
+            logger.LogWarning(ex, "Failed to send {Context} email to {Email}", context, email);
         }
     }
 }

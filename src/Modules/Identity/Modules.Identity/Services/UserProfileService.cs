@@ -1,6 +1,4 @@
-using Finbuckle.MultiTenant.Abstractions;
 using FSH.Framework.Core.Exceptions;
-using FSH.Framework.Shared.Multitenancy;
 using FSH.Framework.Shared.Storage;
 using FSH.Framework.Storage;
 using FSH.Framework.Storage.Services;
@@ -19,7 +17,6 @@ internal sealed class UserProfileService(
     UserManager<FshUser> userManager,
     SignInManager<FshUser> signInManager,
     IStorageService storageService,
-    IMultiTenantContextAccessor<AppTenantInfo> multiTenantContextAccessor,
     IOptions<OriginOptions> originOptions,
     IHttpContextAccessor httpContextAccessor) : IUserProfileService
 {
@@ -118,7 +115,6 @@ internal sealed class UserProfileService(
 
     public async Task SetImageUrlAsync(string userId, string? imageUrl, CancellationToken cancellationToken)
     {
-        EnsureValidTenant();
         var user = await userManager.FindByIdAsync(userId)
             ?? throw new NotFoundException("user not found");
 
@@ -137,28 +133,17 @@ internal sealed class UserProfileService(
 
     public async Task<bool> ExistsWithEmailAsync(string email, string? exceptId = null, CancellationToken cancellationToken = default)
     {
-        EnsureValidTenant();
         return await userManager.FindByEmailAsync(email.Normalize()) is FshUser user && user.Id != exceptId;
     }
 
     public async Task<bool> ExistsWithNameAsync(string name, CancellationToken cancellationToken = default)
     {
-        EnsureValidTenant();
         return await userManager.FindByNameAsync(name) is not null;
     }
 
     public async Task<bool> ExistsWithPhoneNumberAsync(string phoneNumber, string? exceptId = null, CancellationToken cancellationToken = default)
     {
-        EnsureValidTenant();
         return await userManager.Users.FirstOrDefaultAsync(x => x.PhoneNumber == phoneNumber, cancellationToken) is FshUser user && user.Id != exceptId;
-    }
-
-    private void EnsureValidTenant()
-    {
-        if (string.IsNullOrWhiteSpace(multiTenantContextAccessor?.MultiTenantContext?.TenantInfo?.Id))
-        {
-            throw new UnauthorizedException("invalid tenant");
-        }
     }
 
     private string? ResolveImageUrl(Uri? imageUrl)

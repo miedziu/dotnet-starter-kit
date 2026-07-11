@@ -7,7 +7,6 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="Finbuckle.MultiTenant.EntityFrameworkCore" />
 	  <PackageReference Include="Microsoft.EntityFrameworkCore" />
 	  <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" />
 	  <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" />
@@ -20,5 +19,5 @@
 	  <ProjectReference Include="..\Core\Core.csproj" />
 	  <ProjectReference Include="..\Shared\Shared.csproj" />
 	</ItemGroup>
-	
+
 </Project>

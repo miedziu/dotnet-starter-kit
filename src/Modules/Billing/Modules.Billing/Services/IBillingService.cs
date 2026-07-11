@@ -42,7 +42,7 @@ public interface IBillingService
 
     /// <summary>
     /// Creates and issues a Subscription-purpose invoice for one plan term (the term base fee). Called
-    /// when a tenant subscribes or renews. Returns null for free/zero-price plans (no invoice).
+    /// when a subscription is created or renews. Returns null for free/zero-price plans (no invoice).
     /// Idempotent: returns the existing invoice if one already exists for the term.
     /// </summary>
     Task<Invoice?> CreateSubscriptionInvoiceAsync(

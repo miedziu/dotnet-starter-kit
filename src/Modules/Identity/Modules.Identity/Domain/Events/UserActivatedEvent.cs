@@ -8,10 +8,9 @@ public sealed record UserActivatedEvent(
     DateTimeOffset OccurredOnUtc,
     string UserId,
     string? ActivatedBy,
-    string? CorrelationId = null,
-    string? TenantId = null
-) : DomainEvent(EventId, OccurredOnUtc, CorrelationId, TenantId)
+    string? CorrelationId = null
+) : DomainEvent(EventId, OccurredOnUtc, CorrelationId)
 {
-    public static UserActivatedEvent Create(string userId, string? activatedBy = null, string? correlationId = null, string? tenantId = null)
-        => new(Guid.NewGuid(), DateTimeOffset.UtcNow, userId, activatedBy, correlationId, tenantId);
+    public static UserActivatedEvent Create(string userId, string? activatedBy = null, string? correlationId = null)
+        => new(Guid.NewGuid(), DateTimeOffset.UtcNow, userId, activatedBy, correlationId);
 }

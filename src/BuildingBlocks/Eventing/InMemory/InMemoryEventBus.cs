@@ -15,7 +15,6 @@ public sealed partial class InMemoryEventBus : IEventBus
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<InMemoryEventBus> _logger;
-    private readonly IEventTenantScope _tenantScope;
 
     // The closed handler interface type and its HandleAsync method are stable per event type, so
     // they are resolved once and cached rather than recomputing reflection on every published event.
@@ -23,11 +22,10 @@ public sealed partial class InMemoryEventBus : IEventBus
 
     private readonly record struct HandlerDispatch(Type HandlerInterfaceType, MethodInfo HandleMethod);
 
-    public InMemoryEventBus(IServiceProvider serviceProvider, ILogger<InMemoryEventBus> logger, IEventTenantScope tenantScope)
+    public InMemoryEventBus(IServiceProvider serviceProvider, ILogger<InMemoryEventBus> logger)
     {
         _serviceProvider = serviceProvider;
         _logger = logger;
-        _tenantScope = tenantScope;
     }
 
     private static HandlerDispatch GetDispatch(Type eventType)
@@ -59,26 +57,21 @@ public sealed partial class InMemoryEventBus : IEventBus
 
         var dispatch = GetDispatch(eventType);
 
-        // Set tenant context BEFORE resolving handlers — MultiTenantDbContext captures TenantInfo at
-        // construction, so a late tenant NREs the query filter. This is what makes background publishers work.
-        using (_tenantScope.Begin(@event.TenantId))
+        using var scope = _serviceProvider.CreateScope();
+        var provider = scope.ServiceProvider;
+
+        var handlers = ResolveHandlers(provider, dispatch.HandlerInterfaceType);
+        if (handlers.Length == 0)
         {
-            using var scope = _serviceProvider.CreateScope();
-            var provider = scope.ServiceProvider;
+            LogNoHandlers(eventType.FullName);
+            return;
+        }
 
-            var handlers = ResolveHandlers(provider, dispatch.HandlerInterfaceType);
-            if (handlers.Length == 0)
-            {
-                LogNoHandlers(eventType.FullName);
-                return;
-            }
+        var inbox = provider.GetService<IInboxStore>();
 
-            var inbox = provider.GetService<IInboxStore>();
-
-            foreach (var handler in handlers)
-            {
-                await InvokeHandlerAsync(handler, dispatch.HandleMethod, eventType, @event, inbox, ct).ConfigureAwait(false);
-            }
+        foreach (var handler in handlers)
+        {
+            await InvokeHandlerAsync(handler, dispatch.HandleMethod, eventType, @event, inbox, ct).ConfigureAwait(false);
         }
     }
 
@@ -125,7 +118,7 @@ public sealed partial class InMemoryEventBus : IEventBus
 
             if (inbox != null)
             {
-                await inbox.MarkProcessedAsync(@event.Id, handlerName, @event.TenantId, eventType.AssemblyQualifiedName ?? eventType.FullName!, ct)
+                await inbox.MarkProcessedAsync(@event.Id, handlerName, eventType.AssemblyQualifiedName ?? eventType.FullName!, ct)
                     .ConfigureAwait(false);
             }
         }

@@ -23,14 +23,13 @@ public sealed class UserRegisteredHandler(
         {
             // PII minimization: log the pseudonymous UserId only, not the email address.
             logger.LogInformation(
-                "User registered: {UserId}",
+                "User registered: {UserId} ",
                 notification.UserId);
         }
 
         var integrationEvent = new UserRegisteredIntegrationEvent(
             Id: notification.EventId,
             OccurredOnUtc: notification.OccurredOnUtc.UtcDateTime,
-            TenantId: notification.TenantId,
             CorrelationId: notification.CorrelationId ?? notification.EventId.ToString(),
             Source: nameof(UserRegisteredHandler),
             UserId: notification.UserId,

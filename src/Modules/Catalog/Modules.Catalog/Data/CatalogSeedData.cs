@@ -6,7 +6,7 @@ namespace FSH.Modules.Catalog.Data;
 /// <summary>
 /// Demo seed data for the Catalog module — a small "what a catalogue looks like"
 /// dataset (4 brands, 11 categories, 10 products). Called from the DbMigrator's
-/// <c>seed-demo</c> command for the demo tenants only; fresh tenants get an
+/// <c>seed-demo</c> command; fresh tenants get an
 /// empty catalogue and populate via the API / admin UI.
 /// </summary>
 public static class CatalogSeedData

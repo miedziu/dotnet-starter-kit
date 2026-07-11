@@ -1,5 +1,4 @@
-using Finbuckle.MultiTenant.Abstractions;
-using FSH.Framework.Shared.Multitenancy;
+using FSH.Framework.Persistence;
 using FSH.Framework.Web;
 using FSH.Framework.Web.Modules;
 using FSH.Framework.Web.Observability.Logging.Serilog;
@@ -8,12 +7,8 @@ using FSH.Modules.Billing;
 using FSH.Modules.Catalog;
 using FSH.Modules.Identity;
 using FSH.Modules.Identity.Contracts.v1.Tokens.TokenGeneration;
+using FSH.Modules.Identity.Data;
 using FSH.Modules.Identity.Features.v1.Tokens.TokenGeneration;
-using FSH.Modules.Multitenancy;
-using FSH.Modules.Multitenancy.Contracts;
-using FSH.Modules.Multitenancy.Contracts.v1.GetTenantStatus;
-using FSH.Modules.Multitenancy.Data;
-using FSH.Modules.Multitenancy.Features.v1.GetTenantStatus;
 using FSH.Modules.Tickets;
 using FSH.Modules.Webhooks;
 using FSH.Starter.DbMigrator;
@@ -86,8 +81,6 @@ builder.Services.AddMediator(o =>
     [
         typeof(GenerateTokenCommand),
         typeof(GenerateTokenCommandHandler),
-        typeof(GetTenantStatusQuery),
-        typeof(GetTenantStatusQueryHandler),
         typeof(FSH.Modules.Auditing.Contracts.AuditEnvelope),
         typeof(FSH.Modules.Auditing.Persistence.AuditDbContext),
         typeof(FSH.Modules.Webhooks.Contracts.v1.CreateWebhookSubscription.CreateWebhookSubscriptionCommand),
@@ -110,7 +103,6 @@ builder.Services.AddMediator(o =>
 var moduleAssemblies = new Assembly[]
 {
     typeof(IdentityModule).Assembly,
-    typeof(MultitenancyModule).Assembly,
     typeof(AuditingModule).Assembly,
     typeof(FSH.Modules.Files.FilesModule).Assembly,
     typeof(WebhooksModule).Assembly,
@@ -121,7 +113,7 @@ var moduleAssemblies = new Assembly[]
     typeof(FSH.Modules.Notifications.NotificationsModule).Assembly,
 };
 
-// Disable runtime-only concerns; persistence + multitenancy stay on so DbInitializers resolve. Caching
+// Disable runtime-only concerns; persistence stay on so DbInitializers resolve. Caching
 // stays on because some modules' ctor wiring touches IDistributedCache (in-memory fallback if no Redis).
 builder.AddHeroPlatform(o =>
 {
@@ -132,7 +124,6 @@ builder.AddHeroPlatform(o =>
     o.EnableMailing = false;
     o.EnableSse = false;
     o.EnableRealtime = false;
-    o.EnableQuotas = false;
     o.EnableFeatureFlags = false;
     o.EnableIdempotency = false;
     o.EnableCaching = true;
@@ -143,17 +134,6 @@ builder.AddModules(moduleAssemblies);
 // TenantProvisioningService needs IJobService, but Hangfire's is gated behind EnableJobs (off here).
 // Provide a throwing no-op so the DI graph resolves; the migration code paths don't enqueue jobs.
 builder.Services.AddSingleton<FSH.Framework.Jobs.Services.IJobService, NoOpJobService>();
-
-// Strip every BackgroundService (+ TenantStoreInitializerHostedService) before StartAsync: left running they
-// poll/write tables BEFORE Step 1/2 create them (42P01). StartupValidator + Serilog flush IHostedServices stay.
-foreach (var descriptor in builder.Services
-    .Where(d => d.ServiceType == typeof(Microsoft.Extensions.Hosting.IHostedService)
-        && (typeof(Microsoft.Extensions.Hosting.BackgroundService).IsAssignableFrom(d.ImplementationType)
-            || d.ImplementationType?.Name == "TenantStoreInitializerHostedService"))
-    .ToList())
-{
-    builder.Services.Remove(descriptor);
-}
 
 // DemoSeeder is opt-in via the `seed-demo` verb. Register unconditionally so
 // the DI graph is satisfied; the verb dispatch below decides whether to call it.
@@ -188,19 +168,19 @@ try
         .ConfigureAwait(false);
     await Console.Out.WriteLineAsync("[migrator] advisory lock acquired").ConfigureAwait(false);
 
-    // ── Step 1 — tenant catalog ───────────────────────────────────────────
-    // Always applied first: the per-tenant migrator below reads every tenant out of this database.
+    // ── Step 1 — catalog ───────────────────────────────────────────
+    // Always applied first: the migrator below reads every migration out of this database.
     using (var scope = host.Services.CreateScope())
     {
-        var tenantDb = scope.ServiceProvider.GetRequiredService<TenantDbContext>();
-        var pending = (await tenantDb.Database.GetPendingMigrationsAsync(CancellationToken.None)
+        var db = scope.ServiceProvider.GetRequiredService<IdentityDbContext>();
+        var pending = (await db.Database.GetPendingMigrationsAsync(CancellationToken.None)
             .ConfigureAwait(false)).ToList();
 
         if (cli.Command == "list-pending")
         {
             await Console.Out.WriteLineAsync(string.Create(
                 CultureInfo.InvariantCulture,
-                $"[tenant-catalog] {pending.Count} pending migration(s)"))
+                $"[atalog] {pending.Count} pending migration(s)"))
                 .ConfigureAwait(false);
             foreach (var name in pending)
             {
@@ -211,33 +191,14 @@ try
         {
             await Console.Out.WriteLineAsync(string.Create(
                 CultureInfo.InvariantCulture,
-                $"[tenant-catalog] applying {pending.Count} migration(s)…"))
+                $"[catalog] applying {pending.Count} migration(s)…"))
                 .ConfigureAwait(false);
-            await tenantDb.Database.MigrateAsync(CancellationToken.None).ConfigureAwait(false);
-            await Console.Out.WriteLineAsync("[tenant-catalog] done").ConfigureAwait(false);
+            await db.Database.MigrateAsync(CancellationToken.None).ConfigureAwait(false);
+            await Console.Out.WriteLineAsync("[catalog] done").ConfigureAwait(false);
         }
         else
         {
-            await Console.Out.WriteLineAsync("[tenant-catalog] already at head").ConfigureAwait(false);
-        }
-
-        // Seed the root tenant the first time the catalog comes up so the
-        // per-tenant pass below has at least one tenant to iterate.
-        var seeded = await tenantDb.TenantInfo
-            .FindAsync([MultitenancyConstants.Root.Id], CancellationToken.None)
-            .ConfigureAwait(false);
-        if (seeded is null && cli.Command != "list-pending")
-        {
-            var rootTenant = new AppTenantInfo(
-                MultitenancyConstants.Root.Id,
-                MultitenancyConstants.Root.Name,
-                connectionString: string.Empty,
-                MultitenancyConstants.Root.EmailAddress,
-                issuer: MultitenancyConstants.Root.Issuer);
-            rootTenant.SetValidity(TimeProvider.System.GetUtcNow().UtcDateTime.AddYears(1));
-            await tenantDb.TenantInfo.AddAsync(rootTenant, CancellationToken.None).ConfigureAwait(false);
-            await tenantDb.SaveChangesAsync(CancellationToken.None).ConfigureAwait(false);
-            await Console.Out.WriteLineAsync("[tenant-catalog] seeded root tenant").ConfigureAwait(false);
+            await Console.Out.WriteLineAsync("[catalog] already at head").ConfigureAwait(false);
         }
     }
 
@@ -245,43 +206,17 @@ try
     // `seed-demo` short-circuits this: it provisions its own demo tenants inline (Step 3 below).
     if (!cli.CatalogOnly && cli.Command != "seed-demo")
     {
-        var tenantStore = host.Services.GetRequiredService<IMultiTenantStore<AppTenantInfo>>();
-        var tenantService = host.Services.GetRequiredService<ITenantService>();
-
-        var allTenants = (await tenantStore.GetAllAsync().ConfigureAwait(false)).ToList();
-        var tenants = string.IsNullOrEmpty(cli.Tenant)
-            ? allTenants
-            : allTenants.Where(t => string.Equals(t.Id, cli.Tenant, StringComparison.OrdinalIgnoreCase)).ToList();
-
-        if (tenants.Count == 0)
+        using var scope = host.Services.CreateScope();
+        foreach (var initializer in scope.ServiceProvider.GetServices<IDbInitializer>())
         {
-            await Console.Out.WriteLineAsync($"[migrator] no tenants matched {cli.Tenant ?? "(all)"}")
-                .ConfigureAwait(false);
+            await initializer.MigrateAsync(CancellationToken.None).ConfigureAwait(false);
         }
 
-        foreach (var tenant in tenants)
+        if (cli.SeedAfter)
         {
-            if (cli.Command == "list-pending")
+            foreach (var initializer in scope.ServiceProvider.GetServices<IDbInitializer>())
             {
-                await Console.Out.WriteLineAsync(
-                    $"[{tenant.Id}] migrations are evaluated per-tenant by each module's IDbInitializer")
-                    .ConfigureAwait(false);
-                continue;
-            }
-            if (cli.Command == "seed")
-            {
-                await Console.Out.WriteLineAsync($"[{tenant.Id}] seeding…").ConfigureAwait(false);
-                await tenantService.SeedTenantAsync(tenant, CancellationToken.None).ConfigureAwait(false);
-                continue;
-            }
-
-            await Console.Out.WriteLineAsync($"[{tenant.Id}] migrating…").ConfigureAwait(false);
-            await tenantService.MigrateTenantAsync(tenant, CancellationToken.None).ConfigureAwait(false);
-
-            if (cli.SeedAfter)
-            {
-                await Console.Out.WriteLineAsync($"[{tenant.Id}] seeding…").ConfigureAwait(false);
-                await tenantService.SeedTenantAsync(tenant, CancellationToken.None).ConfigureAwait(false);
+                await initializer.SeedAsync(CancellationToken.None).ConfigureAwait(false);
             }
         }
     }
@@ -316,8 +251,10 @@ catch (Exception ex)
 #pragma warning restore CA1031
 {
     logger.LogError(ex, "DbMigrator failed");
+    await Console.Out.WriteLineAsync(ex.Message + "\r\n" + ex.InnerException).ConfigureAwait(false);
     await Console.Error.WriteLineAsync($"[migrator] FAILED: {ex.GetType().Name}: {ex.Message}")
         .ConfigureAwait(false);
+
     if (ex.StackTrace is { } stack)
     {
         await Console.Error.WriteLineAsync(stack).ConfigureAwait(false);

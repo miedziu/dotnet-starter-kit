@@ -1,9 +1,8 @@
-using FSH.Framework.Core.Domain;
 using Microsoft.AspNetCore.Identity;
 
 namespace FSH.Modules.Identity.Domain;
 
-public class FshRole : IdentityRole, IGlobalEntity
+public class FshRole : IdentityRole
 {
     public string? Description { get; set; }
 

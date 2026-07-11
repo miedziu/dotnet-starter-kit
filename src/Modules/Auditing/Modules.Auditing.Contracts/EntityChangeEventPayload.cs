@@ -5,7 +5,7 @@ public sealed record EntityChangeEventPayload(
     string? Schema,
     string Table,
     string EntityName,
-    string Key,                          // unified string key (e.g., "Id:42" or "TenantId:1|UserId:42")
+    string Key,                          // unified string key (e.g., "Id:42")
     EntityOperation Operation,
     IReadOnlyList<PropertyChange> Changes,
     string? TransactionId

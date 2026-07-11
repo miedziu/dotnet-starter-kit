@@ -8,10 +8,9 @@ public sealed record UserRoleAssignedEvent(
     DateTimeOffset OccurredOnUtc,
     string UserId,
     IReadOnlyList<string> AssignedRoles,
-    string? CorrelationId = null,
-    string? TenantId = null
-) : DomainEvent(EventId, OccurredOnUtc, CorrelationId, TenantId)
+    string? CorrelationId = null
+) : DomainEvent(EventId, OccurredOnUtc, CorrelationId)
 {
-    public static UserRoleAssignedEvent Create(string userId, IEnumerable<string> assignedRoles, string? correlationId = null, string? tenantId = null)
-        => new(Guid.NewGuid(), DateTimeOffset.UtcNow, userId, assignedRoles.ToList().AsReadOnly(), correlationId, tenantId);
+    public static UserRoleAssignedEvent Create(string userId, IEnumerable<string> assignedRoles, string? correlationId = null)
+        => new(Guid.NewGuid(), DateTimeOffset.UtcNow, userId, assignedRoles.ToList().AsReadOnly(), correlationId);
 }

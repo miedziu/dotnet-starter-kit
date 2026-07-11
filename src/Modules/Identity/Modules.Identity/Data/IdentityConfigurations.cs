@@ -39,8 +39,12 @@ public class ApplicationRoleClaimConfig : IEntityTypeConfiguration<FshRoleClaim>
 
         builder
             .ToTable("RoleClaims", IdentityModuleConstants.SchemaName);
+
+        //builder.HasKey(rc => rc.Id);
     }
 }
+
+
 
 public class IdentityUserRoleConfig : IEntityTypeConfiguration<IdentityUserRole<string>>
 {
@@ -50,6 +54,8 @@ public class IdentityUserRoleConfig : IEntityTypeConfiguration<IdentityUserRole<
 
         builder
             .ToTable("UserRoles", IdentityModuleConstants.SchemaName);
+
+        builder.HasKey(r => new { r.UserId, r.RoleId });
     }
 }
 
@@ -72,6 +78,8 @@ public class IdentityUserLoginConfig : IEntityTypeConfiguration<IdentityUserLogi
 
         builder
             .ToTable("UserLogins", IdentityModuleConstants.SchemaName);
+
+        builder.HasKey(login => new { login.LoginProvider, login.ProviderKey });
     }
 }
 
@@ -83,5 +91,7 @@ public class IdentityUserTokenConfig : IEntityTypeConfiguration<IdentityUserToke
 
         builder
             .ToTable("UserTokens", IdentityModuleConstants.SchemaName);
+
+        builder.HasKey(t => new { t.UserId, t.LoginProvider, t.Name });
     }
 }

@@ -31,11 +31,9 @@ public class HttpRequestContextEnricher : ILogEventEnricher
             if (httpContext.User?.Identity?.IsAuthenticated == true)
             {
                 var userId = httpContext.User.GetUserId();
-                var tenant = httpContext.User.GetTenant();
                 var userEmailId = httpContext.User.GetEmail();
 
                 logEvent.AddPropertyIfAbsent(propertyFactory.CreateProperty("UserId", userId));
-                logEvent.AddPropertyIfAbsent(propertyFactory.CreateProperty("Tenant", tenant));
                 logEvent.AddPropertyIfAbsent(propertyFactory.CreateProperty("UserEmail", userEmailId));
             }
         }

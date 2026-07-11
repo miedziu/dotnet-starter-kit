@@ -12,7 +12,7 @@ internal static class ModelBuilderExtensions
     /// <summary>
     /// Registers a named global query filter on every entity that implements
     /// <typeparamref name="TInterface"/>. Named filters compose with anonymous
-    /// filters (e.g. Finbuckle's tenant filter) and other named filters via
+    /// filters and other named filters via
     /// AND at query time. To bypass only this filter at a specific call site,
     /// use <c>queryable.IgnoreQueryFilters([filterName])</c> — anonymous and
     /// other named filters remain in force.

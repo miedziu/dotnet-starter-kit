@@ -12,20 +12,17 @@ namespace FSH.Modules.Billing.Services;
 public sealed class BillingService : IBillingService
 {
     private readonly BillingDbContext _db;
-    private readonly IUsageReporter _usageReporter;
     private readonly IEventBus _eventBus;
     private readonly TimeProvider _timeProvider;
     private readonly ILogger<BillingService> _logger;
 
     public BillingService(
         BillingDbContext db,
-        IUsageReporter usageReporter,
         IEventBus eventBus,
         TimeProvider timeProvider,
         ILogger<BillingService> logger)
     {
         _db = db;
-        _usageReporter = usageReporter;
         _eventBus = eventBus;
         _timeProvider = timeProvider;
         _logger = logger;
@@ -62,21 +59,11 @@ public sealed class BillingService : IBillingService
         var plan = await _db.Plans.FirstOrDefaultAsync(p => p.Id == subscription.PlanId, cancellationToken).ConfigureAwait(false)
             ?? throw new NotFoundException($"Plan {subscription.PlanId} not found.");
 
-        var snapshots = await _usageReporter.CaptureForPeriodAsync(periodYear, periodMonth, cancellationToken).ConfigureAwait(false);
 
         var invoiceNumber = BuildUsageInvoiceNumber(periodYear, periodMonth);
         var invoice = Invoice.CreateDraft(invoiceNumber, periodYear, periodMonth, plan.Currency,
             InvoicePurpose.Usage, periodStartUtc: null, periodEndUtc: null);
 
-        foreach (var snap in snapshots)
-        {
-            if (snap.Overage <= 0) continue;
-            var rate = plan.GetOverageRate(snap.Resource);
-            if (rate > 0)
-            {
-                invoice.AddLineItem(InvoiceLineItemKind.Overage, $"{snap.Resource} overage ({snap.Overage} units)", snap.Overage, rate);
-            }
-        }
 
         _db.Invoices.Add(invoice);
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
@@ -158,7 +145,6 @@ public sealed class BillingService : IBillingService
         await _eventBus.PublishAsync(new InvoiceIssuedIntegrationEvent(
             Id: Guid.NewGuid(),
             OccurredOnUtc: now,
-            TenantId: null,
             CorrelationId: Guid.NewGuid().ToString(),
             Source: "Billing",
             InvoiceId: invoice.Id,
@@ -266,7 +252,6 @@ public sealed class BillingService : IBillingService
         await _eventBus.PublishAsync(new InvoiceIssuedIntegrationEvent(
             Id: Guid.NewGuid(),
             OccurredOnUtc: _timeProvider.GetUtcNow().UtcDateTime,
-            TenantId: null,
             CorrelationId: Guid.NewGuid().ToString(),
             Source: "Billing",
             InvoiceId: invoice.Id,

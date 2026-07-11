@@ -21,14 +21,14 @@ public interface ISessionService
         CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Returns all sessions across the current tenant for admin views.
+    /// Returns all sessions for admin views.
     /// </summary>
     /// <param name="includeInactive">When true, also returns expired/revoked sessions.</param>
     /// <param name="search">Optional substring filter applied to user name, email, or IP address.</param>
     /// <param name="skip">Pagination offset.</param>
     /// <param name="take">Pagination size (capped server-side).</param>
     /// <param name="cancellationToken">Cancellation token.</param>
-    Task<(List<UserSessionDto> Items, long TotalCount)> GetTenantSessionsAsync(
+    Task<(List<UserSessionDto> Items, long TotalCount)> GetAllSessionsAsync(
         bool includeInactive,
         string? search,
         int skip,

@@ -30,21 +30,6 @@ export class ApiRequestError extends Error {
 }
 
 /**
- * True when an error is the API's "tenant has been deactivated" 403. The
- * deactivated-tenant guard (MultitenancyModule) rejects *every* request once a
- * tenant is switched off, so this can surface from any query/mutation while a
- * user is mid-session. There is no machine-readable code on the ProblemDetails,
- * so we match the guard's detail text. A global query/mutation error hook uses
- * this to route the user to the dedicated `/tenant-deactivated` page rather than
- * leaving the dead 403 banner stuck under a half-loaded surface.
- */
-export function isTenantDeactivatedError(error: unknown): boolean {
-  if (!(error instanceof ApiRequestError) || error.status !== 403) return false;
-  const detail = error.problem?.detail ?? error.message ?? "";
-  return detail.toLowerCase().includes("tenant has been deactivated");
-}
-
-/**
  * True when an error is a 401 fired against an *impersonation* session — i.e.
  * the operator's grant was revoked (via /impersonation/revoke) or the
  * short-lived impersonation token expired. Both surface as a 401 from the
@@ -59,7 +44,7 @@ export function isTenantDeactivatedError(error: unknown): boolean {
  * silently refreshed-and-retried by apiFetch. A global query/mutation error
  * hook (query-client.ts) uses this to route to the /impersonation-ended
  * terminal page instead of leaving a dead error banner under a half-loaded
- * dashboard — mirrors isTenantDeactivatedError.
+ * dashboard.
  */
 export function isImpersonationRevokedError(error: unknown): boolean {
   if (!(error instanceof ApiRequestError) || error.status !== 401) return false;

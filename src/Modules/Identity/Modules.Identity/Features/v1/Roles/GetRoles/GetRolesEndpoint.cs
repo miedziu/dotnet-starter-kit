@@ -23,6 +23,6 @@ public static class GetRolesEndpoint
         .Produces<PagedResponse<RoleDto>>(StatusCodes.Status200OK)
         .Produces(StatusCodes.Status401Unauthorized)
         .Produces(StatusCodes.Status403Forbidden)
-        .WithDescription("Retrieve roles available for the current tenant. Pageable via PageNumber/PageSize; filterable via Search (case-insensitive substring against name + description).");
+        .WithDescription("Retrieve roles. Pageable via PageNumber/PageSize; filterable via Search (case-insensitive substring against name + description).");
     }
 }

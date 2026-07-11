@@ -1,17 +1,15 @@
 ﻿namespace FSH.Framework.Core.Domain;
 
 /// <summary>
-/// Base domain event with correlation and tenant context.
+/// Base domain event with correlation context.
 /// </summary>
 /// <param name="EventId">The unique event identifier.</param>
 /// <param name="OccurredOnUtc">The UTC timestamp when the event occurred.</param>
 /// <param name="CorrelationId">The optional correlation identifier.</param>
-/// <param name="TenantId">The optional tenant identifier.</param>
 public abstract record DomainEvent(
     Guid EventId,
     DateTimeOffset OccurredOnUtc,
-    string? CorrelationId = null,
-    string? TenantId = null
+    string? CorrelationId = null
 ) : IDomainEvent
 {
     /// <summary>

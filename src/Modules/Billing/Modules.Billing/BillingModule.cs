@@ -5,8 +5,8 @@ using FSH.Framework.Web.Modules;
 using FSH.Modules.Billing.Data;
 using FSH.Modules.Billing.Features.v1.Invoices.GenerateInvoices;
 using FSH.Modules.Billing.Features.v1.Invoices.GetInvoiceById;
-using FSH.Modules.Billing.Features.v1.Invoices.GetInvoices;
 using FSH.Modules.Billing.Features.v1.Invoices.GetInvoicePdf;
+using FSH.Modules.Billing.Features.v1.Invoices.GetInvoices;
 using FSH.Modules.Billing.Features.v1.Invoices.GetMyInvoices;
 using FSH.Modules.Billing.Features.v1.Invoices.IssueInvoice;
 using FSH.Modules.Billing.Features.v1.Invoices.MarkInvoicePaid;
@@ -49,11 +49,10 @@ public sealed class BillingModule : IModule
 
         builder.Services.AddHeroDbContext<BillingDbContext>();
         builder.Services.AddScoped<IDbInitializer, BillingDbInitializer>();
-        builder.Services.AddScoped<IUsageReporter, UsageReporter>();
+        builder.Services.AddScoped<IUsageReporter, UsageReporter>(); //
         builder.Services.AddScoped<IBillingService, BillingService>();
         builder.Services.AddSingleton<IInvoicePdfRenderer, InvoicePdfRenderer>();
 
-        // React to tenant create/renew events (Multitenancy.Contracts) to drive subscriptions + invoices.
         builder.Services.AddIntegrationEventHandlers(typeof(BillingModule).Assembly);
 
         builder.Services.AddHealthChecks()
@@ -99,7 +98,7 @@ public sealed class BillingModule : IModule
         group.MapMarkInvoicePaidEndpoint();
         group.MapVoidInvoiceEndpoint();
 
-        group.MapGetUsageSnapshotsEndpoint();
+        group.MapGetUsageSnapshotsEndpoint(); //
         group.MapCaptureUsageSnapshotsEndpoint();
 
         group.MapGetMyWalletEndpoint();

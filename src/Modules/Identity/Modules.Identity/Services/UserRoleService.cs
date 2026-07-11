@@ -1,15 +1,13 @@
-using System.Net;
-using Finbuckle.MultiTenant.Abstractions;
 using FSH.Framework.Core.Context;
 using FSH.Framework.Core.Exceptions;
 using FSH.Framework.Shared.Constants;
-using FSH.Framework.Shared.Multitenancy;
 using FSH.Modules.Identity.Contracts.DTOs;
 using FSH.Modules.Identity.Contracts.Services;
 using FSH.Modules.Identity.Data;
 using FSH.Modules.Identity.Domain;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Net;
 
 namespace FSH.Modules.Identity.Services;
 
@@ -17,7 +15,6 @@ internal sealed class UserRoleService(
     UserManager<FshUser> userManager,
     RoleManager<FshRole> roleManager,
     IdentityDbContext db,
-    IMultiTenantContextAccessor<AppTenantInfo> multiTenantContextAccessor,
     ICurrentUser currentUser,
     IUserPermissionService userPermissionService) : IUserRoleService
 {
@@ -93,21 +90,9 @@ internal sealed class UserRoleService(
                 HttpStatusCode.BadRequest);
         }
 
-        // The root tenant's seed admin is the framework's last-resort recovery account.
-        if (IsRootTenantAdmin(user))
-        {
-            throw new ForbiddenException("The root tenant administrator cannot be demoted.");
-        }
-
-        // After this removal, at least one admin must remain in the tenant — matches
+        // After this removal, at least one admin must remain — matches
         // the "at least one active administrator" invariant enforced on user deactivation.
         await EnsureMinimumAdminCountAsync();
-    }
-
-    private bool IsRootTenantAdmin(FshUser user)
-    {
-        return user.Email == MultitenancyConstants.Root.EmailAddress
-            && multiTenantContextAccessor?.MultiTenantContext?.TenantInfo?.Id == MultitenancyConstants.Root.Id;
     }
 
     private async Task EnsureMinimumAdminCountAsync()
@@ -116,7 +101,7 @@ internal sealed class UserRoleService(
         if (adminCount <= 1)
         {
             throw new CustomException(
-                "Tenant must retain at least one administrator.",
+                "Application must retain at least one administrator.",
                 Array.Empty<string>(),
                 HttpStatusCode.BadRequest);
         }
@@ -157,8 +142,7 @@ internal sealed class UserRoleService(
             return;
         }
 
-        var tenantId = multiTenantContextAccessor?.MultiTenantContext?.TenantInfo?.Id;
-        user.RecordRolesAssigned(assignedRoles, tenantId);
+        user.RecordRolesAssigned(assignedRoles);
         await db.SaveChangesAsync(cancellationToken);
     }
 }

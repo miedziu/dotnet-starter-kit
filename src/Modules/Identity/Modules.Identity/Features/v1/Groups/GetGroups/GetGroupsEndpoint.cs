@@ -18,7 +18,7 @@ public static class GetGroupsEndpoint
         .WithName("ListGroups")
         .WithSummary("List all groups")
         .RequirePermission(IdentityPermissions.Groups.View)
-        .WithDescription("Retrieve all groups for the current tenant with optional search filter.")
+        .WithDescription("Retrieve all groups with optional search filter.")
         .Produces<IEnumerable<GroupDto>>(StatusCodes.Status200OK);
     }
 }

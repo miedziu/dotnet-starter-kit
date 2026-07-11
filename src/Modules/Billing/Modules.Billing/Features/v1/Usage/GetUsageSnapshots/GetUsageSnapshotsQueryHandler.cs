@@ -26,11 +26,10 @@ public sealed class GetUsageSnapshotsQueryHandler(
 
         var snaps = await q
             .OrderByDescending(s => s.PeriodYear).ThenByDescending(s => s.PeriodMonth)
-            .ThenBy(s => s.Resource)
             .ToListAsync(cancellationToken).ConfigureAwait(false);
 
         return snaps
-            .Select(s => new UsageSnapshotDto(s.Id, s.PeriodYear, s.PeriodMonth, s.Resource, s.UsedUnits, s.LimitUnits, s.Overage, s.CapturedAtUtc))
+            .Select(s => new UsageSnapshotDto(s.Id, s.PeriodYear, s.PeriodMonth, s.UsedUnits, s.LimitUnits, s.Overage, s.CapturedAtUtc))
             .ToList();
     }
 }

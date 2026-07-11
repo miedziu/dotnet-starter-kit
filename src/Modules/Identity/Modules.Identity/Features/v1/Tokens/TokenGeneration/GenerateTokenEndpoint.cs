@@ -1,4 +1,3 @@
-using FSH.Framework.Shared.Multitenancy;
 using FSH.Modules.Identity.Contracts.DTOs;
 using FSH.Modules.Identity.Contracts.v1.Tokens.TokenGeneration;
 using Mediator;
@@ -32,19 +31,10 @@ public static class GenerateTokenEndpoint
         return endpoint.MapPost("/token/issue",
             [AllowAnonymous] async Task<Results<Ok<TokenResponse>, UnauthorizedHttpResult, ProblemHttpResult>>
             ([FromBody] GenerateTokenCommand command,
-            [DefaultValue("root")][FromHeader] string tenant,
             [FromHeader(Name = AppHeader)] string? app,
             [FromServices] IMediator mediator,
             CancellationToken ct) =>
             {
-                if (IsRootViaDashboard(tenant, app))
-                {
-                    return TypedResults.Problem(
-                        statusCode: StatusCodes.Status403Forbidden,
-                        title: "App boundary",
-                        detail: "SuperAdmin accounts must use the admin app. Sign in there instead of the tenant dashboard.");
-                }
-
                 var token = await mediator.Send(command, ct);
                 return token is null
                     ? TypedResults.Unauthorized()
@@ -58,11 +48,5 @@ public static class GenerateTokenEndpoint
             .Produces(StatusCodes.Status403Forbidden)
             .Produces(StatusCodes.Status400BadRequest)
             .Produces(StatusCodes.Status500InternalServerError);
-    }
-
-    private static bool IsRootViaDashboard(string tenant, string? app)
-    {
-        return string.Equals(tenant, MultitenancyConstants.Root.Id, StringComparison.OrdinalIgnoreCase)
-            && string.Equals(app, AppDashboard, StringComparison.OrdinalIgnoreCase);
     }
 }

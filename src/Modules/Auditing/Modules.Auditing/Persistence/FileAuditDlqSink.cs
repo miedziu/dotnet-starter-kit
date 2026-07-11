@@ -97,7 +97,6 @@ public sealed class FileAuditDlqSink : IAuditDlqSink, IDisposable
             envelope.ReceivedAtUtc,
             EventType = envelope.EventType.ToString(),
             Severity = envelope.Severity.ToString(),
-            envelope.TenantId,
             envelope.UserId,
             envelope.UserName,
             envelope.TraceId,

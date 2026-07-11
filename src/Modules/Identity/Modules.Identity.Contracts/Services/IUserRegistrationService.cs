@@ -30,7 +30,7 @@ public interface IUserRegistrationService
     /// <summary>
     /// Confirms a user's email address.
     /// </summary>
-    Task<string> ConfirmEmailAsync(string userId, string code, string tenant, CancellationToken cancellationToken);
+    Task<string> ConfirmEmailAsync(string userId, string code, CancellationToken cancellationToken);
 
     /// <summary>
     /// Administratively marks a user's email as confirmed without a confirmation token. Gated by the

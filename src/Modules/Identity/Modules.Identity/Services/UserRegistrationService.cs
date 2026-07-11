@@ -1,4 +1,3 @@
-using Finbuckle.MultiTenant.Abstractions;
 using FSH.Framework.Core.Common;
 using FSH.Framework.Core.Exceptions;
 using FSH.Framework.Eventing.Outbox;
@@ -6,7 +5,6 @@ using FSH.Framework.Jobs.Services;
 using FSH.Framework.Mailing;
 using FSH.Framework.Mailing.Services;
 using FSH.Framework.Shared.Constants;
-using FSH.Framework.Shared.Multitenancy;
 using FSH.Modules.Identity.Contracts.Events;
 using FSH.Modules.Identity.Contracts.Services;
 using FSH.Modules.Identity.Data;
@@ -27,12 +25,10 @@ internal sealed class UserRegistrationService(
     IdentityDbContext db,
     IJobService jobService,
     IMailService mailService,
-    IMultiTenantContextAccessor<AppTenantInfo> multiTenantContextAccessor,
     IOutboxStore outboxStore) : IUserRegistrationService
 {
     public async Task<string> GetOrCreateFromPrincipalAsync(ClaimsPrincipal principal, CancellationToken cancellationToken = default)
     {
-        EnsureValidTenant();
         ArgumentNullException.ThrowIfNull(principal);
 
         var email = ExtractEmailFromPrincipal(principal);
@@ -74,7 +70,7 @@ internal sealed class UserRegistrationService(
             user = await CreateUserWithPasswordAsync(firstName, lastName, email, userName, password, phoneNumber);
 
             // Assign role and groups within transaction
-            await AssignDefaultRoleAndGroupsAsync(user, "System", cancellationToken);
+        	await AssignDefaultRoleAndGroupsAsync(user, "System", cancellationToken);
 
             // Process referral usernames
             if (referralUsernames?.Length > 0)
@@ -82,10 +78,7 @@ internal sealed class UserRegistrationService(
                 await ProcessReferralsAsync(user.Id, referralUsernames, cancellationToken);
             }
 
-            // Send confirmation email (background job - not part of transaction
             await SendConfirmationEmailAsync(user, origin, cancellationToken);
-
-            // Record registration and add outbox message
             await PublishUserRegisteredAsync(user, "Identity", cancellationToken);
 
             await db.SaveChangesAsync(cancellationToken);
@@ -158,10 +151,8 @@ internal sealed class UserRegistrationService(
         }
     }
 
-    public async Task<string> ConfirmEmailAsync(string userId, string code, string tenant, CancellationToken cancellationToken)
+    public async Task<string> ConfirmEmailAsync(string userId, string code, CancellationToken cancellationToken)
     {
-        EnsureValidTenant();
-
         var user = await userManager.Users
             .Where(u => u.Id == userId && !u.EmailConfirmed)
             .FirstOrDefaultAsync(cancellationToken);
@@ -178,8 +169,6 @@ internal sealed class UserRegistrationService(
 
     public async Task AdminConfirmEmailAsync(string userId, CancellationToken cancellationToken = default)
     {
-        EnsureValidTenant();
-
         var user = await userManager.Users
             .Where(u => u.Id == userId)
             .FirstOrDefaultAsync(cancellationToken)
@@ -205,8 +194,6 @@ internal sealed class UserRegistrationService(
 
     public async Task ResendConfirmationEmailAsync(string userId, string origin, CancellationToken cancellationToken = default)
     {
-        EnsureValidTenant();
-
         var user = await userManager.Users
             .Where(u => u.Id == userId)
             .FirstOrDefaultAsync(cancellationToken)
@@ -225,8 +212,6 @@ internal sealed class UserRegistrationService(
 
     public async Task<string> ConfirmPhoneNumberAsync(string userId, string code, CancellationToken cancellationToken = default)
     {
-        EnsureValidTenant();
-
         var user = await userManager.Users
             .Where(u => u.Id == userId && !u.PhoneNumberConfirmed)
             .FirstOrDefaultAsync(cancellationToken);
@@ -239,14 +224,6 @@ internal sealed class UserRegistrationService(
         return result.Succeeded
             ? string.Format(CultureInfo.InvariantCulture, "Phone number {0} confirmed successfully.", user.PhoneNumber)
             : throw new CustomException(string.Format(CultureInfo.InvariantCulture, "An error occurred while confirming phone number {0}", user.PhoneNumber));
-    }
-
-    private void EnsureValidTenant()
-    {
-        if (string.IsNullOrWhiteSpace(multiTenantContextAccessor?.MultiTenantContext?.TenantInfo?.Id))
-        {
-            throw new UnauthorizedException("invalid tenant");
-        }
     }
 
     private static string ExtractEmailFromPrincipal(ClaimsPrincipal principal)
@@ -408,13 +385,11 @@ internal sealed class UserRegistrationService(
 
     private async Task PublishUserRegisteredAsync(FshUser user, string source, CancellationToken cancellationToken = default)
     {
-        var tenantId = multiTenantContextAccessor.MultiTenantContext.TenantInfo?.Id;
-        user.RecordRegistered(tenantId);
+        user.RecordRegistered();
 
         var integrationEvent = new UserRegisteredIntegrationEvent(
             Id: Guid.NewGuid(),
             OccurredOnUtc: TimeProvider.System.GetUtcNow().UtcDateTime,
-            TenantId: tenantId,
             CorrelationId: Guid.NewGuid().ToString(),
             Source: source,
             UserId: user.Id,
@@ -428,8 +403,6 @@ internal sealed class UserRegistrationService(
 
     private async Task<string> GetEmailVerificationUriAsync(FshUser user, string origin)
     {
-        EnsureValidTenant();
-
         string code = await userManager.GenerateEmailConfirmationTokenAsync(user);
         code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
 
@@ -438,10 +411,6 @@ internal sealed class UserRegistrationService(
 
         string verificationUri = QueryHelpers.AddQueryString(endpointUri.ToString(), QueryStringKeys.UserId, user.Id);
         verificationUri = QueryHelpers.AddQueryString(verificationUri, QueryStringKeys.Code, code);
-        verificationUri = QueryHelpers.AddQueryString(
-            verificationUri,
-            MultitenancyConstants.Identifier,
-            multiTenantContextAccessor?.MultiTenantContext?.TenantInfo?.Id!);
 
         return verificationUri;
     }

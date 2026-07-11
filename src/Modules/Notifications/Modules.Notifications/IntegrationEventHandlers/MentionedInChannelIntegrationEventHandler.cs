@@ -1,6 +1,4 @@
-using Finbuckle.MultiTenant.Abstractions;
 using FSH.Framework.Eventing.Abstractions;
-using FSH.Framework.Shared.Multitenancy;
 using FSH.Framework.Web.Realtime;
 using FSH.Modules.Chat.Contracts.Events;
 using FSH.Modules.Notifications.Data;
@@ -23,24 +21,12 @@ namespace FSH.Modules.Notifications.IntegrationEventHandlers;
 public sealed class MentionedInChannelIntegrationEventHandler(
     NotificationsDbContext db,
     IHubContext<AppHub> hub,
-    IMultiTenantContextAccessor<AppTenantInfo> tenantAccessor,
     ILogger<MentionedInChannelIntegrationEventHandler> logger)
     : IIntegrationEventHandler<MentionedInChannelIntegrationEvent>
 {
     public async Task HandleAsync(MentionedInChannelIntegrationEvent @event, CancellationToken ct = default)
     {
         ArgumentNullException.ThrowIfNull(@event);
-
-        // Fail loud on a tenant mismatch rather than write to the wrong tenant: the DbContext captures its
-        // tenant at construction, so a future publisher omitting the context would leak cross-tenant silently.
-        var ambientTenantId = tenantAccessor.MultiTenantContext.TenantInfo?.Id;
-        if (!string.Equals(ambientTenantId, @event.TenantId, StringComparison.Ordinal))
-        {
-            throw new InvalidOperationException(
-                $"Tenant context mismatch handling {nameof(MentionedInChannelIntegrationEvent)}: ambient " +
-                $"'{ambientTenantId ?? "(none)"}' != event '{@event.TenantId ?? "(none)"}'. The publisher must " +
-                "establish the tenant's Finbuckle context before publishing (see eventing rules).");
-        }
 
         var notification = Notification.Create(
             userId: @event.MentionedUserId,

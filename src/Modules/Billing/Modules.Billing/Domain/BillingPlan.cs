@@ -1,21 +1,15 @@
 using FSH.Framework.Core.Domain;
-using FSH.Framework.Shared.Quota;
 using FSH.Modules.Billing.Contracts;
 
 namespace FSH.Modules.Billing.Domain;
 
 /// <summary>
-/// Priced side of a tenant plan. The plan key matches the key used by quota configuration so a
+/// Priced side of a plan. The plan key matches the key used by quota configuration so a
 /// plan named "pro" in QuotaOptions.Plans corresponds to the BillingPlan with Key "pro". Limits
 /// come from QuotaOptions; prices and overage rates come from here.
-///
-/// <see cref="IGlobalEntity"/>: plans are platform-wide catalogue rows, NOT per-tenant.
-/// Every tenant subscribes to one of these shared plans.
 /// </summary>
-public sealed class BillingPlan : BaseEntity<Guid>, IGlobalEntity
+public sealed class BillingPlan : BaseEntity<Guid>
 {
-    private readonly Dictionary<QuotaResource, decimal> _overageRates = new();
-
     public string Key { get; private set; } = default!;
     public string Name { get; private set; } = default!;
     public Money MonthlyBasePrice { get; private set; } = default!;
@@ -32,8 +26,6 @@ public sealed class BillingPlan : BaseEntity<Guid>, IGlobalEntity
     public DateTime CreatedAtUtc { get; private set; }
     public DateTime? UpdatedAtUtc { get; private set; }
 
-    public IReadOnlyDictionary<QuotaResource, decimal> OverageRates => _overageRates;
-
     private BillingPlan() { }
 
     public static BillingPlan Create(
@@ -41,7 +33,6 @@ public sealed class BillingPlan : BaseEntity<Guid>, IGlobalEntity
         string name,
         string currency,
         decimal monthlyBasePrice,
-        IReadOnlyDictionary<QuotaResource, decimal>? overageRates = null,
         PlanInterval interval = PlanInterval.Monthly,
         decimal? annualPrice = null)
     {
@@ -71,21 +62,12 @@ public sealed class BillingPlan : BaseEntity<Guid>, IGlobalEntity
             CreatedAtUtc = DateTime.UtcNow
         };
 
-        if (overageRates is not null)
-        {
-            foreach (var (res, rate) in overageRates)
-            {
-                plan._overageRates[res] = rate;
-            }
-        }
-
         return plan;
     }
 
     public void Update(
         string name,
         decimal monthlyBasePrice,
-        IReadOnlyDictionary<QuotaResource, decimal>? overageRates,
         PlanInterval interval = PlanInterval.Monthly,
         decimal? annualPrice = null)
     {
@@ -103,14 +85,6 @@ public sealed class BillingPlan : BaseEntity<Guid>, IGlobalEntity
         MonthlyBasePrice = new Money(monthlyBasePrice, Currency);
         Interval = interval;
         AnnualPrice = annualPrice is { } a ? new Money(a, Currency) : null;
-        _overageRates.Clear();
-        if (overageRates is not null)
-        {
-            foreach (var (res, rate) in overageRates)
-            {
-                _overageRates[res] = rate;
-            }
-        }
         UpdatedAtUtc = DateTime.UtcNow;
     }
 
@@ -119,9 +93,6 @@ public sealed class BillingPlan : BaseEntity<Guid>, IGlobalEntity
         IsActive = false;
         UpdatedAtUtc = DateTime.UtcNow;
     }
-
-    public decimal GetOverageRate(QuotaResource resource) =>
-        _overageRates.TryGetValue(resource, out var rate) ? rate : 0m;
 
     /// <summary>Number of months the plan's billing interval covers (1 monthly, 12 yearly).</summary>
     public int TermMonths => Interval == PlanInterval.Yearly ? 12 : 1;

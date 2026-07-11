@@ -18,7 +18,7 @@ public static class GetUsersListEndpoint
         .WithName("ListUsers")
         .WithSummary("List users")
         .RequirePermission(IdentityPermissions.Users.View)
-        .WithDescription("Retrieve a list of users for the current tenant.")
+        .WithDescription("Retrieve a list of users.")
         .Produces<IEnumerable<UserDto>>(StatusCodes.Status200OK)
         .Produces(StatusCodes.Status401Unauthorized)
         .Produces(StatusCodes.Status403Forbidden);

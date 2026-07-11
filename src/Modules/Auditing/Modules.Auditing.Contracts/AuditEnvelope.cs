@@ -15,7 +15,6 @@ public sealed class AuditEnvelope : IAuditEvent
     public AuditEventType EventType { get; }
     public AuditSeverity Severity { get; }
 
-    public string? TenantId { get; }
     public string? UserId { get; }
     public string? UserName { get; }
 
@@ -35,7 +34,6 @@ public sealed class AuditEnvelope : IAuditEvent
         DateTime receivedAtUtc,
         AuditEventType eventType,
         AuditSeverity severity,
-        string? tenantId,
         string? userId,
         string? userName,
         string? traceId,
@@ -51,7 +49,6 @@ public sealed class AuditEnvelope : IAuditEvent
         ReceivedAtUtc = receivedAtUtc.Kind == DateTimeKind.Utc ? receivedAtUtc : receivedAtUtc.ToUniversalTime();
         EventType = eventType;
         Severity = severity;
-        TenantId = tenantId;
         UserId = userId;
         UserName = userName;
         TraceId = traceId ?? Activity.Current?.TraceId.ToString();

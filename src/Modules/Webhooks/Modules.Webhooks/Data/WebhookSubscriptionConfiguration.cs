@@ -1,4 +1,3 @@
-using Finbuckle.MultiTenant.EntityFrameworkCore.Extensions;
 using FSH.Modules.Webhooks.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;

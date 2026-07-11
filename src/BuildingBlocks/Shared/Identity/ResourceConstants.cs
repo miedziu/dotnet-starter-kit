@@ -2,7 +2,6 @@
 
 public static class ResourceConstants
 {
-    public const string Tenants = nameof(Tenants);
     public const string Dashboard = nameof(Dashboard);
     public const string Hangfire = nameof(Hangfire);
     public const string Users = nameof(Users);

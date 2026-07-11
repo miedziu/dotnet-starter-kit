@@ -17,7 +17,7 @@ public static class AssignSubscriptionEndpoint
                 async (AssignSubscriptionCommand command, IMediator mediator, CancellationToken ct) =>
                     Results.Ok(await mediator.Send(command, ct)))
             .WithName("AssignSubscription")
-            .WithSummary("Assign a plan to a tenant")
+            .WithSummary("Assign a plan to the application")
             .RequirePermission(BillingPermissions.Manage)
             .WithIdempotency();
     }

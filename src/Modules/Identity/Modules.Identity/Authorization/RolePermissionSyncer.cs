@@ -1,10 +1,7 @@
 using FSH.Framework.Caching;
 using FSH.Framework.Shared.Constants;
-using FSH.Framework.Shared.Identity.Claims;
-using FSH.Framework.Shared.Multitenancy;
 using FSH.Modules.Identity.Data;
 using FSH.Modules.Identity.Domain;
-using Finbuckle.MultiTenant.Abstractions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Hybrid;
@@ -20,22 +17,16 @@ namespace FSH.Modules.Identity.Authorization;
 public sealed class RolePermissionSyncer(
     IdentityDbContext context,
     RoleManager<FshRole> roleManager,
-    IMultiTenantContextAccessor<AppTenantInfo> tenantAccessor,
     HybridCache cache,
     TimeProvider timeProvider,
     ILogger<RolePermissionSyncer> logger)
 {
     public async Task SyncAsync(CancellationToken cancellationToken)
     {
-        var tenantId = tenantAccessor.MultiTenantContext.TenantInfo?.Id;
-        bool isRoot = tenantId == MultitenancyConstants.Root.Id;
-
         int basicAdded = await SyncRoleAsync(RoleConstants.Basic, PermissionConstants.Basic, cancellationToken).ConfigureAwait(false);
 
         // Admin gets all non-root permissions; the root tenant's Admin additionally gets Root permissions.
-        var adminPermissions = isRoot
-            ? PermissionConstants.Admin.Concat(PermissionConstants.Root).Distinct().ToList()
-            : PermissionConstants.Admin.ToList();
+        var adminPermissions = PermissionConstants.Admin.ToList();
         int adminAdded = await SyncRoleAsync(RoleConstants.Admin, adminPermissions, cancellationToken).ConfigureAwait(false);
 
         // If we wrote anything, drop the per-user permission cache so already-logged-in
@@ -87,10 +78,9 @@ public sealed class RolePermissionSyncer(
         if (logger.IsEnabled(LogLevel.Information))
         {
             logger.LogInformation(
-                "Synced {Count} new permission claim(s) to '{Role}' for tenant '{Tenant}'",
+                "Synced {Count} new permission claim(s) to '{Role}'",
                 toAdd.Count,
-                roleName,
-                tenantAccessor.MultiTenantContext.TenantInfo?.Id);
+                roleName);
         }
 
         return toAdd.Count;

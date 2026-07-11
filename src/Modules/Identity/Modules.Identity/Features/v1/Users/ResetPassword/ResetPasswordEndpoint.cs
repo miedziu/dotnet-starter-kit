@@ -1,4 +1,3 @@
-using FSH.Framework.Shared.Multitenancy;
 using FSH.Modules.Identity.Contracts.v1.Users.ResetPassword;
 using Mediator;
 using Microsoft.AspNetCore.Builder;
@@ -14,7 +13,6 @@ public static class ResetPasswordEndpoint
     {
         return endpoints.MapPost("/reset-password",
             async ([FromBody] ResetPasswordCommand command,
-            [FromHeader(Name = MultitenancyConstants.Identifier)] string tenant,
             IMediator mediator,
             CancellationToken cancellationToken) =>
         {

@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 namespace FSH.Modules.Billing.Data;
 
 /// <summary>
-/// Billing data lives in the main application database rather than per-tenant databases because
+/// Billing data lives in the main application database
 /// invoices and subscriptions are a global administrative concern. Billing is not tenant-scoped:
 /// there is a single global subscription, wallet, and invoice set shared across the whole system.
 /// </summary>

@@ -1,5 +1,3 @@
-using Finbuckle.MultiTenant.Abstractions;
-using FSH.Framework.Shared.Multitenancy;
 using FSH.Modules.Auditing.Contracts;
 using Microsoft.AspNetCore.Http;
 using System.Diagnostics;
@@ -15,12 +13,11 @@ namespace FSH.Modules.Auditing;
 /// </summary>
 public sealed class ChannelAuditPublisher : IAuditPublisher
 {
-    private static readonly IAuditScope DefaultScope = new DefaultAuditScope(null, null, null, null, null, null, null, null, AuditTag.None);
+    private static readonly IAuditScope DefaultScope = new DefaultAuditScope(null, null, null, null, null, null, null, AuditTag.None);
     private readonly Channel<AuditEnvelope> _default;
     private readonly Channel<AuditEnvelope> _security;
     private readonly int _defaultCapacity;
     private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly IMultiTenantContextAccessor<AppTenantInfo> _tenantAccessor;
     private readonly TimeProvider _timeProvider;
 
     public IAuditScope CurrentScope =>
@@ -29,13 +26,11 @@ public sealed class ChannelAuditPublisher : IAuditPublisher
 
     public ChannelAuditPublisher(
         IHttpContextAccessor httpContextAccessor,
-        IMultiTenantContextAccessor<AppTenantInfo> tenantAccessor,
         TimeProvider timeProvider,
         int capacity = 50_000,
         int securityCapacity = 50_000)
     {
         _httpContextAccessor = httpContextAccessor;
-        _tenantAccessor = tenantAccessor;
         _timeProvider = timeProvider;
         _defaultCapacity = capacity;
 
@@ -104,7 +99,6 @@ public sealed class ChannelAuditPublisher : IAuditPublisher
             receivedAtUtc: _timeProvider.GetUtcNow().UtcDateTime,
             eventType: auditEvent.EventType,
             severity: auditEvent.Severity,
-            tenantId: auditEvent.TenantId,
             userId: auditEvent.UserId,
             userName: auditEvent.UserName,
             traceId: auditEvent.TraceId,
@@ -118,10 +112,9 @@ public sealed class ChannelAuditPublisher : IAuditPublisher
 
     private static AuditEnvelope BackfillScopeContext(AuditEnvelope env, IAuditScope scope)
     {
-        bool needsTenantBackfill = string.IsNullOrWhiteSpace(env.TenantId);
         bool needsUserBackfill = string.IsNullOrWhiteSpace(env.UserId) && scope.UserId is not null;
 
-        if (!needsTenantBackfill && !needsUserBackfill)
+        if (!needsUserBackfill)
         {
             return env;
         }
@@ -132,7 +125,6 @@ public sealed class ChannelAuditPublisher : IAuditPublisher
             receivedAtUtc: env.ReceivedAtUtc,
             eventType: env.EventType,
             severity: env.Severity,
-            tenantId: needsTenantBackfill ? scope.TenantId : env.TenantId,
             userId: needsUserBackfill ? scope.UserId : env.UserId,
             userName: needsUserBackfill ? scope.UserName ?? env.UserName : env.UserName,
             traceId: env.TraceId,
@@ -152,17 +144,13 @@ public sealed class ChannelAuditPublisher : IAuditPublisher
     /// stays whatever the scope provided (the activator-set
     /// <c>ICurrentUser</c> is scoped, so the publisher can't see it).
     /// </summary>
-    private AuditEnvelope BackfillAmbientContext(AuditEnvelope env)
+    private static AuditEnvelope BackfillAmbientContext(AuditEnvelope env)
     {
-        bool needTenant = string.IsNullOrWhiteSpace(env.TenantId);
         bool needTrace = string.IsNullOrWhiteSpace(env.TraceId);
         bool needSpan = string.IsNullOrWhiteSpace(env.SpanId);
 
-        if (!needTenant && !needTrace && !needSpan) return env;
+        if (!needTrace && !needSpan) return env;
 
-        var ambientTenant = needTenant
-            ? _tenantAccessor.MultiTenantContext?.TenantInfo?.Id
-            : null;
         var activity = Activity.Current;
 
         return new AuditEnvelope(
@@ -171,7 +159,6 @@ public sealed class ChannelAuditPublisher : IAuditPublisher
             receivedAtUtc: env.ReceivedAtUtc,
             eventType: env.EventType,
             severity: env.Severity,
-            tenantId: needTenant ? ambientTenant ?? env.TenantId : env.TenantId,
             userId: env.UserId,
             userName: env.UserName,
             traceId: needTrace ? activity?.TraceId.ToString() ?? env.TraceId : env.TraceId,

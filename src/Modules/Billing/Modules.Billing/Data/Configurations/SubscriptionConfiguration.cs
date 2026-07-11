@@ -15,10 +15,7 @@ public sealed class SubscriptionConfiguration : IEntityTypeConfiguration<Subscri
         builder.Property(x => x.PlanId).IsRequired();
         builder.Property(x => x.Status).HasConversion<int>();
 
-        builder.HasIndex(x => x.Status)
-            .HasFilter($"\"Status\" = {(int)SubscriptionStatus.Active}")
-            .IsUnique()
-            .HasDatabaseName("ux_subscriptions_active");
+        builder.HasIndex(x => x.Status);
 
         builder.Ignore(x => x.DomainEvents);
     }

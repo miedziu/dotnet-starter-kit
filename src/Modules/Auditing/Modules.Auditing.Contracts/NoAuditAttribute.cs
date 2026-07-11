@@ -10,7 +10,7 @@ namespace FSH.Modules.Auditing.Contracts;
 ///   <item><description><see cref="BodyOnly"/> = false (default): skip the
 ///   audit entirely — no activity record is written.</description></item>
 ///   <item><description><see cref="BodyOnly"/> = true: still record the
-///   activity (timing, status, source, tenant, user) but omit the request
+///   activity (timing, status, source, user) but omit the request
 ///   and response body previews.</description></item>
 /// </list>
 ///

@@ -19,7 +19,7 @@ public sealed class ListTrashedFilesQueryHandler(FilesDbContext db)
         int size = q.PageSize is < 1 or > 200 ? 20 : q.PageSize;
 
         // IgnoreQueryFilters because the SoftDelete filter would otherwise hide deleted rows —
-        // exactly what we DO want here. Tenant scoping is preserved via the per-tenant DbContext.
+        // exactly what we DO want here. Scoping is preserved via the DbContext.
         var baseQuery = db.FileAssets
             .AsNoTracking()
             .IgnoreQueryFilters()

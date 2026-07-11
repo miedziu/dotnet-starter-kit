@@ -1,23 +1,13 @@
-using Finbuckle.MultiTenant.Abstractions;
 using FSH.Framework.Persistence.Context;
-using FSH.Framework.Shared.Multitenancy;
-using FSH.Framework.Shared.Persistence;
 using FSH.Modules.Tickets.Domain;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
 
 namespace FSH.Modules.Tickets.Data;
 
-public sealed class TicketsDbContext : BaseDbContext
+public sealed class TicketsDbContext(DbContextOptions<TicketsDbContext> options)
+    : BaseDbContext(options)
 {
     public const string Schema = "tickets";
-
-    public TicketsDbContext(
-        IMultiTenantContextAccessor<AppTenantInfo> multiTenantContextAccessor,
-        DbContextOptions<TicketsDbContext> options,
-        IOptions<DatabaseOptions> settings,
-        IHostEnvironment environment) : base(multiTenantContextAccessor, options, settings, environment) { }
 
     public DbSet<Ticket> Tickets => Set<Ticket>();
     public DbSet<TicketComment> TicketComments => Set<TicketComment>();

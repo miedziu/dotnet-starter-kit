@@ -1,5 +1,3 @@
-using FSH.Framework.Core.Domain;
-
 namespace FSH.Modules.Identity.Domain;
 
 /// <summary>
@@ -8,13 +6,8 @@ namespace FSH.Modules.Identity.Domain;
 /// that carries an act_sub claim. The cached "revoked or ended" check makes this
 /// effectively a revocation list for impersonation tokens — which would otherwise
 /// be impossible since JWTs aren't natively revocable.
-///
-/// Implements <see cref="IGlobalEntity"/> to opt out of the auto-applied
-/// tenant filter — cross-tenant impersonations span tenants, so the shadow
-/// TenantId column doesn't map cleanly. Tenant access is controlled in the
-/// query layer via explicit filters.
 /// </summary>
-public class ImpersonationGrant : IGlobalEntity
+public class ImpersonationGrant
 {
     public Guid Id { get; private set; }
 

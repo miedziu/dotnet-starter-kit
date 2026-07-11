@@ -30,8 +30,7 @@ public static class SseEndpoints
             }
 
             var userId = currentUser.GetUserId().ToString();
-            var tenantId = currentUser.GetTenant();
-            var token = await tokens.IssueAsync(userId, tenantId, cancellationToken).ConfigureAwait(false);
+            var token = await tokens.IssueAsync(userId, cancellationToken).ConfigureAwait(false);
             return Results.Ok(new { token });
         })
         .WithName("SseToken")
@@ -60,7 +59,7 @@ public static class SseEndpoints
             // It was redundant anyway: HTTP/1.1 keeps connections alive by default.
             context.Response.Headers["X-Accel-Buffering"] = "no"; // disable nginx buffering
 
-            var (connectionId, reader) = connectionManager.Connect(principal.UserId, principal.TenantId);
+            var (connectionId, reader) = connectionManager.Connect(principal.UserId);
 
             // Flush the response headers + an initial comment immediately. Kestrel buffers
             // response headers until the first body write, and our first write would otherwise

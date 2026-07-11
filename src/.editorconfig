@@ -296,3 +296,6 @@ dotnet_diagnostic.S125.severity = silent
 
 
 dotnet_diagnostic.S1135.severity = suggestion
+
+# S4663: Comments should not be empty
+dotnet_diagnostic.S4663.severity = suggestion

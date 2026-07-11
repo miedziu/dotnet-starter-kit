@@ -8,7 +8,6 @@ namespace FSH.Modules.Identity.Contracts.Events;
 public sealed record UserRegisteredIntegrationEvent(
     Guid Id,
     DateTime OccurredOnUtc,
-    string? TenantId,
     string CorrelationId,
     string Source,
     string UserId,

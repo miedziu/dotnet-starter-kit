@@ -10,37 +10,37 @@ internal static class BillingEmailBodies
 {
     private static string Date(DateTime utc) => utc.ToString("MMMM d, yyyy", CultureInfo.InvariantCulture);
 
-    public static (string Subject, string Body) NearingExpiry(string tenantName, string? planKey, DateTime validUpto, int daysRemaining)
+    public static (string Subject, string Body) NearingExpiry(string tenantName, DateTime validUpto, int daysRemaining)
     {
         var subject = daysRemaining <= 1
             ? "Your subscription expires tomorrow"
             : $"Your subscription expires in {daysRemaining} days";
         var body = Wrap(subject,
             $"<p>Hi {Escape(tenantName)},</p>" +
-            $"<p>Your <strong>{Escape(planKey ?? "current")}</strong> subscription is valid until " +
+            $"<p>Your <strong>{Escape("current")}</strong> subscription is valid until " +
             $"<strong>{Date(validUpto)}</strong> ({daysRemaining} day(s) remaining).</p>" +
             "<p>Please contact your account operator to renew and avoid any interruption to your service.</p>");
         return (subject, body);
     }
 
-    public static (string Subject, string Body) EnteredGrace(string tenantName, string? planKey, DateTime validUpto, DateTime graceEnds)
+    public static (string Subject, string Body) EnteredGrace(string tenantName, DateTime validUpto, DateTime graceEnds)
     {
         const string subject = "Your subscription has lapsed — grace period active";
         var body = Wrap(subject,
             $"<p>Hi {Escape(tenantName)},</p>" +
-            $"<p>Your <strong>{Escape(planKey ?? "current")}</strong> subscription expired on " +
+            $"<p>Your <strong>{Escape("current")}</strong> subscription expired on " +
             $"<strong>{Date(validUpto)}</strong>. Your service continues during a grace period that ends on " +
             $"<strong>{Date(graceEnds)}</strong>.</p>" +
             "<p>Please renew before the grace period ends to keep your access uninterrupted.</p>");
         return (subject, body);
     }
 
-    public static (string Subject, string Body) Expired(string tenantName, string? planKey, DateTime validUpto)
+    public static (string Subject, string Body) Expired(string tenantName, DateTime validUpto)
     {
         const string subject = "Your subscription has expired";
         var body = Wrap(subject,
             $"<p>Hi {Escape(tenantName)},</p>" +
-            $"<p>Your <strong>{Escape(planKey ?? "current")}</strong> subscription expired on " +
+            $"<p>Your <strong>{Escape("current")}</strong> subscription expired on " +
             $"<strong>{Date(validUpto)}</strong> and the grace period has ended, so access is now suspended.</p>" +
             "<p>Contact your account operator to renew and restore access.</p>");
         return (subject, body);

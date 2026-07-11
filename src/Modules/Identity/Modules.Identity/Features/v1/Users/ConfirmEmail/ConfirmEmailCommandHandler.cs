@@ -17,7 +17,7 @@ public sealed class ConfirmEmailCommandHandler : ICommandHandler<ConfirmEmailCom
     {
         ArgumentNullException.ThrowIfNull(command);
 
-        return await _userService.ConfirmEmailAsync(command.UserId, command.Code, command.Tenant, cancellationToken)
+        return await _userService.ConfirmEmailAsync(command.UserId, command.Code, cancellationToken)
             .ConfigureAwait(false);
     }
 }

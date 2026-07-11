@@ -13,7 +13,6 @@ public sealed class InvoiceLineItemConfiguration : IEntityTypeConfiguration<Invo
         builder.HasKey(x => x.Id);
         builder.Property(x => x.InvoiceId).IsRequired();
         builder.Property(x => x.Kind).HasConversion<int>();
-        builder.Property(x => x.Resource).HasConversion<int?>();
         builder.Property(x => x.Description).IsRequired().HasMaxLength(512);
         builder.Property(x => x.Quantity).HasPrecision(18, 4);
         builder.Property(x => x.UnitPrice).HasPrecision(18, 4);

@@ -1,4 +1,4 @@
-﻿using FSH.Framework.Caching;
+using FSH.Framework.Caching;
 using FSH.Framework.Jobs;
 using FSH.Framework.Mailing;
 using FSH.Framework.Persistence;
@@ -6,10 +6,8 @@ using FSH.Framework.Shared.Constants;
 using FSH.Framework.Web.Auth;
 using FSH.Framework.Web.Cors;
 using FSH.Framework.Web.Exceptions;
-using FSH.Framework.Web.FeatureFlags;
-using FSH.Framework.Web.Idempotency;
-using FSH.Framework.Web.Sse;
 using FSH.Framework.Web.Health;
+using FSH.Framework.Web.Idempotency;
 using FSH.Framework.Web.Mediator.Behaviors;
 using FSH.Framework.Web.Modules;
 using FSH.Framework.Web.Observability.Logging.Serilog;
@@ -19,15 +17,15 @@ using FSH.Framework.Web.Origin;
 using FSH.Framework.Web.RateLimiting;
 using FSH.Framework.Web.Realtime;
 using FSH.Framework.Web.Security;
+using FSH.Framework.Web.Sse;
 using FSH.Framework.Web.Versioning;
+using Mediator;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.ResponseCompression;
-using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
-using Mediator;
 
 namespace FSH.Framework.Web;
 
@@ -103,11 +101,6 @@ public static class Extensions
             }
         }
 
-        if (options.EnableFeatureFlags)
-        {
-            builder.Services.AddHeroFeatureFlags(builder.Configuration);
-        }
-
         if (options.EnableIdempotency)
         {
             builder.Services.AddHeroIdempotency(builder.Configuration);
@@ -116,6 +109,11 @@ public static class Extensions
         if (options.EnableSse)
         {
             builder.Services.AddHeroSse();
+        }
+
+        if (options.EnableRealtime)
+        {
+            builder.Services.AddHeroRealtime(builder.Configuration);
         }
 
         builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
@@ -225,6 +223,7 @@ public sealed class FshPlatformOptions
     public bool EnableFeatureFlags { get; set; } = false;
     public bool EnableIdempotency { get; set; } = true;
     public bool EnableSse { get; set; } = false;
+    public bool EnableRealtime { get; set; } = false;
 }
 
 public sealed class FshPipelineOptions
@@ -234,4 +233,5 @@ public sealed class FshPipelineOptions
     public bool ServeStaticFiles { get; set; } = true;
     public bool MapModules { get; set; } = true;
     public bool MapSseEndpoints { get; set; } = false;
+    public bool MapRealtime { get; set; } = false;
 }

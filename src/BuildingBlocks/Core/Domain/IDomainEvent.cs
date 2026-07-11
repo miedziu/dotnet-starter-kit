@@ -3,7 +3,7 @@
 namespace FSH.Framework.Core.Domain;
 
 /// <summary>
-/// Represents a domain event with correlation and tenant context.
+/// Represents a domain event with correlation context.
 /// Extends <see cref="INotification"/> so domain events can be published via Mediator.
 /// </summary>
 public interface IDomainEvent : INotification
@@ -22,9 +22,4 @@ public interface IDomainEvent : INotification
     /// Gets the correlation identifier for tracing across boundaries.
     /// </summary>
     string? CorrelationId { get; }
-
-    /// <summary>
-    /// Gets the tenant identifier associated with the event.
-    /// </summary>
-    string? TenantId { get; }
 }

@@ -9,10 +9,6 @@ public static class ClaimsPrincipalExtensions
     public static string? GetEmail(this ClaimsPrincipal principal) =>
         principal?.FindFirstValue(ClaimTypes.Email);
 
-    // Retrieves the tenant claim
-    public static string? GetTenant(this ClaimsPrincipal principal) =>
-        principal?.FindFirstValue(CustomClaims.Tenant);
-
     // Retrieves the user's full name
     public static string? GetFullName(this ClaimsPrincipal principal) =>
         principal?.FindFirstValue(CustomClaims.Fullname);

@@ -25,7 +25,7 @@ public sealed class EfCoreInboxStore<TDbContext> : IInboxStore
             .ConfigureAwait(false);
     }
 
-    public async Task MarkProcessedAsync(Guid eventId, string handlerName, string? tenantId, string eventType, CancellationToken ct = default)
+    public async Task MarkProcessedAsync(Guid eventId, string handlerName, string eventType, CancellationToken ct = default)
     {
         // Idempotent: skip if already marked (race between direct publish and outbox retry)
         bool alreadyProcessed = await _dbContext.Set<InboxMessage>()

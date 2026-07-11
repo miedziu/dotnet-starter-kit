@@ -1,8 +1,6 @@
 using FSH.Framework.Core.Context;
 using FSH.Framework.Core.Exceptions;
 using FSH.Framework.Eventing.Abstractions;
-using FSH.Framework.Quota;
-using FSH.Framework.Shared.Quota;
 using FSH.Framework.Storage.Services;
 using FSH.Modules.Files.Contracts.Events;
 using FSH.Modules.Files.Contracts.v1.Commands;
@@ -21,7 +19,6 @@ public sealed class FinalizeUploadCommandHandler(
     FilesDbContext db,
     IStorageService storage,
     IFileScanner scanner,
-    IQuotaService quotas,
     IEventBus events,
     ICurrentUser currentUser)
     : ICommandHandler<FinalizeUploadCommand, FileAssetDto>
@@ -29,7 +26,6 @@ public sealed class FinalizeUploadCommandHandler(
     public async ValueTask<FileAssetDto> Handle(FinalizeUploadCommand cmd, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(cmd);
-        var tenantId = currentUser.GetTenant() ?? throw new UnauthorizedException("invalid tenant");
         var userId = currentUser.GetUserId().ToString();
 
         var asset = await db.FileAssets
@@ -76,16 +72,12 @@ public sealed class FinalizeUploadCommandHandler(
         var scanResult = await scanner.ScanAsync(asset.StorageKey, cancellationToken).ConfigureAwait(false);
         asset.MarkAvailable(head.SizeBytes, scanResult);
 
-        // Debit quota with the actual bytes. Refunded on hard purge by PurgeDeletedFilesJob.
-        await quotas.RecordAsync(QuotaResource.StorageBytes, head.SizeBytes, cancellationToken).ConfigureAwait(false);
-
         await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
         var correlationId = Activity.Current?.Id ?? Guid.NewGuid().ToString();
         await events.PublishAsync(new FileFinalizedIntegrationEvent(
             Id: Guid.NewGuid(),
             OccurredOnUtc: DateTime.UtcNow,
-            TenantId: tenantId,
             CorrelationId: correlationId,
             Source: "Files",
             FileAssetId: asset.Id,

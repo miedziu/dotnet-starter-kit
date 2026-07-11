@@ -10,10 +10,9 @@ public sealed record UserRegisteredEvent(
     string Email,
     string? FirstName,
     string? LastName,
-    string? CorrelationId = null,
-    string? TenantId = null
-) : DomainEvent(EventId, OccurredOnUtc, CorrelationId, TenantId)
+    string? CorrelationId = null
+) : DomainEvent(EventId, OccurredOnUtc, CorrelationId)
 {
-    public static UserRegisteredEvent Create(string userId, string email, string? firstName = null, string? lastName = null, string? correlationId = null, string? tenantId = null)
-        => new(Guid.NewGuid(), DateTimeOffset.UtcNow, userId, email, firstName, lastName, correlationId, tenantId);
+    public static UserRegisteredEvent Create(string userId, string email, string? firstName = null, string? lastName = null, string? correlationId = null)
+        => new(Guid.NewGuid(), DateTimeOffset.UtcNow, userId, email, firstName, lastName, correlationId);
 }

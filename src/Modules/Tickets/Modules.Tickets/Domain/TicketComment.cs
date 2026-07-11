@@ -1,4 +1,5 @@
 using FSH.Framework.Core.Domain;
+using FSH.Framework.Shared.Persistence;
 
 namespace FSH.Modules.Tickets.Domain;
 

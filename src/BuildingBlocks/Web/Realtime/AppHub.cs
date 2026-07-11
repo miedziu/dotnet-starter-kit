@@ -1,8 +1,8 @@
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
+using System.Security.Claims;
 
 namespace FSH.Framework.Web.Realtime;
 
@@ -60,20 +60,6 @@ public sealed class AppHub : Hub
             ?? user.FindFirstValue("uid");
     }
 
-    /// <summary>
-    /// Reads the tenant id off the principal — used to scope cross-tenant
-    /// broadcasts (presence) to a single tenant group so a 1000-user tenant
-    /// doesn't broadcast every connect to other tenants.
-    /// </summary>
-    private string? GetTenantId()
-    {
-        var user = Context.User;
-        if (user is null) return null;
-        return user.FindFirstValue("tenant")
-            ?? user.FindFirstValue("tid")
-            ?? user.FindFirstValue("tenantId");
-    }
-
     public override async Task OnConnectedAsync()
     {
         try
@@ -88,15 +74,6 @@ public sealed class AppHub : Hub
             await Groups.AddToGroupAsync(Context.ConnectionId, $"user:{userId}", Context.ConnectionAborted)
                 .ConfigureAwait(false);
 
-            // Join the tenant group — scopes cross-tenant broadcasts (presence) so a 1000-user
-            // tenant doesn't broadcast every connect to other tenants.
-            var tenantId = GetTenantId();
-            if (!string.IsNullOrEmpty(tenantId))
-            {
-                await Groups.AddToGroupAsync(Context.ConnectionId, $"tenant:{tenantId}", Context.ConnectionAborted)
-                    .ConfigureAwait(false);
-            }
-
             var channelIds = await _channels
                 .ListMyChannelIdsAsync(userId, Context.ConnectionAborted)
                 .ConfigureAwait(false);
@@ -110,13 +87,9 @@ public sealed class AppHub : Hub
             AppHubLog.Connected(_logger, Context.ConnectionId, userId, channelIds.Count);
 
             // On the user's first open connection, broadcast PresenceChanged so clients flip the dot.
-            // Scoped to the tenant group, not Clients.All, to avoid global fan-out.
             if (_presence.Connect(userId))
             {
-                var target = string.IsNullOrEmpty(tenantId)
-                    ? Clients.All
-                    : Clients.Group($"tenant:{tenantId}");
-                await target.SendAsync(
+                await Clients.All.SendAsync(
                         "PresenceChanged",
                         new { userId, online = true },
                         Context.ConnectionAborted)
@@ -139,11 +112,7 @@ public sealed class AppHub : Hub
         var userId = GetUserId();
         if (!string.IsNullOrEmpty(userId) && _presence.Disconnect(userId))
         {
-            var tenantId = GetTenantId();
-            var target = string.IsNullOrEmpty(tenantId)
-                ? Clients.All
-                : Clients.Group($"tenant:{tenantId}");
-            await target.SendAsync(
+            await Clients.All.SendAsync(
                     "PresenceChanged",
                     new { userId, online = false })
                 .ConfigureAwait(false);

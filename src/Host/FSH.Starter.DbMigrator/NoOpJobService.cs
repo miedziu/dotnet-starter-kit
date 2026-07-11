@@ -10,7 +10,6 @@ namespace FSH.Starter.DbMigrator;
 /// schema and worker threads — overkill for a one-shot console).
 ///
 /// All operations throw — the migrator's code paths
-/// (<c>ITenantService.MigrateTenantAsync</c> / <c>SeedTenantAsync</c>)
 /// never enqueue jobs. If a regression starts enqueuing during migration
 /// the throw makes the misuse obvious.
 /// </summary>

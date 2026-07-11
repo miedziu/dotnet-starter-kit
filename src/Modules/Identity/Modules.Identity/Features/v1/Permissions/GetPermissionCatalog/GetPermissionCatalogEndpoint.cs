@@ -18,7 +18,7 @@ public static class GetPermissionCatalogEndpoint
         .WithName("GetPermissionCatalog")
         .WithSummary("Get permission catalog")
         .RequirePermission(IdentityPermissions.Roles.View)
-        .WithDescription("Returns every permission registered in the host, filtered to the caller's tenant context. Non-root tenants see the Admin set; the root tenant additionally sees the platform Root set.")
+        .WithDescription("Returns every permission registered in the host.")
         .Produces<IReadOnlyList<PermissionCatalogEntryDto>>(StatusCodes.Status200OK)
         .Produces(StatusCodes.Status401Unauthorized)
         .Produces(StatusCodes.Status403Forbidden);

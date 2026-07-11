@@ -2,19 +2,18 @@ import { apiFetch, ApiRequestError } from "@/lib/api-client";
 import { env } from "@/env";
 import { tokenStore } from "@/auth/token-store";
 
-export type QuotaResource =
-  | "ApiCalls"
-  | "StorageBytes"
-  | "Users"
-  | "WebhookDeliveries"
-  | (string & {});
+// export type QuotaResource =
+//   | "ApiCalls"
+//   | "StorageBytes"
+//   | "Users"
+//   | "WebhookDeliveries"
+//   | (string & {});
 
 export type UsageSnapshotDto = {
   id: string;
   tenantId: string;
   periodYear: number;
   periodMonth: number;
-  resource: QuotaResource;
   usedUnits: number;
   limitUnits: number;
   overage: number;

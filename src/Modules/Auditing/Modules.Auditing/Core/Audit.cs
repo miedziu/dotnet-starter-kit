@@ -31,20 +31,20 @@ public static class Audit
     public static Builder ForEntityChange(
         string dbContext, string? schema, string table, string entityName, string key,
         EntityOperation operation, IEnumerable<PropertyChange> changes)
-        => new Builder(
+        => new(
             eventType: AuditEventType.EntityChange,
             severity: AuditSeverity.Information,
             payload: new EntityChangeEventPayload(dbContext, schema, table, entityName, key, operation, changes.ToArray(), TransactionId: null));
 
     public static Builder ForSecurity(SecurityAction action)
-        => new Builder(
+        => new(
             eventType: AuditEventType.Security,
             severity: action is SecurityAction.LoginFailed or SecurityAction.PermissionDenied or SecurityAction.PolicyFailed
                 ? AuditSeverity.Warning : AuditSeverity.Information,
             payload: new SecurityEventPayload(action, null, null, null, null, null));
 
     public static Builder ForActivity(Contracts.ActivityKind kind, string name)
-        => new Builder(
+        => new(
             eventType: AuditEventType.Activity,
             severity: AuditSeverity.Information,
             payload: new ActivityEventPayload(kind, name, null, 0, BodyCapture.None, 0, 0, null, null));
@@ -108,7 +108,6 @@ public static class Audit
         private AuditSeverity _severity;
         private object _payload;
 
-        private string? _tenantId;
         private string? _userId;
         private string? _userName;
         private string? _traceId = Activity.Current?.TraceId.ToString();
@@ -127,7 +126,6 @@ public static class Audit
         }
 
         public Builder WithSeverity(AuditSeverity severity) { _severity = severity; return this; }
-        public Builder WithTenant(string? tenantId) { _tenantId = tenantId; return this; }
         public Builder WithUser(string? userId, string? userName = null) { _userId = userId; _userName = userName; return this; }
         public Builder WithTrace(string? traceId, string? spanId = null) { _traceId = traceId; _spanId = spanId; return this; }
         public Builder WithCorrelation(string? correlationId) { _correlationId = correlationId; return this; }
@@ -177,7 +175,6 @@ public static class Audit
                 receivedAtUtc: TimeProvider.System.GetUtcNow().UtcDateTime,
                 eventType: _type,
                 severity: _severity,
-                tenantId: _tenantId,
                 userId: _userId,
                 userName: _userName,
                 traceId: _traceId,
@@ -202,7 +199,7 @@ public static class Audit
     // --- tiny safe defaults so dev builds run ---------------------------------
     private sealed class NoopPublisher : IAuditPublisher
     {
-        public IAuditScope CurrentScope { get; } = new DefaultAuditScope(null, null, null, null, null, null, null, null, AuditTag.None);
+        public IAuditScope CurrentScope { get; } = new DefaultAuditScope(null, null, null, null, null, null, null, AuditTag.None);
         public ValueTask PublishAsync(IAuditEvent auditEvent, CancellationToken ct = default) => ValueTask.CompletedTask;
     }
 }

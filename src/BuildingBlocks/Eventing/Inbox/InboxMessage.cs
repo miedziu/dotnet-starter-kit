@@ -8,7 +8,7 @@ namespace FSH.Framework.Eventing.Inbox;
 /// Inbox message to track processed integration events per handler for idempotent consumers.
 ///
 /// </summary>
-public class InboxMessage : IGlobalEntity
+public class InboxMessage
 {
     public Guid Id { get; set; }
 

@@ -17,8 +17,6 @@ public sealed class GetAuditsQuery : IPagedQuery, IQuery<PagedResponse<AuditSumm
 
     public DateTime? ToUtc { get; set; }
 
-    public string? TenantId { get; set; }
-
     public string? UserId { get; set; }
 
     public AuditEventType? EventType { get; set; }

@@ -1,6 +1,7 @@
 using System.Net;
 using FSH.Framework.Core.Domain;
 using FSH.Framework.Core.Exceptions;
+using FSH.Framework.Shared.Persistence;
 using FSH.Modules.Tickets.Contracts.Dtos;
 using FSH.Modules.Tickets.Domain.Events;
 

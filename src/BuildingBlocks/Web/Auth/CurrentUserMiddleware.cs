@@ -20,14 +20,10 @@ public class CurrentUserMiddleware(ICurrentUserInitializer currentUserInitialize
         if (activity is not null && context.User?.Identity?.IsAuthenticated == true)
         {
             var userId = context.User.GetUserId();
-            var tenant = context.User.GetTenant();
             var correlationId = context.Request.HttpContext.TraceIdentifier;
 
             if (!string.IsNullOrEmpty(userId))
                 activity.SetTag("fsh.user_id", userId);
-
-            if (!string.IsNullOrEmpty(tenant))
-                activity.SetTag("fsh.tenant_id", tenant);
 
             if (!string.IsNullOrEmpty(correlationId))
                 activity.SetTag("fsh.correlation_id", correlationId);
