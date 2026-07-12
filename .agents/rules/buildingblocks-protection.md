@@ -11,11 +11,8 @@ Changes to BuildingBlocks affect ALL modules across the entire framework. These 
 
 ## Before Proceeding
 
-1. **Confirm explicit approval** - Has the user specifically approved this change?
-2. **Consider alternatives** - Can this be done in the module instead?
-3. **Assess impact** - What modules will this affect?
-
-## If Approved
+1. **Consider alternatives** - Can this be done in the module instead?
+2. **Assess impact** - What modules will this affect?
 
 - Make minimal, focused changes
 - Ensure backward compatibility
@@ -29,7 +26,3 @@ Changes to BuildingBlocks affect ALL modules across the entire framework. These 
 | Modifying Core | Extension method in module |
 | Changing Persistence | Custom repository in module |
 | Updating Web | Module-specific middleware |
-
-## If Not Approved
-
-Do not proceed. Suggest alternatives that don't require BuildingBlocks modifications.

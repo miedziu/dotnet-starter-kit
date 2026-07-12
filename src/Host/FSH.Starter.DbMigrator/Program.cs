@@ -3,14 +3,25 @@ using FSH.Framework.Web;
 using FSH.Framework.Web.Modules;
 using FSH.Framework.Web.Observability.Logging.Serilog;
 using FSH.Modules.Auditing;
-using FSH.Modules.Billing;
-using FSH.Modules.Catalog;
+using FSH.Modules.Auditing.Contracts;
+// using FSH.Modules.Billing;
+// using FSH.Modules.Billing.Contracts;
+// using FSH.Modules.Catalog;
+// using FSH.Modules.Catalog.Contracts;
+// using FSH.Modules.Chat;
+// using FSH.Modules.Chat.Contracts.v1.Commands;
+// using FSH.Modules.Files;
+// using FSH.Modules.Files.Contracts.v1.Commands;
 using FSH.Modules.Identity;
 using FSH.Modules.Identity.Contracts.v1.Tokens.TokenGeneration;
 using FSH.Modules.Identity.Data;
 using FSH.Modules.Identity.Features.v1.Tokens.TokenGeneration;
-using FSH.Modules.Tickets;
-using FSH.Modules.Webhooks;
+// using FSH.Modules.Notifications;
+// using FSH.Modules.Notifications.Contracts.v1.Commands;
+// using FSH.Modules.Tickets;
+// using FSH.Modules.Tickets.Contracts;
+// using FSH.Modules.Webhooks;
+// using FSH.Modules.Webhooks.Contracts.v1.CreateWebhookSubscription;
 using FSH.Starter.DbMigrator;
 using FSH.Starter.DbMigrator.DemoSeed;
 using Microsoft.EntityFrameworkCore;
@@ -18,8 +29,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+// using Microsoft.Extensions.Options;
 using System.Globalization;
-using System.Reflection;
 
 // FSH DbMigrator — one-shot console that migrates every DB to head, optionally seeds, then exits 0/1.
 // Runs as a deployment step (not at API startup) so it can use an elevated-DDL connection string. Verbs: see MigratorCommand.HelpText.
@@ -61,6 +72,9 @@ if (string.IsNullOrWhiteSpace(builder.Configuration["JwtOptions:SigningKey"]))
     });
 }
 
+// Register ModuleOptions for IOptions<ModuleOptions> injection (used by DemoSeeder)
+builder.Services.Configure<ModuleOptions>(builder.Configuration.GetSection("ModuleOptions"));
+
 // Fail-fast with one clear line if DatabaseOptions__ConnectionString is unset, rather than letting
 // host-build-time option validation throw a stack trace.
 if (string.IsNullOrWhiteSpace(builder.Configuration["DatabaseOptions:ConnectionString"]))
@@ -72,46 +86,50 @@ if (string.IsNullOrWhiteSpace(builder.Configuration["DatabaseOptions:ConnectionS
     return 1;
 }
 
-// Mirror the API's mediator registration so module handlers wire correctly —
-// some module DbInitializers depend on services that mediator pipelines build.
+// Define all modules: (Name, ContractsType, RuntimeType)
+var allModules = new[]
+{
+    ("Identity", typeof(GenerateTokenCommand), typeof(IdentityModule)),
+    ("Auditing", typeof(AuditEnvelope), typeof(AuditingModule)),
+    // ("Files", typeof(RequestUploadUrlCommand), typeof(FilesModule)),
+    // ("Webhooks", typeof(CreateWebhookSubscriptionCommand), typeof(WebhooksModule)),
+    // ("Billing", typeof(BillingContractsMarker), typeof(BillingModule)),
+    // ("Catalog", typeof(CatalogContractsMarker), typeof(CatalogModule)),
+    // ("Tickets", typeof(TicketsContractsMarker), typeof(TicketsModule)),
+    // ("Chat", typeof(CreateChannelCommand), typeof(ChatModule)),
+    // ("Notifications", typeof(MarkNotificationReadCommand), typeof(NotificationsModule))
+};
+
+// Register ALL module handlers with Mediator for source generator discovery
+// (Mediator source generator needs inline types at compile time)
 builder.Services.AddMediator(o =>
 {
     o.ServiceLifetime = ServiceLifetime.Scoped;
-    o.Assemblies =
-    [
+    o.Assemblies = [
         typeof(GenerateTokenCommand),
         typeof(GenerateTokenCommandHandler),
         typeof(FSH.Modules.Auditing.Contracts.AuditEnvelope),
         typeof(FSH.Modules.Auditing.Persistence.AuditDbContext),
-        typeof(FSH.Modules.Webhooks.Contracts.v1.CreateWebhookSubscription.CreateWebhookSubscriptionCommand),
-        typeof(FSH.Modules.Webhooks.WebhooksModule),
-        typeof(FSH.Modules.Billing.Contracts.BillingContractsMarker),
-        typeof(FSH.Modules.Billing.BillingModule),
-        typeof(FSH.Modules.Catalog.Contracts.CatalogContractsMarker),
-        typeof(FSH.Modules.Catalog.CatalogModule),
-        typeof(FSH.Modules.Tickets.Contracts.TicketsContractsMarker),
-        typeof(FSH.Modules.Tickets.TicketsModule),
-        typeof(FSH.Modules.Files.Contracts.v1.Commands.RequestUploadUrlCommand),
-        typeof(FSH.Modules.Files.FilesModule),
-        typeof(FSH.Modules.Chat.Contracts.v1.Commands.CreateChannelCommand),
-        typeof(FSH.Modules.Chat.ChatModule),
-        typeof(FSH.Modules.Notifications.Contracts.v1.Commands.MarkNotificationReadCommand),
-        typeof(FSH.Modules.Notifications.NotificationsModule),
+        // typeof(FSH.Modules.Webhooks.Contracts.v1.CreateWebhookSubscription.CreateWebhookSubscriptionCommand),
+        // typeof(FSH.Modules.Webhooks.WebhooksModule),
+        // typeof(FSH.Modules.Billing.Contracts.BillingContractsMarker),
+        // typeof(FSH.Modules.Billing.BillingModule),
+        // typeof(FSH.Modules.Catalog.Contracts.CatalogContractsMarker),
+        // typeof(FSH.Modules.Catalog.CatalogModule),
+        // typeof(FSH.Modules.Tickets.Contracts.TicketsContractsMarker),
+        // typeof(FSH.Modules.Tickets.TicketsModule),
+        // typeof(FSH.Modules.Files.Contracts.v1.Commands.RequestUploadUrlCommand),
+        // typeof(FSH.Modules.Files.FilesModule),
+        // typeof(FSH.Modules.Chat.Contracts.v1.Commands.CreateChannelCommand),
+        // typeof(FSH.Modules.Chat.ChatModule),
+        // typeof(FSH.Modules.Notifications.Contracts.v1.Commands.MarkNotificationReadCommand),
+        // typeof(FSH.Modules.Notifications.NotificationsModule),
     ];
 });
 
-var moduleAssemblies = new Assembly[]
-{
-    typeof(IdentityModule).Assembly,
-    typeof(AuditingModule).Assembly,
-    typeof(FSH.Modules.Files.FilesModule).Assembly,
-    typeof(WebhooksModule).Assembly,
-    typeof(BillingModule).Assembly,
-    typeof(CatalogModule).Assembly,
-    typeof(TicketsModule).Assembly,
-    typeof(FSH.Modules.Chat.ChatModule).Assembly,
-    typeof(FSH.Modules.Notifications.NotificationsModule).Assembly,
-};
+// Get filtered module assemblies based on configuration (for AddModules only)
+var moduleAssemblies = ModuleRegistrationHelper.GetFilteredModuleAssemblies(
+    builder.Configuration, allModules);
 
 // Disable runtime-only concerns; persistence stay on so DbInitializers resolve. Caching
 // stays on because some modules' ctor wiring touches IDistributedCache (in-memory fallback if no Redis).

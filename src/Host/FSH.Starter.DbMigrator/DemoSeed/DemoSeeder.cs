@@ -1,4 +1,5 @@
 using FSH.Framework.Shared.Constants;
+using FSH.Framework.Web.Modules;
 using FSH.Modules.Billing.Contracts;
 using FSH.Modules.Billing.Data;
 using FSH.Modules.Billing.Domain;
@@ -19,6 +20,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System.Globalization;
 
 namespace FSH.Starter.DbMigrator.DemoSeed;
@@ -42,13 +44,19 @@ internal sealed class DemoSeeder
     private readonly IServiceProvider _services;
     private readonly IConfiguration _config;
     private readonly ILogger<DemoSeeder> _logger;
+    private readonly ModuleOptions _moduleOptions;
     private string _sharedPassword = string.Empty;
 
-    public DemoSeeder(IServiceProvider services, IConfiguration config, ILogger<DemoSeeder> logger)
+    public DemoSeeder(
+        IServiceProvider services,
+        IConfiguration config,
+        ILogger<DemoSeeder> logger,
+        IOptions<ModuleOptions> moduleOptions)
     {
         _services = services;
         _config = config;
         _logger = logger;
+        _moduleOptions = moduleOptions.Value;
     }
 
     public async Task RunAsync(CancellationToken cancellationToken)
@@ -61,17 +69,53 @@ internal sealed class DemoSeeder
         // await EnsureDemoTenantsExistAsync(cancellationToken).ConfigureAwait(false);
         await SeedRootSuperAdminAsync(cancellationToken).ConfigureAwait(false);
 
-        await SeedTenantSubscriptionAsync(cancellationToken).ConfigureAwait(false);
+        // Only seed subscription if Billing module is enabled
+        if (_moduleOptions.IsModuleEnabled("Billing"))
+        {
+            await SeedTenantSubscriptionAsync(cancellationToken).ConfigureAwait(false);
+        }
+        else if (_logger.IsEnabled(LogLevel.Information))
+        {
+            _logger.LogInformation("[demo-seed] skipping subscription seeding — Billing module disabled");
+        }
+
         await SeedTenantUsersAsync(cancellationToken).ConfigureAwait(false);
-        await SeedTenantCatalogAsync(cancellationToken).ConfigureAwait(false);
-        await SeedTenantTicketsAsync(cancellationToken).ConfigureAwait(false);
-        await SeedTenantChatAsync(cancellationToken).ConfigureAwait(false);
+
+        // Only seed catalog if Catalog module is enabled
+        if (_moduleOptions.IsModuleEnabled("Catalog"))
+        {
+            await SeedTenantCatalogAsync(cancellationToken).ConfigureAwait(false);
+        }
+        else if (_logger.IsEnabled(LogLevel.Information))
+        {
+            _logger.LogInformation("[demo-seed] skipping catalog seeding — Catalog module disabled");
+        }
+
+        // Only seed tickets if Tickets module is enabled
+        if (_moduleOptions.IsModuleEnabled("Tickets"))
+        {
+            await SeedTenantTicketsAsync(cancellationToken).ConfigureAwait(false);
+        }
+        else if (_logger.IsEnabled(LogLevel.Information))
+        {
+            _logger.LogInformation("[demo-seed] skipping tickets seeding — Tickets module disabled");
+        }
+
+        // Only seed chat if Chat module is enabled
+        if (_moduleOptions.IsModuleEnabled("Chat"))
+        {
+            await SeedTenantChatAsync(cancellationToken).ConfigureAwait(false);
+        }
+        else if (_logger.IsEnabled(LogLevel.Information))
+        {
+            _logger.LogInformation("[demo-seed] skipping chat seeding — Chat module disabled");
+        }
 
 
         if (_logger.IsEnabled(LogLevel.Information))
         {
             _logger.LogInformation(
-                "[demo-seed] complete · root superadmin + populated with users / catalog / tickets / chat");
+                "[demo-seed] complete · root superadmin + populated with users");
         }
     }
 

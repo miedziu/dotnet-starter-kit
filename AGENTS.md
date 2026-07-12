@@ -21,7 +21,7 @@ front-end. Auth, auditing, billing, files, chat and more are first-class.
 
 | Path | What |
 |------|------|
-| `src/BuildingBlocks/` | Shared framework libraries (Core, Persistence, Web, Caching, Eventing, Jobs, Mailing, Storage, Shared…). **Protected — see below.** |
+| `src/BuildingBlocks/` | Shared framework libraries (Core, Persistence, Web, Caching, Eventing, Jobs, Mailing, Storage, Shared…). |
 | `src/Modules/{Name}/` | Bounded contexts. Each has a runtime project + a `.Contracts` project (its only public API). |
 | `src/Host/FSH.Starter.Api` | Composition-root Web API host. |
 | `src/Host/FSH.Starter.AppHost` | .NET Aspire orchestrator (Redis, MinIO, migrator, API). |
@@ -71,7 +71,7 @@ Single long-lived branch: **`main`** (the default) — there is **no `develop`**
 
 1. **Module boundaries** — a module references another module only through its `.Contracts` project, never its runtime project.
 2. **Registering a module touches FOUR places** — `Program.cs` Mediator `o.Assemblies` (two markers each) + `moduleAssemblies` array, **and the identical pair in `DbMigrator/Program.cs`**. A missing Mediator marker = handlers silently undiscovered. See `architecture.md`.
-3. **Do NOT modify `src/BuildingBlocks`** without explicit approval — shared by every module, wide blast radius.
+3. **`src/BuildingBlocks`**— shared by every module, wide blast radius.
 4. **Mediator handlers must be `public sealed`**, return `ValueTask<T>`, and `.ConfigureAwait(false)` every await.
 5. **Structured logging only** — no string interpolation in log messages; use message templates / `[LoggerMessage]`.
 6. **Propagate `CancellationToken`** into every EF/IO call; add as `= default` on public service methods.
@@ -96,7 +96,7 @@ Single long-lived branch: **`main`** (the default) — there is **no `develop`**
 | CORS, security headers, rate limiting, idempotency | `security.md` |
 | SignalR / SSE backend | `realtime.md` |
 | Logging, correlation, OpenTelemetry | `logging.md` |
-| **Modifying `src/BuildingBlocks`** (read first — it's protected) | `buildingblocks-protection.md` |
+| **Modifying `src/BuildingBlocks`** (read first) | `buildingblocks-protection.md` |
 | A specific module's quirks | `modules/{module}.md` (identity, chat, files, webhooks, auditing, billing, catalog, tickets, notifications) |
 
 **Frontend** (`.agents/rules/frontend/`)
