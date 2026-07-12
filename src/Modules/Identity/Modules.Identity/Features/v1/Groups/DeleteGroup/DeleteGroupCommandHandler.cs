@@ -36,7 +36,7 @@ public sealed class DeleteGroupCommandHandler : ICommandHandler<DeleteGroupComma
 
         // Snapshot members before delete; soft-delete flips IsDeleted but membership rows
         // persist, so capture first for clarity.
-        var memberIds = await _dbContext.UserGroups
+        var memberIntIds = await _dbContext.UserGroups
             .Where(ug => ug.GroupId == command.Id)
             .Select(ug => ug.UserId)
             .ToListAsync(cancellationToken);
@@ -48,9 +48,18 @@ public sealed class DeleteGroupCommandHandler : ICommandHandler<DeleteGroupComma
 
         // A deleted group can no longer contribute its roles to members' effective
         // permission sets — flush each member's cached entry.
-        foreach (var userId in memberIds)
+        foreach (var intId in memberIntIds)
         {
-            await _userPermissionService.InvalidatePermissionCacheAsync(userId, cancellationToken).ConfigureAwait(false);
+            // Fetch the user by IntId and get the string Id
+            var userId = await _dbContext.Users
+                .Where(u => u.IntId == intId)
+                .Select(u => u.Id)
+                .FirstOrDefaultAsync(cancellationToken);
+
+            if (userId != null)
+            {
+                await _userPermissionService.InvalidatePermissionCacheAsync(userId, cancellationToken).ConfigureAwait(false);
+            }
         }
 
         return Unit.Value;

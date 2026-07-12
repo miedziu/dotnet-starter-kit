@@ -17,9 +17,15 @@ public sealed class GroupRoleService : IGroupRoleService
     {
         ArgumentNullException.ThrowIfNull(userId);
 
+        // Fetch IntId from the user (since UserGroup.UserId is now int)
+        var userIntId = await _dbContext.Users
+            .Where(u => u.Id == userId)
+            .Select(u => u.IntId)
+            .FirstOrDefaultAsync(ct);
+
         // Get all group IDs the user belongs to
         var userGroupIds = await _dbContext.UserGroups
-            .Where(ug => ug.UserId == userId)
+            .Where(ug => ug.UserId == userIntId)
             .Select(ug => ug.GroupId)
             .ToListAsync(ct);
 

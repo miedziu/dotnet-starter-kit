@@ -42,7 +42,7 @@ internal sealed class PasswordHistoryService : IPasswordHistoryService
         }
 
         var recentPasswordHashes = await _db.Set<PasswordHistory>()
-            .Where(ph => ph.UserId == userId)
+            .Where(ph => ph.UserId == user.IntId)
             .OrderByDescending(ph => ph.CreatedAt)
             .Take(passwordHistoryCount)
             .Select(ph => ph.PasswordHash)
@@ -73,7 +73,7 @@ internal sealed class PasswordHistoryService : IPasswordHistoryService
             return;
         }
 
-        var passwordHistoryEntry = PasswordHistory.Create(userId, user.PasswordHash);
+        var passwordHistoryEntry = PasswordHistory.Create(user.IntId, user.PasswordHash);
 
         _db.Set<PasswordHistory>().Add(passwordHistoryEntry);
         await _db.SaveChangesAsync(cancellationToken);
@@ -86,6 +86,12 @@ internal sealed class PasswordHistoryService : IPasswordHistoryService
     {
         ArgumentNullException.ThrowIfNull(userId);
 
+        // Fetch IntId from the user
+        var intId = await _db.Users
+            .Where(u => u.Id == userId)
+            .Select(u => u.IntId)
+            .FirstOrDefaultAsync(cancellationToken);
+
         var passwordHistoryCount = _passwordPolicyOptions.PasswordHistoryCount;
         if (passwordHistoryCount <= 0)
         {
@@ -94,7 +100,7 @@ internal sealed class PasswordHistoryService : IPasswordHistoryService
 
         // Get all password history entries for the user, ordered by most recent
         var allPasswordHistories = await _db.Set<PasswordHistory>()
-            .Where(ph => ph.UserId == userId)
+            .Where(ph => ph.UserId == intId)
             .OrderByDescending(ph => ph.CreatedAt)
             .ToListAsync(cancellationToken);
 

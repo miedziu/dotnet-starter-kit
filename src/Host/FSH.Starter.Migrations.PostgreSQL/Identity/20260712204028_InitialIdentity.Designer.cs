@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FSH.Starter.Migrations.PostgreSQL.Identity
 {
     [DbContext(typeof(IdentityDbContext))]
-    [Migration("20260711225448_InitialIdentity")]
+    [Migration("20260712204028_InitialIdentity")]
     partial class InitialIdentity
     {
         /// <inheritdoc />
@@ -184,6 +184,13 @@ namespace FSH.Starter.Migrations.PostgreSQL.Identity
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<int>("IntId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("IntId");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IntId"));
+
                     b.Property<string>("NormalizedEmail")
                         .HasColumnType("text");
 
@@ -219,6 +226,9 @@ namespace FSH.Starter.Migrations.PostgreSQL.Identity
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("IntId")
+                        .IsUnique();
 
                     b.ToTable("Users", "identity");
                 });
@@ -403,10 +413,8 @@ namespace FSH.Starter.Migrations.PostgreSQL.Identity
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -419,26 +427,27 @@ namespace FSH.Starter.Migrations.PostgreSQL.Identity
 
             modelBuilder.Entity("FSH.Modules.Identity.Domain.Referral", b =>
                 {
-                    b.Property<string>("ReferrerUserId")
+                    b.Property<int>("ReferrerUserId")
                         .HasMaxLength(64)
-                        .HasColumnType("character varying(64)");
+                        .HasColumnType("integer");
 
-                    b.Property<string>("NewReferredUserId")
+                    b.Property<int>("NewReferredUserId")
                         .HasMaxLength(64)
-                        .HasColumnType("character varying(64)");
+                        .HasColumnType("integer");
 
                     b.HasKey("ReferrerUserId", "NewReferredUserId");
 
                     b.HasIndex("NewReferredUserId");
+
+                    b.HasIndex("ReferrerUserId");
 
                     b.ToTable("Referrals", "identity");
                 });
 
             modelBuilder.Entity("FSH.Modules.Identity.Domain.UserGroup", b =>
                 {
-                    b.Property<string>("UserId")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)");
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
 
                     b.Property<Guid>("GroupId")
                         .HasColumnType("uuid");
@@ -527,10 +536,8 @@ namespace FSH.Starter.Migrations.PostgreSQL.Identity
                         .HasMaxLength(1024)
                         .HasColumnType("character varying(1024)");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)");
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -642,6 +649,7 @@ namespace FSH.Starter.Migrations.PostgreSQL.Identity
                     b.HasOne("FSH.Modules.Identity.Domain.FshUser", "User")
                         .WithMany("PasswordHistories")
                         .HasForeignKey("UserId")
+                        .HasPrincipalKey("IntId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -653,12 +661,14 @@ namespace FSH.Starter.Migrations.PostgreSQL.Identity
                     b.HasOne("FSH.Modules.Identity.Domain.FshUser", "NewReferredUser")
                         .WithMany()
                         .HasForeignKey("NewReferredUserId")
+                        .HasPrincipalKey("IntId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("FSH.Modules.Identity.Domain.FshUser", "ReferrerUser")
                         .WithMany("Referrals")
                         .HasForeignKey("ReferrerUserId")
+                        .HasPrincipalKey("IntId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -678,6 +688,7 @@ namespace FSH.Starter.Migrations.PostgreSQL.Identity
                     b.HasOne("FSH.Modules.Identity.Domain.FshUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
+                        .HasPrincipalKey("IntId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -691,6 +702,7 @@ namespace FSH.Starter.Migrations.PostgreSQL.Identity
                     b.HasOne("FSH.Modules.Identity.Domain.FshUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
+                        .HasPrincipalKey("IntId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

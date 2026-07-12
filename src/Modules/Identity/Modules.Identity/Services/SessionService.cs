@@ -6,6 +6,7 @@ using FSH.Modules.Identity.Data;
 using FSH.Modules.Identity.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System.Globalization;
 using UAParser;
 
 namespace FSH.Modules.Identity.Services;
@@ -39,10 +40,21 @@ public sealed class SessionService : ISessionService
         DateTime expiresAt,
         CancellationToken cancellationToken = default)
     {
+        // Fetch IntId from the user
+        var intId = await _db.Users
+            .Where(u => u.Id == userId)
+            .Select(u => u.IntId)
+            .FirstOrDefaultAsync(cancellationToken);
+
+        if (intId == 0)
+        {
+            throw new NotFoundException($"User with ID '{userId}' not found.");
+        }
+
         var clientInfo = _uaParser.Parse(userAgent);
 
         var session = UserSession.Create(
-            userId: userId,
+            userId: intId,
             refreshTokenHash: refreshTokenHash,
             ipAddress: ipAddress,
             userAgent: userAgent,
@@ -74,10 +86,16 @@ public sealed class SessionService : ISessionService
             throw new UnauthorizedAccessException("Cannot view sessions for another user");
         }
 
+        // Fetch IntId from the user
+        var intId = await _db.Users
+            .Where(u => u.Id == userId)
+            .Select(u => u.IntId)
+            .FirstOrDefaultAsync(cancellationToken);
+
         var now = _timeProvider.GetUtcNow().UtcDateTime;
         var sessions = await _db.UserSessions
             .AsNoTracking()
-            .Where(s => s.UserId == userId && !s.IsRevoked && s.ExpiresAt > now)
+            .Where(s => s.UserId == intId && !s.IsRevoked && s.ExpiresAt > now)
             .OrderByDescending(s => s.LastActivityAt)
             .ToListAsync(cancellationToken);
 
@@ -88,11 +106,17 @@ public sealed class SessionService : ISessionService
         string userId,
         CancellationToken cancellationToken = default)
     {
+        // Fetch IntId from the user
+        var intId = await _db.Users
+            .Where(u => u.Id == userId)
+            .Select(u => u.IntId)
+            .FirstOrDefaultAsync(cancellationToken);
+
         var now = _timeProvider.GetUtcNow().UtcDateTime;
         var sessions = await _db.UserSessions
             .AsNoTracking()
             .Include(s => s.User)
-            .Where(s => s.UserId == userId && !s.IsRevoked && s.ExpiresAt > now)
+            .Where(s => s.UserId == intId && !s.IsRevoked && s.ExpiresAt > now)
             .OrderByDescending(s => s.LastActivityAt)
             .ToListAsync(cancellationToken);
 
@@ -161,6 +185,7 @@ public sealed class SessionService : ISessionService
         CancellationToken cancellationToken = default)
     {
         var session = await _db.UserSessions
+            .Include(s => s.User)
             .FirstOrDefaultAsync(s => s.Id == sessionId && !s.IsRevoked, cancellationToken);
 
         if (session is null)
@@ -169,7 +194,7 @@ public sealed class SessionService : ISessionService
         }
 
         var currentUserId = _currentUser.GetUserId().ToString();
-        if (!string.Equals(session.UserId, currentUserId, StringComparison.OrdinalIgnoreCase))
+        if (!string.Equals(session.UserId.ToString(CultureInfo.InvariantCulture), currentUserId, StringComparison.OrdinalIgnoreCase))
         {
             throw new UnauthorizedAccessException("Cannot revoke session for another user");
         }
@@ -199,8 +224,14 @@ public sealed class SessionService : ISessionService
             throw new UnauthorizedAccessException("Cannot revoke sessions for another user");
         }
 
+        // Fetch IntId from the user
+        var intId = await _db.Users
+            .Where(u => u.Id == userId)
+            .Select(u => u.IntId)
+            .FirstOrDefaultAsync(cancellationToken);
+
         var query = _db.UserSessions
-            .Where(s => s.UserId == userId && !s.IsRevoked);
+            .Where(s => s.UserId == intId && !s.IsRevoked);
 
         if (exceptSessionId.HasValue)
         {
@@ -230,8 +261,14 @@ public sealed class SessionService : ISessionService
         string? reason = null,
         CancellationToken cancellationToken = default)
     {
+        // Fetch IntId from the user
+        var intId = await _db.Users
+            .Where(u => u.Id == userId)
+            .Select(u => u.IntId)
+            .FirstOrDefaultAsync(cancellationToken);
+
         var sessions = await _db.UserSessions
-            .Where(s => s.UserId == userId && !s.IsRevoked)
+            .Where(s => s.UserId == intId && !s.IsRevoked)
             .ToListAsync(cancellationToken);
 
         foreach (var session in sessions)
@@ -358,7 +395,7 @@ public sealed class SessionService : ISessionService
         return new UserSessionDto
         {
             Id = session.Id,
-            UserId = session.UserId,
+            UserId = session.User?.Id,
             UserName = session.User?.UserName,
             UserEmail = session.User?.Email,
             IpAddress = session.IpAddress,

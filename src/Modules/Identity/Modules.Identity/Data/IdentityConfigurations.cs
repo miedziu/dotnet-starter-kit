@@ -15,8 +15,19 @@ public class ApplicationUserConfig : IEntityTypeConfiguration<FshUser>
             .ToTable("Users", IdentityModuleConstants.SchemaName);
 
         builder
+            .Property(u => u.IntId)
+            .IsRequired()
+            .ValueGeneratedOnAdd()
+            .HasColumnName("IntId");
+
+        builder
             .Property(u => u.ObjectId)
                 .HasMaxLength(256);
+
+        // Unique constraint on IntId
+        builder
+            .HasIndex(u => u.IntId)
+            .IsUnique();
     }
 }
 

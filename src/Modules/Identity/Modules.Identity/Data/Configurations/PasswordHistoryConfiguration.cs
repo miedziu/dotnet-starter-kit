@@ -16,8 +16,7 @@ public class PasswordHistoryConfiguration : IEntityTypeConfiguration<PasswordHis
 
         builder
             .Property(ph => ph.UserId)
-            .IsRequired()
-            .HasMaxLength(256);
+            .IsRequired();
 
         builder
             .Property(ph => ph.PasswordHash)
@@ -32,6 +31,7 @@ public class PasswordHistoryConfiguration : IEntityTypeConfiguration<PasswordHis
             .HasOne(ph => ph.User)
             .WithMany((FshUser u) => u.PasswordHistories)
             .HasForeignKey(ph => ph.UserId)
+            .HasPrincipalKey((FshUser u) => u.IntId)
             .OnDelete(DeleteBehavior.Cascade);
 
         // Add index for efficient lookups

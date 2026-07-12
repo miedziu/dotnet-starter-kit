@@ -8,6 +8,8 @@ public class FshUser : IdentityUser, IHasDomainEvents
 {
     private readonly List<IDomainEvent> _domainEvents = [];
 
+    public int IntId { get; init; }
+
     public string? FirstName { get; set; }
     public string? LastName { get; set; }
     public Uri? ImageUrl { get; set; }

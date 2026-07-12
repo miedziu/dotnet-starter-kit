@@ -15,7 +15,6 @@ Changes to BuildingBlocks affect ALL modules across the entire framework. These 
 2. **Assess impact** - What modules will this affect?
 
 - Make minimal, focused changes
-- Ensure backward compatibility
 - Update all affected modules
 - Document the change
 

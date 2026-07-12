@@ -24,10 +24,10 @@
         //".vscode/*": true,
         ".github": true,
         "**/*.tsbuildinfo": true,
-        "**/*.md": true, //
+        //"**/*.md": true, //
         "**/*.min.*": true,
         //"**/*Migrations*/*": true, //
-        ".agents": true
+        //".agents": true
     },
     "diffEditor.renderGutterMenu": false,
     "diffEditor.renderIndicators": true,

@@ -35,7 +35,7 @@ public sealed class GetGroupMembersQueryHandler : IQueryHandler<GetGroupMembersQ
             .Join(
                 _dbContext.Users,
                 ug => ug.UserId,
-                u => u.Id,
+                u => u.IntId,
                 (ug, u) => new GroupMemberDto
                 {
                     UserId = u.Id,

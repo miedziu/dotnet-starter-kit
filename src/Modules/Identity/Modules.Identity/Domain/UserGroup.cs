@@ -2,7 +2,7 @@ namespace FSH.Modules.Identity.Domain;
 
 public class UserGroup
 {
-    public string UserId { get; private set; } = default!;
+    public int UserId { get; private set; }
     public Guid GroupId { get; private set; }
     public DateTime AddedAt { get; private set; }
     public string? AddedBy { get; private set; }
@@ -13,7 +13,7 @@ public class UserGroup
 
     private UserGroup() { } // EF Core
 
-    public static UserGroup Create(string userId, Guid groupId, string? addedBy = null)
+    public static UserGroup Create(int userId, Guid groupId, string? addedBy = null)
     {
         return new UserGroup
         {

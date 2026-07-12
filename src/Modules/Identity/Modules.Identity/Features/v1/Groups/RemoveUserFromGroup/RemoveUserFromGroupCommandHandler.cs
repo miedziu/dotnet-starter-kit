@@ -22,9 +22,15 @@ public sealed class RemoveUserFromGroupCommandHandler : ICommandHandler<RemoveUs
     {
         ArgumentNullException.ThrowIfNull(command);
 
+        // Fetch IntId from the user (since UserGroup.UserId is now int)
+        var userIntId = await _dbContext.Users
+            .Where(u => u.Id == command.UserId)
+            .Select(u => u.IntId)
+            .FirstOrDefaultAsync(cancellationToken);
+
         var membership = await _dbContext.UserGroups
             .Include(ug => ug.Group)
-            .FirstOrDefaultAsync(ug => ug.GroupId == command.GroupId && ug.UserId == command.UserId, cancellationToken);
+            .FirstOrDefaultAsync(ug => ug.GroupId == command.GroupId && ug.UserId == userIntId, cancellationToken);
 
         if (membership is null)
         {

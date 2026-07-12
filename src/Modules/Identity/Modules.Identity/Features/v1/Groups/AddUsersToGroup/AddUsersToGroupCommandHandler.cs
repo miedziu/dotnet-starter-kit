@@ -35,39 +35,45 @@ public sealed class AddUsersToGroupCommandHandler : ICommandHandler<AddUsersToGr
             throw new NotFoundException($"Group with ID '{command.GroupId}' not found.");
         }
 
-        // Validate user IDs exist
-        var existingUserIds = await _dbContext.Users
+        // Get IntIds for the users (since UserGroup.UserId is now int)
+        var userIntIds = await _dbContext.Users
             .Where(u => command.UserIds.Contains(u.Id))
-            .Select(u => u.Id)
-            .ToListAsync(cancellationToken);
+            .Select(u => new { u.Id, u.IntId })
+            .ToDictionaryAsync(x => x.Id, x => x.IntId, cancellationToken);
 
-        var invalidUserIds = command.UserIds.Except(existingUserIds).ToList();
+        var invalidUserIds = command.UserIds.Except(userIntIds.Keys).ToList();
         if (invalidUserIds.Count > 0)
         {
             throw new NotFoundException($"Users not found: {string.Join(", ", invalidUserIds)}");
         }
 
-        // Get existing memberships
-        var existingMemberships = await _dbContext.UserGroups
-            .Where(ug => ug.GroupId == command.GroupId && command.UserIds.Contains(ug.UserId))
+        // Get existing memberships (compare by IntId)
+        var existingIntIds = await _dbContext.UserGroups
+            .Where(ug => ug.GroupId == command.GroupId && userIntIds.Values.Contains(ug.UserId))
             .Select(ug => ug.UserId)
-            .ToListAsync(cancellationToken);
+            .ToHashSetAsync(cancellationToken);
 
-        var alreadyMemberUserIds = existingMemberships.ToList();
-        var usersToAdd = command.UserIds.Except(existingMemberships).ToList();
+        var alreadyMemberUserIds = userIntIds
+            .Where(kvp => existingIntIds.Contains(kvp.Value))
+            .Select(kvp => kvp.Key)
+            .ToList();
 
-        // Add new memberships
+        var usersToAdd = userIntIds
+            .Where(kvp => !existingIntIds.Contains(kvp.Value))
+            .ToList();
+
+        // Add new memberships using IntId
         var currentUserId = _currentUser.GetUserId().ToString();
-        foreach (var userId in usersToAdd)
+        foreach (var userIntId in usersToAdd)
         {
-            _dbContext.UserGroups.Add(UserGroup.Create(userId, command.GroupId, currentUserId));
+            _dbContext.UserGroups.Add(UserGroup.Create(userIntId.Value, command.GroupId, currentUserId));
         }
 
         await _dbContext.SaveChangesAsync(cancellationToken);
 
         // Joining a group can grant new roles (via GroupRoles) feeding JWT claims; invalidate
         // each newly-added user's cached permission set so their next request reflects it.
-        foreach (var userId in usersToAdd)
+        foreach (var userId in usersToAdd.Select(x => x.Key))
         {
             await _userPermissionService.InvalidatePermissionCacheAsync(userId, cancellationToken).ConfigureAwait(false);
         }

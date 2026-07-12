@@ -23,13 +23,14 @@ A child entity reached **only** through a parent's navigation collection needs `
 
 All migrations live in **one** project, `src/Host/FSH.Starter.Migrations.PostgreSQL`, organized **per-module by folder** (`Identity/`, `Catalog/`, `Chat/`, …), each with its own `{Module}DbContextModelSnapshot`.
 
-```bash
+<!-- ```bash
 dotnet ef migrations add {Name} \
   --project src/Host/FSH.Starter.Migrations.PostgreSQL \
   --startup-project src/Host/FSH.Starter.Api \
   --context {Module}DbContext
-```
+``` -->
 
-- **`migrations remove` operates on the snapshot** — run a full build *before* `migrations add` so the snapshot is current, or you can lose the previous migration.
+<!-- - **`migrations remove` operates on the snapshot** — run a full build *before* `migrations add` so the snapshot is current, or you can lose the previous migration. -->
 - The DB is **not** migrated at API startup. The `DbMigrator` host is a separate step: `apply` (default), `seed`, `seed-demo` (dev only), `list-pending`; flags `--catalog-only`, `--seed`. It migrates the catalog first, then each per-module schema, serialized by a Postgres advisory lock.
 - `dotnet-ef` is pinned in `.config/dotnet-tools.json` — run `dotnet tool restore` first.
+- always update existing migrations OR recreate it with same filename

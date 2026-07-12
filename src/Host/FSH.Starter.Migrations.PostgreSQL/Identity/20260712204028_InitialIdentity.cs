@@ -185,6 +185,8 @@ namespace FSH.Starter.Migrations.PostgreSQL.Identity
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
+                    IntId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     FirstName = table.Column<string>(type: "text", nullable: true),
                     LastName = table.Column<string>(type: "text", nullable: true),
                     ImageUrl = table.Column<string>(type: "text", nullable: true),
@@ -214,6 +216,7 @@ namespace FSH.Starter.Migrations.PostgreSQL.Identity
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Users", x => x.Id);
+                    table.UniqueConstraint("AK_Users_IntId", x => x.IntId);
                 });
 
             migrationBuilder.CreateTable(
@@ -265,7 +268,7 @@ namespace FSH.Starter.Migrations.PostgreSQL.Identity
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    UserId = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    UserId = table.Column<int>(type: "integer", nullable: false),
                     PasswordHash = table.Column<string>(type: "text", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP")
                 },
@@ -277,7 +280,7 @@ namespace FSH.Starter.Migrations.PostgreSQL.Identity
                         column: x => x.UserId,
                         principalSchema: "identity",
                         principalTable: "Users",
-                        principalColumn: "Id",
+                        principalColumn: "IntId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -286,8 +289,8 @@ namespace FSH.Starter.Migrations.PostgreSQL.Identity
                 schema: "identity",
                 columns: table => new
                 {
-                    ReferrerUserId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
-                    NewReferredUserId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false)
+                    ReferrerUserId = table.Column<int>(type: "integer", maxLength: 64, nullable: false),
+                    NewReferredUserId = table.Column<int>(type: "integer", maxLength: 64, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -297,14 +300,14 @@ namespace FSH.Starter.Migrations.PostgreSQL.Identity
                         column: x => x.NewReferredUserId,
                         principalSchema: "identity",
                         principalTable: "Users",
-                        principalColumn: "Id",
+                        principalColumn: "IntId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Referrals_Users_ReferrerUserId",
                         column: x => x.ReferrerUserId,
                         principalSchema: "identity",
                         principalTable: "Users",
-                        principalColumn: "Id",
+                        principalColumn: "IntId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -313,7 +316,7 @@ namespace FSH.Starter.Migrations.PostgreSQL.Identity
                 schema: "identity",
                 columns: table => new
                 {
-                    UserId = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: false),
+                    UserId = table.Column<int>(type: "integer", nullable: false),
                     GroupId = table.Column<Guid>(type: "uuid", nullable: false),
                     AddedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
                     AddedBy = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true)
@@ -333,7 +336,7 @@ namespace FSH.Starter.Migrations.PostgreSQL.Identity
                         column: x => x.UserId,
                         principalSchema: "identity",
                         principalTable: "Users",
-                        principalColumn: "Id",
+                        principalColumn: "IntId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -343,7 +346,7 @@ namespace FSH.Starter.Migrations.PostgreSQL.Identity
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    UserId = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: false),
+                    UserId = table.Column<int>(type: "integer", nullable: false),
                     RefreshTokenHash = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
                     IpAddress = table.Column<string>(type: "character varying(45)", maxLength: 45, nullable: false),
                     UserAgent = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: false),
@@ -368,7 +371,7 @@ namespace FSH.Starter.Migrations.PostgreSQL.Identity
                         column: x => x.UserId,
                         principalSchema: "identity",
                         principalTable: "Users",
-                        principalColumn: "Id",
+                        principalColumn: "IntId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -440,6 +443,12 @@ namespace FSH.Starter.Migrations.PostgreSQL.Identity
                 column: "NewReferredUserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Referrals_ReferrerUserId",
+                schema: "identity",
+                table: "Referrals",
+                column: "ReferrerUserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_UserGroups_GroupId",
                 schema: "identity",
                 table: "UserGroups",
@@ -450,6 +459,13 @@ namespace FSH.Starter.Migrations.PostgreSQL.Identity
                 schema: "identity",
                 table: "UserGroups",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_IntId",
+                schema: "identity",
+                table: "Users",
+                column: "IntId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserSessions_ExpiresAt",

@@ -273,24 +273,32 @@ internal sealed class UserRegistrationService(
 
         if (normalizedUsernames.Count == 0) return;
 
+        // Get the IntId for the referred user
+        var newReferredUserIntId = await db.Users
+            .AsNoTracking()
+            .Where(u => u.Id == newReferredUserId)
+            .Select(u => u.IntId)
+            .FirstOrDefaultAsync(cancellationToken);
+
+        if (newReferredUserIntId == 0) throw new CustomException("Unexpected error occurred."); // should not happen, remove?
 
         // Find existing referrals to exclude
         var existing = await db.Referrals
-            .Where(r => r.NewReferredUserId == newReferredUserId)
+            .Where(r => r.NewReferredUserId == newReferredUserIntId)
             .Select(r => r.ReferrerUserId)
             .ToHashSetAsync(cancellationToken);
 
-        // Find valid referrers by normalized usernames
-        var validReferrerUserIds = await db.Users
+        // Find valid referrers by normalized usernames and get their IntIds
+        var validReferrerIntIds = await db.Users
             .AsNoTracking()
             .Where(u => u.NormalizedUserName != null && normalizedUsernames.Contains(u.NormalizedUserName))
-            .Select(u => u.Id)
+            .Select(u => u.IntId)
             .ToHashSetAsync(cancellationToken);
 
         // Create new referrals
-        var newReferrals = validReferrerUserIds
+        var newReferrals = validReferrerIntIds
             .Except(existing)
-            .Select(id => Domain.Referral.Create(id, newReferredUserId))
+            .Select(id => Domain.Referral.Create(id, newReferredUserIntId))
             .ToList();
 
         if (newReferrals.Count > 0)
@@ -535,7 +543,7 @@ internal sealed class UserRegistrationService(
 
         foreach (var group in defaultGroups)
         {
-            db.UserGroups.Add(UserGroup.Create(user.Id, group.Id, source));
+            db.UserGroups.Add(UserGroup.Create(user.IntId, group.Id, source));
         }
     }
 

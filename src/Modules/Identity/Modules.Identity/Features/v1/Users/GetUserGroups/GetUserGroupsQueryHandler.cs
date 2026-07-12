@@ -28,10 +28,16 @@ public sealed class GetUserGroupsQueryHandler : IQueryHandler<GetUserGroupsQuery
             throw new NotFoundException($"User with ID '{query.UserId}' not found.");
         }
 
-        // Get user's groups
+        // Get user's groups (using IntId since UserGroup.UserId is now int)
+        var userIntId = await _dbContext.Users
+            .AsNoTracking()
+            .Where(u => u.Id == query.UserId)
+            .Select(u => u.IntId)
+            .FirstOrDefaultAsync(cancellationToken);
+
         var groupIds = await _dbContext.UserGroups
             .AsNoTracking()
-            .Where(ug => ug.UserId == query.UserId)
+            .Where(ug => ug.UserId == userIntId)
             .Select(ug => ug.GroupId)
             .ToListAsync(cancellationToken);
 

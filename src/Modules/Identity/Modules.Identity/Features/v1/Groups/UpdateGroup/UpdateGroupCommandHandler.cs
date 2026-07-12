@@ -51,11 +51,18 @@ public sealed class UpdateGroupCommandHandler : ICommandHandler<UpdateGroupComma
         // effective permission set may have shifted — invalidate each.
         if (!currentRoleIdsBefore.SetEquals(newRoleIds))
         {
-            var memberIds = await _dbContext.UserGroups
+            var memberIntIds = await _dbContext.UserGroups
                 .Where(ug => ug.GroupId == command.Id)
                 .Select(ug => ug.UserId)
                 .ToListAsync(cancellationToken);
-            foreach (var memberId in memberIds)
+
+            // Fetch string user IDs from IntIds
+            var memberUserIds = await _dbContext.Users
+                .Where(u => memberIntIds.Contains(u.IntId))
+                .Select(u => u.Id)
+                .ToListAsync(cancellationToken);
+
+            foreach (var memberId in memberUserIds)
             {
                 await _userPermissionService.InvalidatePermissionCacheAsync(memberId, cancellationToken).ConfigureAwait(false);
             }

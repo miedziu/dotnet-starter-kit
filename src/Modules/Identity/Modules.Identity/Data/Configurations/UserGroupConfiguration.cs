@@ -17,8 +17,7 @@ public class UserGroupConfiguration : IEntityTypeConfiguration<UserGroup>
 
         builder
             .Property(ug => ug.UserId)
-            .IsRequired()
-            .HasMaxLength(450);
+            .IsRequired();
 
         builder
             .Property(ug => ug.AddedBy)
@@ -32,6 +31,7 @@ public class UserGroupConfiguration : IEntityTypeConfiguration<UserGroup>
             .HasOne(ug => ug.User)
             .WithMany()
             .HasForeignKey(ug => ug.UserId)
+            .HasPrincipalKey((FshUser u) => u.IntId)
             .OnDelete(DeleteBehavior.Cascade);
 
         builder

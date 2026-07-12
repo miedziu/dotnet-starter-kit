@@ -16,8 +16,7 @@ public class UserSessionConfiguration : IEntityTypeConfiguration<UserSession>
 
         builder
             .Property(s => s.UserId)
-            .IsRequired()
-            .HasMaxLength(450);
+            .IsRequired();
 
         builder
             .Property(s => s.RefreshTokenHash)
@@ -70,6 +69,7 @@ public class UserSessionConfiguration : IEntityTypeConfiguration<UserSession>
             .HasOne(s => s.User)
             .WithMany()
             .HasForeignKey(s => s.UserId)
+            .HasPrincipalKey((FshUser u) => u.IntId)
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasIndex(s => s.UserId);

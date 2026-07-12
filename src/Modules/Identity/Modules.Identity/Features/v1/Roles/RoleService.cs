@@ -33,12 +33,18 @@ public sealed class RoleService(RoleManager<FshRole> roleManager,
             .Select(ur => ur.UserId)
             .ToListAsync(cancellationToken);
 
-        // Group-derived role holders.
-        var groupUserIds = await context.GroupRoles
+        // Group-derived role holders (fetch IntIds since UserGroup.UserId is now int)
+        var groupUserIntIds = await context.GroupRoles
             .Where(gr => gr.RoleId == roleId)
             .SelectMany(gr => context.UserGroups
                 .Where(ug => ug.GroupId == gr.GroupId)
                 .Select(ug => ug.UserId))
+            .ToListAsync(cancellationToken);
+
+        // Fetch string UserIds from IntIds for group-derived users
+        var groupUserIds = await context.Users
+            .Where(u => groupUserIntIds.Contains(u.IntId))
+            .Select(u => u.Id)
             .ToListAsync(cancellationToken);
 
         foreach (var userId in directUserIds.Concat(groupUserIds).Distinct())

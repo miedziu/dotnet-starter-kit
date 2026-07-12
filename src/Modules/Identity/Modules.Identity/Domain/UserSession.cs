@@ -8,7 +8,7 @@ public class UserSession : IHasDomainEvents
     private readonly List<IDomainEvent> _domainEvents = [];
 
     public Guid Id { get; private set; }
-    public string UserId { get; private set; } = default!;
+    public int UserId { get; private set; }
     public string RefreshTokenHash { get; private set; } = default!;
     public string IpAddress { get; private set; } = default!;
     public string UserAgent { get; private set; } = default!;
@@ -36,7 +36,7 @@ public class UserSession : IHasDomainEvents
     private UserSession() { } // EF Core
 
     public static UserSession Create(
-        string userId,
+        int userId,
         string refreshTokenHash,
         string ipAddress,
         string userAgent,

@@ -3,7 +3,7 @@ namespace FSH.Modules.Identity.Domain;
 public class PasswordHistory
 {
     public int Id { get; init; }
-    public string UserId { get; private set; } = default!;
+    public int UserId { get; private set; }
     public string PasswordHash { get; private set; } = default!;
     public DateTime CreatedAt { get; private set; }
 
@@ -12,7 +12,7 @@ public class PasswordHistory
 
     private PasswordHistory() { } // EF Core
 
-    public static PasswordHistory Create(string userId, string passwordHash)
+    public static PasswordHistory Create(int userId, string passwordHash)
     {
         return new PasswordHistory
         {
