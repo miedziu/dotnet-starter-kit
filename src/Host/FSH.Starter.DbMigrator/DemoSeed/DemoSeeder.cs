@@ -4,11 +4,9 @@ using FSH.Modules.Billing.Contracts;
 using FSH.Modules.Billing.Data;
 using FSH.Modules.Billing.Domain;
 using FSH.Modules.Catalog.Contracts.Authorization;
-using FSH.Modules.Catalog.Data;
 using FSH.Modules.Chat.Data;
 using FSH.Modules.Chat.Domain;
 using FSH.Modules.Identity.Contracts.Authorization;
-using FSH.Modules.Identity.Contracts.Services;
 using FSH.Modules.Identity.Data;
 using FSH.Modules.Identity.Domain;
 using FSH.Modules.Tickets.Contracts.Authorization;
@@ -80,16 +78,6 @@ internal sealed class DemoSeeder
         }
 
         await SeedTenantUsersAsync(cancellationToken).ConfigureAwait(false);
-
-        // Only seed catalog if Catalog module is enabled
-        if (_moduleOptions.IsModuleEnabled("Catalog"))
-        {
-            await SeedTenantCatalogAsync(cancellationToken).ConfigureAwait(false);
-        }
-        else if (_logger.IsEnabled(LogLevel.Information))
-        {
-            _logger.LogInformation("[demo-seed] skipping catalog seeding — Catalog module disabled");
-        }
 
         // Only seed tickets if Tickets module is enabled
         if (_moduleOptions.IsModuleEnabled("Tickets"))
@@ -375,46 +363,6 @@ internal sealed class DemoSeeder
                 "[demo-seed] failed to reset password for '{Email}': {Errors}",
                 user.Email,
                 string.Join("; ", result.Errors.Select(e => e.Description)));
-        }
-    }
-
-    // ─── Catalog ────────────────────────────────────────────────────────
-
-    /// <summary>
-    /// Idempotently seeds the Catalog demo dataset (4 brands / 11 categories /
-    /// 10 products) into the demo tenant. Bails when any catalog row already
-    /// exists for that tenant.
-    /// </summary>
-    private async Task SeedTenantCatalogAsync(CancellationToken cancellationToken)
-    {
-        using var scope = _services.CreateScope();
-
-        var dbContext = scope.ServiceProvider.GetRequiredService<CatalogDbContext>();
-        bool alreadySeeded = await dbContext.Brands.AnyAsync(cancellationToken).ConfigureAwait(false)
-            || await dbContext.Categories.AnyAsync(cancellationToken).ConfigureAwait(false)
-            || await dbContext.Products.AnyAsync(cancellationToken).ConfigureAwait(false);
-        if (alreadySeeded) return;
-
-        var brands = CatalogSeedData.BuildBrands();
-        dbContext.Brands.AddRange(brands);
-
-        var (roots, children) = CatalogSeedData.BuildCategories();
-        dbContext.Categories.AddRange(roots);
-        dbContext.Categories.AddRange(children);
-
-        await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-
-        var brandsByName = brands.ToDictionary(b => b.Name, b => b);
-        var categoriesByName = roots.Concat(children).ToDictionary(c => c.Name, c => c);
-        var products = CatalogSeedData.BuildProducts(brandsByName, categoriesByName);
-        dbContext.Products.AddRange(products);
-        await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-
-        if (_logger.IsEnabled(LogLevel.Information))
-        {
-            _logger.LogInformation(
-                "[demo-seed] seeded {BrandCount} brands, {CategoryCount} categories, {ProductCount} products",
-                 brands.Count, roots.Count + children.Count, products.Count);
         }
     }
 
