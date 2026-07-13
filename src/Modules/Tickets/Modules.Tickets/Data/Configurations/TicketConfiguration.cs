@@ -28,7 +28,7 @@ public sealed class TicketConfiguration : IEntityTypeConfiguration<Ticket>
         builder.HasIndex(x => x.AssignedToUserId);
         builder.HasIndex(x => x.ReporterUserId);
         builder.HasIndex(x => x.IsDeleted);
-        builder.Property(x => x.DeletedBy).HasMaxLength(64);
+        builder.Property(x => x.DeletedBy);
 
         builder.HasMany(x => x.Comments)
             .WithOne()

@@ -4,24 +4,24 @@ using FSH.Framework.Web.Modules;
 using FSH.Framework.Web.Observability.Logging.Serilog;
 using FSH.Modules.Auditing;
 using FSH.Modules.Auditing.Contracts;
-// using FSH.Modules.Billing;
-// using FSH.Modules.Billing.Contracts;
-// using FSH.Modules.Catalog;
-// using FSH.Modules.Catalog.Contracts;
-// using FSH.Modules.Chat;
-// using FSH.Modules.Chat.Contracts.v1.Commands;
-// using FSH.Modules.Files;
-// using FSH.Modules.Files.Contracts.v1.Commands;
+using FSH.Modules.Billing;
+using FSH.Modules.Billing.Contracts;
+using FSH.Modules.Catalog;
+using FSH.Modules.Catalog.Contracts;
+using FSH.Modules.Chat;
+using FSH.Modules.Chat.Contracts.v1.Commands;
+using FSH.Modules.Files;
+using FSH.Modules.Files.Contracts.v1.Commands;
 using FSH.Modules.Identity;
 using FSH.Modules.Identity.Contracts.v1.Tokens.TokenGeneration;
 using FSH.Modules.Identity.Data;
 using FSH.Modules.Identity.Features.v1.Tokens.TokenGeneration;
-// using FSH.Modules.Notifications;
-// using FSH.Modules.Notifications.Contracts.v1.Commands;
-// using FSH.Modules.Tickets;
-// using FSH.Modules.Tickets.Contracts;
-// using FSH.Modules.Webhooks;
-// using FSH.Modules.Webhooks.Contracts.v1.CreateWebhookSubscription;
+using FSH.Modules.Notifications;
+using FSH.Modules.Notifications.Contracts.v1.Commands;
+using FSH.Modules.Tickets;
+using FSH.Modules.Tickets.Contracts;
+using FSH.Modules.Webhooks;
+using FSH.Modules.Webhooks.Contracts.v1.CreateWebhookSubscription;
 using FSH.Starter.DbMigrator;
 using FSH.Starter.DbMigrator.DemoSeed;
 using Microsoft.EntityFrameworkCore;
@@ -29,7 +29,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-// using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Options;
 using System.Globalization;
 
 // FSH DbMigrator — one-shot console that migrates every DB to head, optionally seeds, then exits 0/1.
@@ -91,13 +91,13 @@ var allModules = new[]
 {
     ("Identity", typeof(GenerateTokenCommand), typeof(IdentityModule)),
     ("Auditing", typeof(AuditEnvelope), typeof(AuditingModule)),
-    // ("Files", typeof(RequestUploadUrlCommand), typeof(FilesModule)),
-    // ("Webhooks", typeof(CreateWebhookSubscriptionCommand), typeof(WebhooksModule)),
-    // ("Billing", typeof(BillingContractsMarker), typeof(BillingModule)),
-    // ("Catalog", typeof(CatalogContractsMarker), typeof(CatalogModule)),
-    // ("Tickets", typeof(TicketsContractsMarker), typeof(TicketsModule)),
-    // ("Chat", typeof(CreateChannelCommand), typeof(ChatModule)),
-    // ("Notifications", typeof(MarkNotificationReadCommand), typeof(NotificationsModule))
+    ("Files", typeof(RequestUploadUrlCommand), typeof(FilesModule)),
+    ("Webhooks", typeof(CreateWebhookSubscriptionCommand), typeof(WebhooksModule)),
+    ("Billing", typeof(BillingContractsMarker), typeof(BillingModule)),
+    ("Catalog", typeof(CatalogContractsMarker), typeof(CatalogModule)),
+    ("Tickets", typeof(TicketsContractsMarker), typeof(TicketsModule)),
+    ("Chat", typeof(CreateChannelCommand), typeof(ChatModule)),
+    ("Notifications", typeof(MarkNotificationReadCommand), typeof(NotificationsModule))
 };
 
 // Register ALL module handlers with Mediator for source generator discovery
@@ -110,20 +110,20 @@ builder.Services.AddMediator(o =>
         typeof(GenerateTokenCommandHandler),
         typeof(FSH.Modules.Auditing.Contracts.AuditEnvelope),
         typeof(FSH.Modules.Auditing.Persistence.AuditDbContext),
-        // typeof(FSH.Modules.Webhooks.Contracts.v1.CreateWebhookSubscription.CreateWebhookSubscriptionCommand),
-        // typeof(FSH.Modules.Webhooks.WebhooksModule),
-        // typeof(FSH.Modules.Billing.Contracts.BillingContractsMarker),
-        // typeof(FSH.Modules.Billing.BillingModule),
-        // typeof(FSH.Modules.Catalog.Contracts.CatalogContractsMarker),
-        // typeof(FSH.Modules.Catalog.CatalogModule),
-        // typeof(FSH.Modules.Tickets.Contracts.TicketsContractsMarker),
-        // typeof(FSH.Modules.Tickets.TicketsModule),
-        // typeof(FSH.Modules.Files.Contracts.v1.Commands.RequestUploadUrlCommand),
-        // typeof(FSH.Modules.Files.FilesModule),
-        // typeof(FSH.Modules.Chat.Contracts.v1.Commands.CreateChannelCommand),
-        // typeof(FSH.Modules.Chat.ChatModule),
-        // typeof(FSH.Modules.Notifications.Contracts.v1.Commands.MarkNotificationReadCommand),
-        // typeof(FSH.Modules.Notifications.NotificationsModule),
+        typeof(FSH.Modules.Webhooks.Contracts.v1.CreateWebhookSubscription.CreateWebhookSubscriptionCommand),
+        typeof(FSH.Modules.Webhooks.WebhooksModule),
+        typeof(FSH.Modules.Billing.Contracts.BillingContractsMarker),
+        typeof(FSH.Modules.Billing.BillingModule),
+        typeof(FSH.Modules.Catalog.Contracts.CatalogContractsMarker),
+        typeof(FSH.Modules.Catalog.CatalogModule),
+        typeof(FSH.Modules.Tickets.Contracts.TicketsContractsMarker),
+        typeof(FSH.Modules.Tickets.TicketsModule),
+        typeof(FSH.Modules.Files.Contracts.v1.Commands.RequestUploadUrlCommand),
+        typeof(FSH.Modules.Files.FilesModule),
+        typeof(FSH.Modules.Chat.Contracts.v1.Commands.CreateChannelCommand),
+        typeof(FSH.Modules.Chat.ChatModule),
+        typeof(FSH.Modules.Notifications.Contracts.v1.Commands.MarkNotificationReadCommand),
+        typeof(FSH.Modules.Notifications.NotificationsModule),
     ];
 });
 

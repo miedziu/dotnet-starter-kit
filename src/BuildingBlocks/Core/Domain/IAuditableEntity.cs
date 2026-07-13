@@ -1,4 +1,4 @@
-﻿namespace FSH.Framework.Core.Domain;
+namespace FSH.Framework.Core.Domain;
 
 /// <summary>
 /// Defines audit metadata for an entity.
@@ -23,5 +23,5 @@ public interface IAuditableEntity
     /// <summary>
     /// Gets the identifier of the last modifier.
     /// </summary>
-    string? LastModifiedBy { get; }
+    int? LastModifiedBy { get; }
 }

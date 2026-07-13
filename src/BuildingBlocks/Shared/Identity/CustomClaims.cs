@@ -1,4 +1,4 @@
-﻿namespace FSH.Framework.Shared.Constants;
+namespace FSH.Framework.Shared.Constants;
 
 public static class CustomClaims
 {
@@ -7,4 +7,5 @@ public static class CustomClaims
     public const string ImageUrl = "image_url";
     public const string IpAddress = "ipAddress";
     public const string Expiration = "exp";
+    public const string IntId = "intId";
 }

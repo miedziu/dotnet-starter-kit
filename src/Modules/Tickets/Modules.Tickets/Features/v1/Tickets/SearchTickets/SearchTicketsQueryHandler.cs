@@ -1,4 +1,6 @@
+using FSH.Framework.Core.Exceptions;
 using FSH.Framework.Shared.Persistence;
+using FSH.Modules.Identity.Contracts.Services;
 using FSH.Modules.Tickets.Contracts.Dtos;
 using FSH.Modules.Tickets.Contracts.v1.Tickets;
 using FSH.Modules.Tickets.Data;
@@ -8,7 +10,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FSH.Modules.Tickets.Features.v1.Tickets.SearchTickets;
 
-public sealed class SearchTicketsQueryHandler(TicketsDbContext dbContext)
+public sealed class SearchTicketsQueryHandler(
+    TicketsDbContext dbContext,
+    IUserProfileService userProfileService)
     : IQueryHandler<SearchTicketsQuery, PagedResponse<TicketDto>>
 {
     public async ValueTask<PagedResponse<TicketDto>> Handle(SearchTicketsQuery query, CancellationToken cancellationToken)
@@ -30,11 +34,14 @@ public sealed class SearchTicketsQueryHandler(TicketsDbContext dbContext)
         }
         if (query.AssignedToUserId is { } assignee)
         {
-            q = q.Where(t => t.AssignedToUserId == assignee);
+            var assigneeIntId = await userProfileService.GetIntIdAsync(assignee.ToString(), cancellationToken);
+            q = q.Where(t => t.AssignedToUserId == assigneeIntId);
         }
         if (query.ReporterUserId is { } reporter)
         {
-            q = q.Where(t => t.ReporterUserId == reporter);
+            var reporterIntId = await userProfileService.GetIntIdAsync(reporter.ToString(), cancellationToken);
+            q = q.Where(t => t.ReporterUserId == reporterIntId);
+
         }
         if (!string.IsNullOrWhiteSpace(query.Search))
         {
@@ -62,9 +69,11 @@ public sealed class SearchTicketsQueryHandler(TicketsDbContext dbContext)
             .ToListAsync(cancellationToken)
             .ConfigureAwait(false);
 
+        var items = (await Task.WhenAll(projected.Select(p => p.Ticket.ToDto(userProfileService, cancellationToken).AsTask())).ConfigureAwait(false)).ToList();
+
         return new PagedResponse<TicketDto>
         {
-            Items = projected.Select(p => p.Ticket.ToDto(p.CommentCount)).ToList(),
+            Items = items,
             PageNumber = page,
             PageSize = size,
             TotalCount = total,

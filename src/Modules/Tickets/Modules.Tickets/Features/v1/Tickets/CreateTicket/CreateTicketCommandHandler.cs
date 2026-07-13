@@ -2,17 +2,19 @@ using System.Globalization;
 using System.Net;
 using FSH.Framework.Core.Context;
 using FSH.Framework.Core.Exceptions;
+using FSH.Framework.Persistence;
+using FSH.Modules.Identity.Contracts.Services;
 using FSH.Modules.Tickets.Contracts.v1.Tickets;
 using FSH.Modules.Tickets.Data;
 using FSH.Modules.Tickets.Domain;
 using Mediator;
-using FSH.Framework.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace FSH.Modules.Tickets.Features.v1.Tickets.CreateTicket;
 
 public sealed class CreateTicketCommandHandler(
     TicketsDbContext dbContext,
+    IUserProfileService userProfileService,
     ICurrentUser currentUser)
     : ICommandHandler<CreateTicketCommand, Guid>
 {
@@ -20,8 +22,8 @@ public sealed class CreateTicketCommandHandler(
     {
         ArgumentNullException.ThrowIfNull(command);
 
-        var reporterId = currentUser.GetUserId();
-        if (reporterId == Guid.Empty)
+        var reporterId = currentUser.GetIntUserId();
+        if (reporterId is null)
         {
             throw new CustomException(
                 "Cannot create a ticket without an authenticated reporter.",
@@ -37,13 +39,21 @@ public sealed class CreateTicketCommandHandler(
             .ConfigureAwait(false);
         string number = $"TK-{(count + 1).ToString(CultureInfo.InvariantCulture)}";
 
+        int? assignedToUserId = null;
+        if (command.AssignedToUserId.HasValue)
+        {
+            assignedToUserId = await userProfileService.GetIntIdAsync(
+                command.AssignedToUserId.Value.ToString(),
+                cancellationToken);
+        }
+
         var ticket = Ticket.Create(
             number: number,
             title: command.Title,
             description: command.Description,
             priority: command.Priority,
             reporterUserId: reporterId,
-            assignedToUserId: command.AssignedToUserId);
+            assignedToUserId: assignedToUserId);
 
         dbContext.Tickets.Add(ticket);
         await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);

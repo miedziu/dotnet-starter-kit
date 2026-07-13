@@ -9,7 +9,7 @@ namespace FSH.Modules.Chat.Domain;
 /// A chat channel: a 1:1 DM, a group DM (3+), or a named channel (Slack-style).
 /// Soft-deletable so archived channels can be restored by admins.
 /// </summary>
-public sealed class ChatChannel : AggregateRoot<Guid>, ISoftDeletable
+public sealed class ChatChannel : AggregateRoot<Guid>
 {
     public ChannelType Type { get; private set; }
     public string? Name { get; private set; }
@@ -31,7 +31,6 @@ public sealed class ChatChannel : AggregateRoot<Guid>, ISoftDeletable
 
     public bool IsDeleted { get; private set; }
     public DateTimeOffset? DeletedOnUtc { get; private set; }
-    public string? DeletedBy { get; private set; }
 
     private readonly List<ChannelMember> _members = [];
     public IReadOnlyList<ChannelMember> Members => _members;
@@ -49,7 +48,6 @@ public sealed class ChatChannel : AggregateRoot<Guid>, ISoftDeletable
         if (IsDeleted) return;
         IsDeleted = true;
         DeletedOnUtc = DateTimeOffset.UtcNow;
-        DeletedBy = deletedByUserId;
         UpdatedAtUtc = DateTime.UtcNow;
     }
 
@@ -58,7 +56,6 @@ public sealed class ChatChannel : AggregateRoot<Guid>, ISoftDeletable
         if (!IsDeleted) return;
         IsDeleted = false;
         DeletedOnUtc = null;
-        DeletedBy = null;
         UpdatedAtUtc = DateTime.UtcNow;
     }
 

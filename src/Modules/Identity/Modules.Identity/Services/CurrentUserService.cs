@@ -1,4 +1,4 @@
-﻿using FSH.Framework.Core.Context;
+using FSH.Framework.Core.Context;
 using FSH.Framework.Core.Exceptions;
 using FSH.Framework.Shared.Identity.Claims;
 using FSH.Modules.Identity.Contracts.Services;
@@ -9,6 +9,7 @@ namespace FSH.Modules.Identity.Services;
 internal sealed class CurrentUserService : ICurrentUserService
 {
     private ClaimsPrincipal? _user;
+    private int? _intUserId;
 
     public string? Name => _user?.Identity?.Name;
 
@@ -19,6 +20,14 @@ internal sealed class CurrentUserService : ICurrentUserService
         return IsAuthenticated()
             ? Guid.Parse(_user?.GetUserId() ?? Guid.Empty.ToString())
             : _userId;
+    }
+
+    public int? GetIntUserId()
+    {
+        if (!IsAuthenticated())
+            return _intUserId;
+        
+        return _user?.GetIntUserId();
     }
 
     public string? GetUserEmail() =>
@@ -56,5 +65,15 @@ internal sealed class CurrentUserService : ICurrentUserService
         {
             _userId = Guid.Parse(userId);
         }
+    }
+
+    public void SetIntUserId(int intUserId)
+    {
+        if (_intUserId.HasValue)
+        {
+            throw new CustomException("Method reserved for in-scope initialization");
+        }
+
+        _intUserId = intUserId;
     }
 }

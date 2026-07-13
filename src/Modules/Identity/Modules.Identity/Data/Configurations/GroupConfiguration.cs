@@ -30,12 +30,10 @@ public class GroupConfiguration : IEntityTypeConfiguration<Group>
 
         builder
             .Property(g => g.LastModifiedBy)
-            .HasColumnName("ModifiedBy")
-            .HasMaxLength(450);
+            .HasColumnName("ModifiedBy");
 
         builder
-            .Property(g => g.DeletedBy)
-            .HasMaxLength(450);
+            .Property(g => g.DeletedBy);
 
         builder
             .Property(g => g.CreatedOnUtc)

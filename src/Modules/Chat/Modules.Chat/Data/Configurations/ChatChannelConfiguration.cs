@@ -35,7 +35,6 @@ public sealed class ChatChannelConfiguration : IEntityTypeConfiguration<ChatChan
         builder.Property(x => x.LastMessageAtUtc);
 
         builder.Property(x => x.IsDeleted).IsRequired();
-        builder.Property(x => x.DeletedBy).HasMaxLength(64);
         builder.HasIndex(x => x.IsDeleted);
 
         builder.HasMany(x => x.Members)

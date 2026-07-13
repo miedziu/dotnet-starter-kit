@@ -1,9 +1,8 @@
-using System.Net;
 using FSH.Framework.Core.Domain;
 using FSH.Framework.Core.Exceptions;
-using FSH.Framework.Shared.Persistence;
 using FSH.Modules.Tickets.Contracts.Dtos;
 using FSH.Modules.Tickets.Domain.Events;
+using System.Net;
 
 namespace FSH.Modules.Tickets.Domain;
 
@@ -13,7 +12,7 @@ namespace FSH.Modules.Tickets.Domain;
 /// method throws CustomException when called from an illegal state, so
 /// the API surface returns clean 409s for invalid transitions.
 /// </summary>
-public sealed class Ticket : AggregateRoot<Guid>, ISoftDeletable
+public sealed class Ticket : AggregateRoot<Guid>, ISoftDeletableInt
 {
     private readonly List<TicketComment> _comments = [];
 
@@ -22,8 +21,8 @@ public sealed class Ticket : AggregateRoot<Guid>, ISoftDeletable
     public string? Description { get; private set; }
     public TicketStatus Status { get; private set; }
     public TicketPriority Priority { get; private set; }
-    public Guid ReporterUserId { get; private set; }
-    public Guid? AssignedToUserId { get; private set; }
+    public int? ReporterUserId { get; private set; }
+    public int? AssignedToUserId { get; private set; }
     public string? ResolutionNote { get; private set; }
     public DateTime CreatedAtUtc { get; private set; }
     public DateTime? UpdatedAtUtc { get; private set; }
@@ -32,7 +31,7 @@ public sealed class Ticket : AggregateRoot<Guid>, ISoftDeletable
 
     public bool IsDeleted { get; private set; }
     public DateTimeOffset? DeletedOnUtc { get; private set; }
-    public string? DeletedBy { get; private set; }
+    public int? DeletedBy { get; private set; }
 
     public IReadOnlyCollection<TicketComment> Comments => _comments.AsReadOnly();
 
@@ -55,8 +54,8 @@ public sealed class Ticket : AggregateRoot<Guid>, ISoftDeletable
         string title,
         string? description,
         TicketPriority priority,
-        Guid reporterUserId,
-        Guid? assignedToUserId)
+        int? reporterUserId,
+        int? assignedToUserId)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(number);
         ArgumentException.ThrowIfNullOrWhiteSpace(title);
@@ -86,7 +85,7 @@ public sealed class Ticket : AggregateRoot<Guid>, ISoftDeletable
         return ticket;
     }
 
-    public void Assign(Guid? assigneeUserId)
+    public void Assign(int? assigneeUserId)
     {
         ThrowIfClosedOrResolved("assign");
 
@@ -195,7 +194,7 @@ public sealed class Ticket : AggregateRoot<Guid>, ISoftDeletable
         TransitionStatus(AssignedToUserId is null ? TicketStatus.Open : TicketStatus.InProgress);
     }
 
-    public Guid AddComment(Guid authorUserId, string body)
+    public Guid AddComment(int? authorUserId, string body)
     {
         if (Status == TicketStatus.Closed)
         {

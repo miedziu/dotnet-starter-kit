@@ -292,7 +292,8 @@ public sealed class IdentityService(
             new(ClaimTypes.MobilePhone, user.PhoneNumber ?? string.Empty),
             new(ClaimConstants.Fullname, fullName),
             new(ClaimTypes.Surname, user.LastName ?? string.Empty),
-            new(ClaimConstants.ImageUrl, user.ImageUrl?.ToString() ?? string.Empty)
+            new(ClaimConstants.ImageUrl, user.ImageUrl?.ToString() ?? string.Empty),
+            new Claim(CustomClaims.IntId, user.IntId.ToString(System.Globalization.CultureInfo.InvariantCulture))
         ];
     }
 

@@ -44,7 +44,6 @@ public sealed class GetGroupMembersQueryHandler : IQueryHandler<GetGroupMembersQ
                     FirstName = u.FirstName,
                     LastName = u.LastName,
                     AddedAt = ug.AddedAt,
-                    AddedBy = ug.AddedBy
                 })
             .OrderBy(m => m.UserName)
             .ToListAsync(cancellationToken);

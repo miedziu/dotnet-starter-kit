@@ -25,8 +25,8 @@ namespace FSH.Starter.Migrations.PostgreSQL.Tickets
                     Description = table.Column<string>(type: "character varying(4096)", maxLength: 4096, nullable: true),
                     Status = table.Column<string>(type: "character varying(32)", maxLength: 32, nullable: false),
                     Priority = table.Column<string>(type: "character varying(16)", maxLength: 16, nullable: false),
-                    ReporterUserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    AssignedToUserId = table.Column<Guid>(type: "uuid", nullable: true),
+                    ReporterUserId = table.Column<int>(type: "integer", nullable: true),
+                    AssignedToUserId = table.Column<int>(type: "integer", nullable: true),
                     ResolutionNote = table.Column<string>(type: "character varying(4096)", maxLength: 4096, nullable: true),
                     CreatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
@@ -34,7 +34,7 @@ namespace FSH.Starter.Migrations.PostgreSQL.Tickets
                     ClosedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
                     DeletedOnUtc = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
-                    DeletedBy = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true)
+                    DeletedBy = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -48,12 +48,12 @@ namespace FSH.Starter.Migrations.PostgreSQL.Tickets
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     TicketId = table.Column<Guid>(type: "uuid", nullable: false),
-                    AuthorUserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    AuthorUserId = table.Column<int>(type: "integer", nullable: true),
                     Body = table.Column<string>(type: "character varying(8192)", maxLength: 8192, nullable: false),
                     CreatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
                     DeletedOnUtc = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
-                    DeletedBy = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true)
+                    DeletedBy = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {

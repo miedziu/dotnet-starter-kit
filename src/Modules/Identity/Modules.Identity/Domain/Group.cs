@@ -2,7 +2,7 @@ using FSH.Framework.Core.Domain;
 
 namespace FSH.Modules.Identity.Domain;
 
-public class Group : IAuditableEntity, ISoftDeletable
+public class Group : IAuditableEntity, ISoftDeletableInt
 {
     public Guid Id { get; private set; }
     public string Name { get; private set; } = default!;
@@ -14,12 +14,12 @@ public class Group : IAuditableEntity, ISoftDeletable
     public DateTimeOffset CreatedOnUtc { get; private set; }
     public string? CreatedBy { get; private set; }
     public DateTimeOffset? LastModifiedOnUtc { get; private set; }
-    public string? LastModifiedBy { get; private set; }
+    public int? LastModifiedBy { get; private set; }
 
     // ISoftDeletable implementation
     public bool IsDeleted { get; private set; }
     public DateTimeOffset? DeletedOnUtc { get; private set; }
-    public string? DeletedBy { get; private set; }
+    public int? DeletedBy { get; private set; }
 
     // Navigation properties
     public virtual ICollection<GroupRole> GroupRoles { get; private set; } = [];
@@ -41,7 +41,7 @@ public class Group : IAuditableEntity, ISoftDeletable
         };
     }
 
-    public void Update(string name, string? description, string? modifiedBy = null)
+    public void Update(string name, string? description, int? modifiedBy = null)
     {
         Name = name;
         Description = description;
@@ -49,14 +49,14 @@ public class Group : IAuditableEntity, ISoftDeletable
         LastModifiedBy = modifiedBy;
     }
 
-    public void SetAsDefault(bool isDefault, string? modifiedBy = null)
+    public void SetAsDefault(bool isDefault, int? modifiedBy = null)
     {
         IsDefault = isDefault;
         LastModifiedOnUtc = TimeProvider.System.GetUtcNow();
         LastModifiedBy = modifiedBy;
     }
 
-    public void Delete(string? deletedBy = null)
+    public void Delete(int? deletedBy = null)
     {
         IsDeleted = true;
         DeletedOnUtc = TimeProvider.System.GetUtcNow();

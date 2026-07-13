@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FSH.Starter.Migrations.PostgreSQL.Catalog
 {
     [DbContext(typeof(CatalogDbContext))]
-    [Migration("20260711180958_InitialCatalog")]
+    [Migration("20260713161823_InitialCatalog")]
     partial class InitialCatalog
     {
         /// <inheritdoc />

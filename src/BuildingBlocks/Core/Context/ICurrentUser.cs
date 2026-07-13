@@ -1,4 +1,4 @@
-﻿using System.Security.Claims;
+using System.Security.Claims;
 
 namespace FSH.Framework.Core.Context;
 
@@ -13,10 +13,16 @@ public interface ICurrentUser
     string? Name { get; }
 
     /// <summary>
-    /// Gets the unique identifier of the current user.
+    /// Gets the unique identifier of the current user (ASP.NET Identity string Id).
     /// </summary>
     /// <returns>The user's unique identifier.</returns>
     Guid GetUserId();
+
+    /// <summary>
+    /// Gets the internal integer identifier of the current user (IntId).
+    /// </summary>
+    /// <returns>The user's internal integer identifier, or null if not available.</returns>
+    int? GetIntUserId();
 
     /// <summary>
     /// Gets the email address of the current user.

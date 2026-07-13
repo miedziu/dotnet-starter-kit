@@ -1,4 +1,5 @@
 using FSH.Framework.Core.Exceptions;
+using FSH.Modules.Identity.Contracts.Services;
 using FSH.Modules.Tickets.Contracts.Dtos;
 using FSH.Modules.Tickets.Contracts.v1.Tickets;
 using FSH.Modules.Tickets.Data;
@@ -8,7 +9,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FSH.Modules.Tickets.Features.v1.Tickets.GetTicketById;
 
-public sealed class GetTicketByIdQueryHandler(TicketsDbContext dbContext)
+public sealed class GetTicketByIdQueryHandler(
+    TicketsDbContext dbContext,
+    IUserProfileService userProfileService)
     : IQueryHandler<GetTicketByIdQuery, TicketDto>
 {
     public async ValueTask<TicketDto> Handle(GetTicketByIdQuery query, CancellationToken cancellationToken)
@@ -29,6 +32,6 @@ public sealed class GetTicketByIdQueryHandler(TicketsDbContext dbContext)
             .CountAsync(c => c.TicketId == ticket.Id, cancellationToken)
             .ConfigureAwait(false);
 
-        return ticket.ToDto(commentCount);
+        return await ticket.ToDto(commentCount, userProfileService, cancellationToken).ConfigureAwait(false);
     }
 }

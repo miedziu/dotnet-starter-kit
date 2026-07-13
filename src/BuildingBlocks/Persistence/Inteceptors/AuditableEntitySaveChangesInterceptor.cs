@@ -75,7 +75,7 @@ public sealed class AuditableEntitySaveChangesInterceptor : SaveChangesIntercept
     {
         if (context is null) return;
 
-        var userId = _currentUser.IsAuthenticated() ? _currentUser.GetUserId().ToString() : null;
+        var userId = _currentUser.IsAuthenticated() ? _currentUser.GetIntUserId() : null;
         var now = _timeProvider.GetUtcNow();
 
         foreach (var entry in context.ChangeTracker.Entries())

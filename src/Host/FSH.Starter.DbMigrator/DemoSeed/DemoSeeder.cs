@@ -432,10 +432,10 @@ internal sealed class DemoSeeder
 
         var userManager = scope.ServiceProvider.GetRequiredService<UserManager<FshUser>>();
         var usersByEmail = await userManager.Users
-            .ToDictionaryAsync(u => u.Email!, u => Guid.Parse(u.Id), cancellationToken)
+            .ToDictionaryAsync(u => u.Email!, u => u.IntId, cancellationToken)
             .ConfigureAwait(false);
 
-        Guid? UserId(string email) =>
+        int? UserId(string email) =>
             usersByEmail.TryGetValue(email, out var id) ? id : null;
 
         IReadOnlyList<TicketScenario> scenarios;
@@ -642,9 +642,9 @@ internal sealed class DemoSeeder
         string Title,
         string? Description,
         TicketPriority Priority,
-        Guid? ReporterUserId,
-        Guid? AssignedToUserId,
-        IReadOnlyList<(Guid? AuthorUserId, string Body)> Comments,
+        int? ReporterUserId,
+        int? AssignedToUserId,
+        IReadOnlyList<(int? AuthorUserId, string Body)> Comments,
         bool Resolve,
         string? ResolutionNote);
 
@@ -716,7 +716,7 @@ internal sealed class DemoSeeder
             ]),
     ];
 
-    private static IReadOnlyList<TicketScenario> TicketScenarios(Func<string, Guid?> uid) =>
+    private static IReadOnlyList<TicketScenario> TicketScenarios(Func<string, int?> uid) =>
     [
         new("Login button broken on mobile",
             "Tapping login on iOS Safari does nothing on first tap. Have to double-tap.",

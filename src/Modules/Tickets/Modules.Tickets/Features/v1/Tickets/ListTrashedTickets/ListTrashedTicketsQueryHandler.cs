@@ -1,5 +1,6 @@
 using FSH.Framework.Persistence;
 using FSH.Framework.Shared.Persistence;
+using FSH.Modules.Identity.Contracts.Services;
 using FSH.Modules.Tickets.Contracts.Dtos;
 using FSH.Modules.Tickets.Contracts.v1.Tickets;
 using FSH.Modules.Tickets.Data;
@@ -9,7 +10,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FSH.Modules.Tickets.Features.v1.Tickets.ListTrashedTickets;
 
-public sealed class ListTrashedTicketsQueryHandler(TicketsDbContext dbContext)
+public sealed class ListTrashedTicketsQueryHandler(
+    TicketsDbContext dbContext,
+    IUserProfileService userProfileService)
     : IQueryHandler<ListTrashedTicketsQuery, PagedResponse<TicketDto>>
 {
     public async ValueTask<PagedResponse<TicketDto>> Handle(
@@ -33,13 +36,14 @@ public sealed class ListTrashedTicketsQueryHandler(TicketsDbContext dbContext)
             .ToListAsync(cancellationToken)
             .ConfigureAwait(false);
 
+        var items = (await Task.WhenAll(tickets.Select(t => t.ToDto(0, userProfileService, cancellationToken).AsTask())).ConfigureAwait(false)).ToList();
         return new PagedResponse<TicketDto>
         {
-            Items = tickets.Select(t => t.ToDto(0)).ToList(),
+            Items = items,
             PageNumber = page,
             PageSize = size,
             TotalCount = total,
-            TotalPages = (int)Math.Ceiling(total / (double)size),
+            TotalPages = (int)Math.Ceiling(total / (double)size)
         };
     }
 }

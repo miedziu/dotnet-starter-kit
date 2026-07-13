@@ -1,4 +1,5 @@
 using FSH.Framework.Core.Exceptions;
+using FSH.Modules.Identity.Contracts.Services;
 using FSH.Modules.Tickets.Contracts.Dtos;
 using FSH.Modules.Tickets.Contracts.v1.Tickets;
 using FSH.Modules.Tickets.Data;
@@ -8,7 +9,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FSH.Modules.Tickets.Features.v1.Tickets.ListTicketComments;
 
-public sealed class ListTicketCommentsQueryHandler(TicketsDbContext dbContext)
+public sealed class ListTicketCommentsQueryHandler(
+    TicketsDbContext dbContext,
+    IUserProfileService userProfileService)
     : IQueryHandler<ListTicketCommentsQuery, IReadOnlyList<TicketCommentDto>>
 {
     public async ValueTask<IReadOnlyList<TicketCommentDto>> Handle(
@@ -35,6 +38,8 @@ public sealed class ListTicketCommentsQueryHandler(TicketsDbContext dbContext)
             .ToListAsync(cancellationToken)
             .ConfigureAwait(false);
 
-        return comments.Select(c => c.ToDto()).ToList();
+        var commentsDTOs = (await Task.WhenAll(comments.Select(c => c.ToDto(userProfileService, cancellationToken).AsTask())).ConfigureAwait(false)).ToList();
+
+        return commentsDTOs;
     }
 }

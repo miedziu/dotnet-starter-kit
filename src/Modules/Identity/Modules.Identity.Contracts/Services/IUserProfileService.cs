@@ -49,4 +49,16 @@ public interface IUserProfileService
     /// Checks if a user exists with the given phone number.
     /// </summary>
     Task<bool> ExistsWithPhoneNumberAsync(string phoneNumber, string? exceptId = null, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Gets the internal integer identifier (IntId) for a user by their Guid Id.
+    /// Throws NotFoundException if the user is not found.
+    /// </summary>
+    Task<int> GetIntIdAsync(string userId, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Gets the Guid Id for a user by their internal integer identifier (IntId).
+    /// Throws NotFoundException if the user is not found.
+    /// </summary>
+    Task<Guid> GetGuidAsync(int intId, CancellationToken cancellationToken = default);
 }

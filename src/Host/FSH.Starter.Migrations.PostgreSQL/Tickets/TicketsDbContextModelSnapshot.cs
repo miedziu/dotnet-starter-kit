@@ -29,8 +29,8 @@ namespace FSH.Starter.Migrations.PostgreSQL.Tickets
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("AssignedToUserId")
-                        .HasColumnType("uuid");
+                    b.Property<int?>("AssignedToUserId")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime?>("ClosedAtUtc")
                         .HasColumnType("timestamp with time zone");
@@ -38,9 +38,8 @@ namespace FSH.Starter.Migrations.PostgreSQL.Tickets
                     b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("DeletedBy")
-                        .HasMaxLength(64)
-                        .HasColumnType("character varying(64)");
+                    b.Property<int?>("DeletedBy")
+                        .HasColumnType("integer");
 
                     b.Property<DateTimeOffset?>("DeletedOnUtc")
                         .HasColumnType("timestamp with time zone");
@@ -62,8 +61,8 @@ namespace FSH.Starter.Migrations.PostgreSQL.Tickets
                         .HasMaxLength(16)
                         .HasColumnType("character varying(16)");
 
-                    b.Property<Guid>("ReporterUserId")
-                        .HasColumnType("uuid");
+                    b.Property<int?>("ReporterUserId")
+                        .HasColumnType("integer");
 
                     b.Property<string>("ResolutionNote")
                         .HasMaxLength(4096)
@@ -107,8 +106,8 @@ namespace FSH.Starter.Migrations.PostgreSQL.Tickets
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("AuthorUserId")
-                        .HasColumnType("uuid");
+                    b.Property<int?>("AuthorUserId")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Body")
                         .IsRequired()
@@ -118,9 +117,8 @@ namespace FSH.Starter.Migrations.PostgreSQL.Tickets
                     b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("DeletedBy")
-                        .HasMaxLength(64)
-                        .HasColumnType("character varying(64)");
+                    b.Property<int?>("DeletedBy")
+                        .HasColumnType("integer");
 
                     b.Property<DateTimeOffset?>("DeletedOnUtc")
                         .HasColumnType("timestamp with time zone");

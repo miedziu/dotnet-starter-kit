@@ -5,6 +5,6 @@ namespace FSH.Modules.Tickets.Domain.Events;
 public sealed record TicketCommentAddedDomainEvent(
     Guid TicketId,
     Guid CommentId,
-    Guid AuthorUserId,
+    int? AuthorUserId,
     Guid EventId,
     DateTimeOffset OccurredOnUtc) : DomainEvent(EventId, OccurredOnUtc);

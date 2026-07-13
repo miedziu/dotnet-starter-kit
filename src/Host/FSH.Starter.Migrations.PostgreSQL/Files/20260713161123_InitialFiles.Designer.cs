@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FSH.Starter.Migrations.PostgreSQL.Files
 {
     [DbContext(typeof(FilesDbContext))]
-    [Migration("20260711160325_InitialFiles")]
+    [Migration("20260713161123_InitialFiles")]
     partial class InitialFiles
     {
         /// <inheritdoc />

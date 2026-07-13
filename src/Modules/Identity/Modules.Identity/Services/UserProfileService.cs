@@ -150,6 +150,37 @@ internal sealed class UserProfileService(
         return await userManager.Users.FirstOrDefaultAsync(x => x.PhoneNumber == phoneNumber, cancellationToken) is FshUser user && user.Id != exceptId;
     }
 
+    public async Task<int> GetIntIdAsync(string userId, CancellationToken cancellationToken = default)
+    {
+        var intId = await userManager.Users
+            .Where(u => u.Id == userId)
+            .Select(u => (int?)u.IntId)
+            .FirstOrDefaultAsync(cancellationToken);
+
+        if (!intId.HasValue)
+        {
+            throw new NotFoundException($"User with Id '{userId}' not found.");
+        }
+
+        return intId.Value;
+    }
+
+    public async Task<Guid> GetGuidAsync(int intId, CancellationToken cancellationToken = default)
+    {
+        var userId = await userManager.Users
+            .AsNoTracking()
+            .Where(u => u.IntId == intId)
+            .Select(u => u.Id)
+            .FirstOrDefaultAsync(cancellationToken);
+
+        if (string.IsNullOrEmpty(userId))
+        {
+            throw new NotFoundException($"User with IntId '{intId}' not found.");
+        }
+
+        return Guid.Parse(userId);
+    }
+
     private string? ResolveImageUrl(Uri? imageUrl)
     {
         if (imageUrl is null)

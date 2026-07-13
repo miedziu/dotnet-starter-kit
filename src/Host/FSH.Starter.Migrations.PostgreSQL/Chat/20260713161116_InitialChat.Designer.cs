@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FSH.Starter.Migrations.PostgreSQL.Chat
 {
     [DbContext(typeof(ChatDbContext))]
-    [Migration("20260711160318_InitialChat")]
+    [Migration("20260713161116_InitialChat")]
     partial class InitialChat
     {
         /// <inheritdoc />
@@ -70,10 +70,6 @@ namespace FSH.Starter.Migrations.PostgreSQL.Chat
 
                     b.Property<string>("CreatedByUserId")
                         .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("character varying(64)");
-
-                    b.Property<string>("DeletedBy")
                         .HasMaxLength(64)
                         .HasColumnType("character varying(64)");
 

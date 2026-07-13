@@ -17,7 +17,7 @@ public sealed class TicketCommentConfiguration : IEntityTypeConfiguration<Ticket
         builder.Property(x => x.Id).ValueGeneratedNever();
 
         builder.Property(x => x.Body).IsRequired().HasMaxLength(8192);
-        builder.Property(x => x.DeletedBy).HasMaxLength(64);
+        builder.Property(x => x.DeletedBy);
         builder.HasIndex(x => x.TicketId);
         builder.HasIndex(x => x.IsDeleted);
         builder.Ignore(x => x.DomainEvents);

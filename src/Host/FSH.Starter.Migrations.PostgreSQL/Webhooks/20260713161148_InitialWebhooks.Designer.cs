@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FSH.Starter.Migrations.PostgreSQL.Webhooks
 {
     [DbContext(typeof(WebhookDbContext))]
-    [Migration("20260711160352_InitialWebhooks")]
+    [Migration("20260713161148_InitialWebhooks")]
     partial class InitialWebhooks
     {
         /// <inheritdoc />

@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FSH.Starter.Migrations.PostgreSQL.Identity
 {
     [DbContext(typeof(IdentityDbContext))]
-    [Migration("20260712204028_InitialIdentity")]
+    [Migration("20260713162509_InitialIdentity")]
     partial class InitialIdentity
     {
         /// <inheritdoc />
@@ -169,6 +169,13 @@ namespace FSH.Starter.Migrations.PostgreSQL.Identity
                     b.Property<string>("ImageUrl")
                         .HasColumnType("text");
 
+                    b.Property<int>("IntId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("IntId");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IntId"));
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
 
@@ -183,13 +190,6 @@ namespace FSH.Starter.Migrations.PostgreSQL.Identity
 
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("IntId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("IntId");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IntId"));
 
                     b.Property<string>("NormalizedEmail")
                         .HasColumnType("text");
@@ -249,9 +249,8 @@ namespace FSH.Starter.Migrations.PostgreSQL.Identity
                         .HasColumnName("CreatedAt")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-                    b.Property<string>("DeletedBy")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)");
+                    b.Property<int?>("DeletedBy")
+                        .HasColumnType("integer");
 
                     b.Property<DateTimeOffset?>("DeletedOnUtc")
                         .HasColumnType("timestamp with time zone");
@@ -269,9 +268,8 @@ namespace FSH.Starter.Migrations.PostgreSQL.Identity
                     b.Property<bool>("IsSystemGroup")
                         .HasColumnType("boolean");
 
-                    b.Property<string>("LastModifiedBy")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                    b.Property<int?>("LastModifiedBy")
+                        .HasColumnType("integer")
                         .HasColumnName("ModifiedBy");
 
                     b.Property<DateTimeOffset?>("LastModifiedOnUtc")

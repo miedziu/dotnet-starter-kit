@@ -17,8 +17,8 @@ public sealed class AddTicketCommentCommandHandler(
     {
         ArgumentNullException.ThrowIfNull(command);
 
-        var authorId = currentUser.GetUserId();
-        if (authorId == Guid.Empty)
+        var authorId = currentUser.GetIntUserId();
+        if (authorId is null)
         {
             throw new CustomException(
                 "Cannot post a comment without an authenticated author.",

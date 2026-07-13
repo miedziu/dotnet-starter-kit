@@ -8,7 +8,7 @@ public sealed record TicketCreatedDomainEvent(
     string Number,
     string Title,
     TicketPriority Priority,
-    Guid ReporterUserId,
-    Guid? AssignedToUserId,
+    int? ReporterUserId,
+    int? AssignedToUserId,
     Guid EventId,
     DateTimeOffset OccurredOnUtc) : DomainEvent(EventId, OccurredOnUtc);
