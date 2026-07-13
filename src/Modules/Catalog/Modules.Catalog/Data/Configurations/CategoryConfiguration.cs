@@ -13,11 +13,11 @@ public sealed class CategoryConfiguration : IEntityTypeConfiguration<Category>
         builder.HasKey(x => x.Id);
         builder.Property(x => x.Name).IsRequired().HasMaxLength(128);
         builder.Property(x => x.Slug).IsRequired().HasMaxLength(160);
-        builder.HasIndex(x => x.Slug).IsUnique().HasFilter("\"IsDeleted\" = FALSE");
+        builder.HasIndex(x => x.Slug).IsUnique().HasFilter("\"DeletedAt\" IS NULL");
         builder.Property(x => x.Description).HasMaxLength(1024);
         builder.Property(x => x.DeletedBy).HasMaxLength(64);
         builder.HasIndex(x => x.ParentCategoryId);
-        builder.HasIndex(x => x.IsDeleted);
+        builder.HasIndex(x => x.DeletedAt);
         builder.Ignore(x => x.DomainEvents);
     }
 }

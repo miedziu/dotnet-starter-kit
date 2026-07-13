@@ -6,14 +6,9 @@ namespace FSH.Framework.Core.Domain;
 public interface ISoftDeletable
 {
     /// <summary>
-    /// Gets a value indicating whether the entity is deleted.
+    /// Gets the UTC timestamp when the entity was deleted. Null if not deleted.
     /// </summary>
-    bool IsDeleted { get; }
-
-    /// <summary>
-    /// Gets the UTC timestamp when the entity was deleted.
-    /// </summary>
-    DateTimeOffset? DeletedOnUtc { get; }
+    DateTimeOffset? DeletedAt { get; }
 
     /// <summary>
     /// Gets the identifier of the user who deleted the entity.
@@ -24,14 +19,9 @@ public interface ISoftDeletable
 public interface ISoftDeletableInt
 {
     /// <summary>
-    /// Gets a value indicating whether the entity is deleted.
+    /// Gets the UTC timestamp when the entity was deleted. Null if not deleted.
     /// </summary>
-    bool IsDeleted { get; }
-
-    /// <summary>
-    /// Gets the UTC timestamp when the entity was deleted.
-    /// </summary>
-    DateTimeOffset? DeletedOnUtc { get; }
+    DateTimeOffset? DeletedAt { get; }
 
     /// <summary>
     /// Gets the identifier of the user who deleted the entity.

@@ -28,7 +28,7 @@ public sealed class GetBrandByIdQueryHandler(CatalogDbContext dbContext)
             brand.LogoUrl,
             brand.CreatedAtUtc,
             brand.UpdatedAtUtc,
-            brand.DeletedOnUtc,
+            brand.DeletedAt,
             brand.DeletedBy);
     }
 }

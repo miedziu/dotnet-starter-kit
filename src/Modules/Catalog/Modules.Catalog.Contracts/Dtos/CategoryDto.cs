@@ -8,5 +8,5 @@ public sealed record CategoryDto(
     Guid? ParentCategoryId,
     DateTime CreatedAtUtc,
     DateTime? UpdatedAtUtc,
-    DateTimeOffset? DeletedOnUtc = null,
+    DateTimeOffset? DeletedAt = null,
     string? DeletedBy = null);

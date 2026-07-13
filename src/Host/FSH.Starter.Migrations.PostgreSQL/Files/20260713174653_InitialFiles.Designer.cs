@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FSH.Starter.Migrations.PostgreSQL.Files
 {
     [DbContext(typeof(FilesDbContext))]
-    [Migration("20260713161123_InitialFiles")]
+    [Migration("20260713174653_InitialFiles")]
     partial class InitialFiles
     {
         /// <inheritdoc />
@@ -45,20 +45,17 @@ namespace FSH.Starter.Migrations.PostgreSQL.Files
                         .HasMaxLength(64)
                         .HasColumnType("character varying(64)");
 
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("DeletedBy")
                         .HasMaxLength(64)
                         .HasColumnType("character varying(64)");
-
-                    b.Property<DateTimeOffset?>("DeletedOnUtc")
-                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("FileName")
                         .IsRequired()
                         .HasMaxLength(260)
                         .HasColumnType("character varying(260)");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
 
                     b.Property<string>("OriginalFileName")
                         .IsRequired()
@@ -98,16 +95,16 @@ namespace FSH.Starter.Migrations.PostgreSQL.Files
 
                     b.HasKey("Id");
 
+                    b.HasIndex("DeletedAt")
+                        .HasDatabaseName("IX_FileAsset_Deletion");
+
                     b.HasIndex("Status")
                         .HasDatabaseName("IX_FileAsset_Status");
 
                     b.HasIndex("StorageKey")
                         .IsUnique()
                         .HasDatabaseName("UX_FileAsset_StorageKey")
-                        .HasFilter("\"IsDeleted\" = FALSE");
-
-                    b.HasIndex("IsDeleted", "DeletedOnUtc")
-                        .HasDatabaseName("IX_FileAsset_Deletion");
+                        .HasFilter("\"DeletedAt\" IS NULL");
 
                     b.HasIndex("OwnerType", "OwnerId")
                         .HasDatabaseName("IX_FileAsset_Owner");

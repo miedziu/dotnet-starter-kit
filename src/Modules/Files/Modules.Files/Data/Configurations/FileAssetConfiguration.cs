@@ -26,8 +26,7 @@ public sealed class FileAssetConfiguration : IEntityTypeConfiguration<FileAsset>
         builder.Property(x => x.CreatedByUserId).IsRequired().HasMaxLength(64);
         builder.Property(x => x.CreatedAtUtc).IsRequired();
         builder.Property(x => x.UpdatedAtUtc);
-        builder.Property(x => x.IsDeleted).IsRequired();
-        builder.Property(x => x.DeletedOnUtc);
+        builder.Property(x => x.DeletedAt);
         builder.Property(x => x.DeletedBy).HasMaxLength(64);
 
         // Schema-per-tenant (BaseDbContext) makes narrowing implicit, so only an
@@ -36,13 +35,13 @@ public sealed class FileAssetConfiguration : IEntityTypeConfiguration<FileAsset>
             .HasDatabaseName("IX_FileAsset_Owner");
         builder.HasIndex(x => x.Status)
             .HasDatabaseName("IX_FileAsset_Status");
-        builder.HasIndex(x => new { x.IsDeleted, x.DeletedOnUtc })
+        builder.HasIndex(x => x.DeletedAt)
             .HasDatabaseName("IX_FileAsset_Deletion");
         // Unique on StorageKey across live rows only — a soft-deleted row's key should not block
         // a subsequent upload that happens to choose the same path (rare, but possible).
         builder.HasIndex(x => x.StorageKey)
             .IsUnique()
-            .HasFilter("\"IsDeleted\" = FALSE")
+            .HasFilter("\"DeletedAt\" IS NULL")
             .HasDatabaseName("UX_FileAsset_StorageKey");
 
         builder.Ignore(x => x.DomainEvents);

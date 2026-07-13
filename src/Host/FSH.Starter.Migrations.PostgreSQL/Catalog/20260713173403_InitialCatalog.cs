@@ -26,8 +26,7 @@ namespace FSH.Starter.Migrations.PostgreSQL.Catalog
                     LogoUrl = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: true),
                     CreatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
-                    DeletedOnUtc = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                    DeletedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                     DeletedBy = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true)
                 },
                 constraints: table =>
@@ -47,8 +46,7 @@ namespace FSH.Starter.Migrations.PostgreSQL.Catalog
                     ParentCategoryId = table.Column<Guid>(type: "uuid", nullable: true),
                     CreatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
-                    DeletedOnUtc = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                    DeletedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                     DeletedBy = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true)
                 },
                 constraints: table =>
@@ -74,8 +72,7 @@ namespace FSH.Starter.Migrations.PostgreSQL.Catalog
                     IsActive = table.Column<bool>(type: "boolean", nullable: false),
                     CreatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
-                    DeletedOnUtc = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                    DeletedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                     DeletedBy = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true)
                 },
                 constraints: table =>
@@ -109,10 +106,10 @@ namespace FSH.Starter.Migrations.PostgreSQL.Catalog
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Brands_IsDeleted",
+                name: "IX_Brands_DeletedAt",
                 schema: "catalog",
                 table: "Brands",
-                column: "IsDeleted");
+                column: "DeletedAt");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Brands_Slug",
@@ -120,13 +117,13 @@ namespace FSH.Starter.Migrations.PostgreSQL.Catalog
                 table: "Brands",
                 column: "Slug",
                 unique: true,
-                filter: "\"IsDeleted\" = FALSE");
+                filter: "\"DeletedAt\" IS NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Categories_IsDeleted",
+                name: "IX_Categories_DeletedAt",
                 schema: "catalog",
                 table: "Categories",
-                column: "IsDeleted");
+                column: "DeletedAt");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Categories_ParentCategoryId",
@@ -140,7 +137,7 @@ namespace FSH.Starter.Migrations.PostgreSQL.Catalog
                 table: "Categories",
                 column: "Slug",
                 unique: true,
-                filter: "\"IsDeleted\" = FALSE");
+                filter: "\"DeletedAt\" IS NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProductImages_ProductId",
@@ -161,10 +158,10 @@ namespace FSH.Starter.Migrations.PostgreSQL.Catalog
                 column: "CategoryId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Products_IsDeleted",
+                name: "IX_Products_DeletedAt",
                 schema: "catalog",
                 table: "Products",
-                column: "IsDeleted");
+                column: "DeletedAt");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Products_Sku",
@@ -172,7 +169,7 @@ namespace FSH.Starter.Migrations.PostgreSQL.Catalog
                 table: "Products",
                 column: "Sku",
                 unique: true,
-                filter: "\"IsDeleted\" = FALSE");
+                filter: "\"DeletedAt\" IS NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Products_Slug",
@@ -180,7 +177,7 @@ namespace FSH.Starter.Migrations.PostgreSQL.Catalog
                 table: "Products",
                 column: "Slug",
                 unique: true,
-                filter: "\"IsDeleted\" = FALSE");
+                filter: "\"DeletedAt\" IS NULL");
         }
 
         /// <inheritdoc />

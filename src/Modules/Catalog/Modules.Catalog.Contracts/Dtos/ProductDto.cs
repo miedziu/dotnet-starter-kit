@@ -17,5 +17,5 @@ public sealed record ProductDto(
     IReadOnlyList<ProductImageDto> Images,
     DateTime CreatedAtUtc,
     DateTime? UpdatedAtUtc,
-    DateTimeOffset? DeletedOnUtc = null,
+    DateTimeOffset? DeletedAt = null,
     string? DeletedBy = null);

@@ -9,7 +9,7 @@ namespace FSH.Framework.Persistence;
 public static class QueryFilters
 {
     /// <summary>
-    /// Hides rows where <c>ISoftDeletable.IsDeleted == true</c>. Disable
+    /// Hides rows where <c>ISoftDeletable.DeletedAt != null</c>. Disable
     /// this name on trash views and restore handlers; tenant scoping and
     /// any other filters on the entity remain in force.
     /// </summary>

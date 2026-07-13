@@ -8,5 +8,5 @@ public sealed record BrandDto(
     string? LogoUrl,
     DateTime CreatedAtUtc,
     DateTime? UpdatedAtUtc,
-    DateTimeOffset? DeletedOnUtc = null,
+    DateTimeOffset? DeletedAt = null,
     string? DeletedBy = null);

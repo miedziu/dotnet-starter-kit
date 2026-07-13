@@ -29,8 +29,7 @@ namespace FSH.Starter.Migrations.PostgreSQL.Identity
                     CreatedBy = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
                     ModifiedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                     ModifiedBy = table.Column<int>(type: "integer", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
-                    DeletedOnUtc = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                    DeletedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                     DeletedBy = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
@@ -388,16 +387,16 @@ namespace FSH.Starter.Migrations.PostgreSQL.Identity
                 column: "RoleId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Groups_DeletedAt",
+                schema: "identity",
+                table: "Groups",
+                column: "DeletedAt");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Groups_IsDefault",
                 schema: "identity",
                 table: "Groups",
                 column: "IsDefault");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Groups_IsDeleted",
-                schema: "identity",
-                table: "Groups",
-                column: "IsDeleted");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Groups_Name",

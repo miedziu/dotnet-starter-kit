@@ -23,6 +23,6 @@ internal static class ProductMappings
             .ToList(),
         p.CreatedAtUtc,
         p.UpdatedAtUtc,
-        p.DeletedOnUtc,
+        p.DeletedAt,
         p.DeletedBy);
 }

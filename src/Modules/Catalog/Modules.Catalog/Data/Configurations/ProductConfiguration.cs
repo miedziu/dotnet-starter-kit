@@ -13,11 +13,11 @@ public sealed class ProductConfiguration : IEntityTypeConfiguration<Product>
         builder.HasKey(x => x.Id);
 
         builder.Property(x => x.Sku).IsRequired().HasMaxLength(64);
-        builder.HasIndex(x => x.Sku).IsUnique().HasFilter("\"IsDeleted\" = FALSE");
+        builder.HasIndex(x => x.Sku).IsUnique().HasFilter("\"DeletedAt\" IS NULL");
 
         builder.Property(x => x.Name).IsRequired().HasMaxLength(200);
         builder.Property(x => x.Slug).IsRequired().HasMaxLength(220);
-        builder.HasIndex(x => x.Slug).IsUnique().HasFilter("\"IsDeleted\" = FALSE");
+        builder.HasIndex(x => x.Slug).IsUnique().HasFilter("\"DeletedAt\" IS NULL");
 
         builder.Property(x => x.Description).HasMaxLength(4000);
 
@@ -50,7 +50,7 @@ public sealed class ProductConfiguration : IEntityTypeConfiguration<Product>
         builder.Navigation(x => x.Price).IsRequired();
 
         builder.Property(x => x.DeletedBy).HasMaxLength(64);
-        builder.HasIndex(x => x.IsDeleted);
+        builder.HasIndex(x => x.DeletedAt);
 
         builder.Ignore(x => x.DomainEvents);
     }

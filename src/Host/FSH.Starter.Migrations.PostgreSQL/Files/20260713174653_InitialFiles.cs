@@ -34,8 +34,7 @@ namespace FSH.Starter.Migrations.PostgreSQL.Files
                     CreatedByUserId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
                     CreatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
-                    DeletedOnUtc = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                    DeletedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                     DeletedBy = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true)
                 },
                 constraints: table =>
@@ -47,7 +46,7 @@ namespace FSH.Starter.Migrations.PostgreSQL.Files
                 name: "IX_FileAsset_Deletion",
                 schema: "files",
                 table: "FileAssets",
-                columns: new[] { "IsDeleted", "DeletedOnUtc" });
+                column: "DeletedAt");
 
             migrationBuilder.CreateIndex(
                 name: "IX_FileAsset_Owner",
@@ -67,7 +66,7 @@ namespace FSH.Starter.Migrations.PostgreSQL.Files
                 table: "FileAssets",
                 column: "StorageKey",
                 unique: true,
-                filter: "\"IsDeleted\" = FALSE");
+                filter: "\"DeletedAt\" IS NULL");
         }
 
         /// <inheritdoc />

@@ -29,8 +29,7 @@ public sealed class FileAsset : AggregateRoot<Guid>, ISoftDeletable
 
     // ISoftDeletable — written by AuditableEntitySaveChangesInterceptor on dbContext.Remove(),
     // hidden from default queries by the global SoftDelete filter on BaseDbContext.
-    public bool IsDeleted { get; private set; }
-    public DateTimeOffset? DeletedOnUtc { get; private set; }
+    public DateTimeOffset? DeletedAt { get; private set; }
     public string? DeletedBy { get; private set; }
 
     private FileAsset() { }
@@ -105,9 +104,8 @@ public sealed class FileAsset : AggregateRoot<Guid>, ISoftDeletable
     /// <summary>Reverses a soft delete. Idempotent.</summary>
     public void Restore()
     {
-        if (!IsDeleted) return;
-        IsDeleted = false;
-        DeletedOnUtc = null;
+        if (DeletedAt == null) return;
+        DeletedAt = null;
         DeletedBy = null;
         UpdatedAtUtc = DateTime.UtcNow;
     }

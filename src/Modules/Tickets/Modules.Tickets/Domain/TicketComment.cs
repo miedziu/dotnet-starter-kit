@@ -17,8 +17,7 @@ public sealed class TicketComment : BaseEntity<Guid>, ISoftDeletableInt
     // Setters are populated by AuditableEntitySaveChangesInterceptor via EF Core's
     // entry.Property(...).CurrentValue — invisible to static analysis.
 #pragma warning disable S1144 // EF Core writes these setters via reflection
-    public bool IsDeleted { get; private set; }
-    public DateTimeOffset? DeletedOnUtc { get; private set; }
+    public DateTimeOffset? DeletedAt { get; private set; }
     public int? DeletedBy { get; private set; }
 #pragma warning restore S1144
 

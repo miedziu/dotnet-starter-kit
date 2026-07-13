@@ -20,7 +20,7 @@ public sealed class RestoreFileCommandHandler(FilesDbContext db)
             .ConfigureAwait(false)
             ?? throw new NotFoundException("file not found");
 
-        if (!f.IsDeleted)
+        if (f.DeletedAt == null)
         {
             return Unit.Value; // idempotent — already live
         }

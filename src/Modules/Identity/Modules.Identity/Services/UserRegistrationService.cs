@@ -538,7 +538,7 @@ internal sealed class UserRegistrationService(
 
         var defaultGroups = await db.Groups
             .AsNoTracking()
-            .Where(g => g.IsDefault && !g.IsDeleted)
+            .Where(g => g.IsDefault && g.DeletedAt == null)
             .ToListAsync(cancellationToken);
 
         foreach (var group in defaultGroups)

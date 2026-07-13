@@ -32,8 +32,7 @@ namespace FSH.Starter.Migrations.PostgreSQL.Tickets
                     UpdatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     ResolvedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     ClosedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
-                    DeletedOnUtc = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                    DeletedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                     DeletedBy = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
@@ -51,8 +50,7 @@ namespace FSH.Starter.Migrations.PostgreSQL.Tickets
                     AuthorUserId = table.Column<int>(type: "integer", nullable: true),
                     Body = table.Column<string>(type: "character varying(8192)", maxLength: 8192, nullable: false),
                     CreatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
-                    DeletedOnUtc = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                    DeletedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                     DeletedBy = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
@@ -68,10 +66,10 @@ namespace FSH.Starter.Migrations.PostgreSQL.Tickets
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_TicketComments_IsDeleted",
+                name: "IX_TicketComments_DeletedAt",
                 schema: "tickets",
                 table: "TicketComments",
-                column: "IsDeleted");
+                column: "DeletedAt");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TicketComments_TicketId",
@@ -86,10 +84,10 @@ namespace FSH.Starter.Migrations.PostgreSQL.Tickets
                 column: "AssignedToUserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tickets_IsDeleted",
+                name: "IX_Tickets_DeletedAt",
                 schema: "tickets",
                 table: "Tickets",
-                column: "IsDeleted");
+                column: "DeletedAt");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Tickets_Number",
@@ -97,7 +95,7 @@ namespace FSH.Starter.Migrations.PostgreSQL.Tickets
                 table: "Tickets",
                 column: "Number",
                 unique: true,
-                filter: "\"IsDeleted\" = FALSE");
+                filter: "\"DeletedAt\" IS NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Tickets_ReporterUserId",

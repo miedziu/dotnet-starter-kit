@@ -21,7 +21,7 @@ internal static class TicketMappings
         t.ResolvedAtUtc,
         t.ClosedAtUtc,
         t.Comments.Count,
-        t.DeletedOnUtc,
+        t.DeletedAt,
         (await GetGuidAsync(t.DeletedBy, userProfileService, cancellationToken)).ToString());
 
     public static async ValueTask<TicketDto> ToDto(this Ticket t, int commentCount, IUserProfileService userProfileService, CancellationToken cancellationToken = default) => new(
@@ -39,7 +39,7 @@ internal static class TicketMappings
         t.ResolvedAtUtc,
         t.ClosedAtUtc,
         commentCount,
-        t.DeletedOnUtc,
+        t.DeletedAt,
         (await GetGuidAsync(t.DeletedBy, userProfileService, cancellationToken)).ToString());
 
     public static async ValueTask<TicketCommentDto> ToDto(this TicketComment c, IUserProfileService userProfileService, CancellationToken cancellationToken = default) => new(

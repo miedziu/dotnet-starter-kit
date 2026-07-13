@@ -47,6 +47,6 @@ public class GroupConfiguration : IEntityTypeConfiguration<Group>
         // Indexes
         builder.HasIndex(g => g.Name);
         builder.HasIndex(g => g.IsDefault);
-        builder.HasIndex(g => g.IsDeleted);
+        builder.HasIndex(g => g.DeletedAt);
     }
 }

@@ -97,8 +97,7 @@ public sealed class AuditableEntitySaveChangesInterceptor : SaveChangesIntercept
             if (entry.Entity is ISoftDeletable && entry.State == EntityState.Deleted)
             {
                 entry.State = EntityState.Modified;
-                entry.Property(nameof(ISoftDeletable.IsDeleted)).CurrentValue = true;
-                entry.Property(nameof(ISoftDeletable.DeletedOnUtc)).CurrentValue = now;
+                entry.Property(nameof(ISoftDeletable.DeletedAt)).CurrentValue = now;
                 entry.Property(nameof(ISoftDeletable.DeletedBy)).CurrentValue = userId;
 
                 // A soft-delete cascades Deleted onto owned references; restore them to Unchanged or the

@@ -45,7 +45,7 @@ public sealed class SearchCategoriesQueryHandler(CatalogDbContext dbContext)
         return new PagedResponse<CategoryDto>
         {
             Items = categories
-                .Select(c => new CategoryDto(c.Id, c.Name, c.Slug, c.Description, c.ParentCategoryId, c.CreatedAtUtc, c.UpdatedAtUtc, c.DeletedOnUtc, c.DeletedBy))
+                .Select(c => new CategoryDto(c.Id, c.Name, c.Slug, c.Description, c.ParentCategoryId, c.CreatedAtUtc, c.UpdatedAtUtc, c.DeletedAt, c.DeletedBy))
                 .ToList(),
             PageNumber = page,
             PageSize = size,

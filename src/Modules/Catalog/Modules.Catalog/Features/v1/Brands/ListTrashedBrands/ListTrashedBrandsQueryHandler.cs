@@ -23,8 +23,8 @@ public sealed class ListTrashedBrandsQueryHandler(CatalogDbContext dbContext)
         var q = dbContext.Brands
             .AsNoTracking()
             .IgnoreQueryFilters([QueryFilters.SoftDelete])
-            .Where(b => b.IsDeleted)
-            .OrderByDescending(b => b.DeletedOnUtc);
+            .Where(b => b.DeletedAt != null)
+            .OrderByDescending(b => b.DeletedAt);
 
         long total = await q.LongCountAsync(cancellationToken).ConfigureAwait(false);
         var items = await q
@@ -32,7 +32,7 @@ public sealed class ListTrashedBrandsQueryHandler(CatalogDbContext dbContext)
             .Take(size)
             .Select(b => new BrandDto(
                 b.Id, b.Name, b.Slug, b.Description, b.LogoUrl,
-                b.CreatedAtUtc, b.UpdatedAtUtc, b.DeletedOnUtc, b.DeletedBy))
+                b.CreatedAtUtc, b.UpdatedAtUtc, b.DeletedAt, b.DeletedBy))
             .ToListAsync(cancellationToken)
             .ConfigureAwait(false);
 

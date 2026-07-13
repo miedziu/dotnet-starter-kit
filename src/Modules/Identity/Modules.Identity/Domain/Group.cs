@@ -17,8 +17,7 @@ public class Group : IAuditableEntity, ISoftDeletableInt
     public int? LastModifiedBy { get; private set; }
 
     // ISoftDeletable implementation
-    public bool IsDeleted { get; private set; }
-    public DateTimeOffset? DeletedOnUtc { get; private set; }
+    public DateTimeOffset? DeletedAt { get; private set; }
     public int? DeletedBy { get; private set; }
 
     // Navigation properties
@@ -58,8 +57,7 @@ public class Group : IAuditableEntity, ISoftDeletableInt
 
     public void Delete(int? deletedBy = null)
     {
-        IsDeleted = true;
-        DeletedOnUtc = TimeProvider.System.GetUtcNow();
+        DeletedAt = TimeProvider.System.GetUtcNow();
         DeletedBy = deletedBy;
     }
 }

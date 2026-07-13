@@ -40,7 +40,7 @@ public sealed class SearchBrandsQueryHandler(CatalogDbContext dbContext)
         return new PagedResponse<BrandDto>
         {
             Items = brands
-                .Select(b => new BrandDto(b.Id, b.Name, b.Slug, b.Description, b.LogoUrl, b.CreatedAtUtc, b.UpdatedAtUtc, b.DeletedOnUtc, b.DeletedBy))
+                .Select(b => new BrandDto(b.Id, b.Name, b.Slug, b.Description, b.LogoUrl, b.CreatedAtUtc, b.UpdatedAtUtc, b.DeletedAt, b.DeletedBy))
                 .ToList(),
             PageNumber = page,
             PageSize = size,

@@ -21,5 +21,5 @@ public sealed record FileAssetDto(
     DateTime CreatedAtUtc,
     string? PublicUrl,
     string CreatedByUserId = "",
-    DateTimeOffset? DeletedOnUtc = null,
+    DateTimeOffset? DeletedAt = null,
     string? DeletedBy = null);

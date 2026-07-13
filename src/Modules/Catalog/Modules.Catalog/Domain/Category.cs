@@ -11,15 +11,13 @@ public sealed class Category : AggregateRoot<Guid>, ISoftDeletable
     public DateTime CreatedAtUtc { get; private set; }
     public DateTime? UpdatedAtUtc { get; private set; }
 
-    public bool IsDeleted { get; private set; }
-    public DateTimeOffset? DeletedOnUtc { get; private set; }
+    public DateTimeOffset? DeletedAt { get; private set; }
     public string? DeletedBy { get; private set; }
 
     public void Restore()
     {
-        if (!IsDeleted) return;
-        IsDeleted = false;
-        DeletedOnUtc = null;
+        if (DeletedAt == null) return;
+        DeletedAt = null;
         DeletedBy = null;
         UpdatedAtUtc = DateTime.UtcNow;
     }

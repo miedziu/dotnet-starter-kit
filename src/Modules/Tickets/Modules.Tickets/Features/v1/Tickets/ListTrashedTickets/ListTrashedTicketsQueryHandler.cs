@@ -26,8 +26,8 @@ public sealed class ListTrashedTicketsQueryHandler(
         var q = dbContext.Tickets
             .AsNoTracking()
             .IgnoreQueryFilters([QueryFilters.SoftDelete])
-            .Where(t => t.IsDeleted)
-            .OrderByDescending(t => t.DeletedOnUtc);
+            .Where(t => t.DeletedAt != null)
+            .OrderByDescending(t => t.DeletedAt);
 
         long total = await q.LongCountAsync(cancellationToken).ConfigureAwait(false);
         var tickets = await q

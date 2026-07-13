@@ -38,18 +38,15 @@ namespace FSH.Starter.Migrations.PostgreSQL.Tickets
                     b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<int?>("DeletedBy")
                         .HasColumnType("integer");
-
-                    b.Property<DateTimeOffset?>("DeletedOnUtc")
-                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Description")
                         .HasMaxLength(4096)
                         .HasColumnType("character varying(4096)");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
 
                     b.Property<string>("Number")
                         .IsRequired()
@@ -88,11 +85,11 @@ namespace FSH.Starter.Migrations.PostgreSQL.Tickets
 
                     b.HasIndex("AssignedToUserId");
 
-                    b.HasIndex("IsDeleted");
+                    b.HasIndex("DeletedAt");
 
                     b.HasIndex("Number")
                         .IsUnique()
-                        .HasFilter("\"IsDeleted\" = FALSE");
+                        .HasFilter("\"DeletedAt\" IS NULL");
 
                     b.HasIndex("ReporterUserId");
 
@@ -117,21 +114,18 @@ namespace FSH.Starter.Migrations.PostgreSQL.Tickets
                     b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int?>("DeletedBy")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTimeOffset?>("DeletedOnUtc")
+                    b.Property<DateTimeOffset?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
+                    b.Property<int?>("DeletedBy")
+                        .HasColumnType("integer");
 
                     b.Property<Guid>("TicketId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("IsDeleted");
+                    b.HasIndex("DeletedAt");
 
                     b.HasIndex("TicketId");
 

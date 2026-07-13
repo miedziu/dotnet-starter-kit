@@ -29,8 +29,7 @@ public sealed class Ticket : AggregateRoot<Guid>, ISoftDeletableInt
     public DateTime? ResolvedAtUtc { get; private set; }
     public DateTime? ClosedAtUtc { get; private set; }
 
-    public bool IsDeleted { get; private set; }
-    public DateTimeOffset? DeletedOnUtc { get; private set; }
+    public DateTimeOffset? DeletedAt { get; private set; }
     public int? DeletedBy { get; private set; }
 
     public IReadOnlyCollection<TicketComment> Comments => _comments.AsReadOnly();
@@ -40,9 +39,8 @@ public sealed class Ticket : AggregateRoot<Guid>, ISoftDeletableInt
     /// </summary>
     public void Restore()
     {
-        if (!IsDeleted) return;
-        IsDeleted = false;
-        DeletedOnUtc = null;
+        if (DeletedAt == null) return;
+        DeletedAt = null;
         DeletedBy = null;
         UpdatedAtUtc = DateTime.UtcNow;
     }

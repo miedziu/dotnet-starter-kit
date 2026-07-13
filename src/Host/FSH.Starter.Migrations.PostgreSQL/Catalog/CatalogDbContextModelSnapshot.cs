@@ -32,19 +32,16 @@ namespace FSH.Starter.Migrations.PostgreSQL.Catalog
                     b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("DeletedBy")
                         .HasMaxLength(64)
                         .HasColumnType("character varying(64)");
 
-                    b.Property<DateTimeOffset?>("DeletedOnUtc")
-                        .HasColumnType("timestamp with time zone");
-
                     b.Property<string>("Description")
                         .HasMaxLength(1024)
                         .HasColumnType("character varying(1024)");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
 
                     b.Property<string>("LogoUrl")
                         .HasMaxLength(512)
@@ -65,11 +62,11 @@ namespace FSH.Starter.Migrations.PostgreSQL.Catalog
 
                     b.HasKey("Id");
 
-                    b.HasIndex("IsDeleted");
+                    b.HasIndex("DeletedAt");
 
                     b.HasIndex("Slug")
                         .IsUnique()
-                        .HasFilter("\"IsDeleted\" = FALSE");
+                        .HasFilter("\"DeletedAt\" IS NULL");
 
                     b.ToTable("Brands", "catalog");
                 });
@@ -83,19 +80,16 @@ namespace FSH.Starter.Migrations.PostgreSQL.Catalog
                     b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("DeletedBy")
                         .HasMaxLength(64)
                         .HasColumnType("character varying(64)");
 
-                    b.Property<DateTimeOffset?>("DeletedOnUtc")
-                        .HasColumnType("timestamp with time zone");
-
                     b.Property<string>("Description")
                         .HasMaxLength(1024)
                         .HasColumnType("character varying(1024)");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -115,13 +109,13 @@ namespace FSH.Starter.Migrations.PostgreSQL.Catalog
 
                     b.HasKey("Id");
 
-                    b.HasIndex("IsDeleted");
+                    b.HasIndex("DeletedAt");
 
                     b.HasIndex("ParentCategoryId");
 
                     b.HasIndex("Slug")
                         .IsUnique()
-                        .HasFilter("\"IsDeleted\" = FALSE");
+                        .HasFilter("\"DeletedAt\" IS NULL");
 
                     b.ToTable("Categories", "catalog");
                 });
@@ -141,21 +135,18 @@ namespace FSH.Starter.Migrations.PostgreSQL.Catalog
                     b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("DeletedBy")
                         .HasMaxLength(64)
                         .HasColumnType("character varying(64)");
-
-                    b.Property<DateTimeOffset?>("DeletedOnUtc")
-                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Description")
                         .HasMaxLength(4000)
                         .HasColumnType("character varying(4000)");
 
                     b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
                     b.Property<string>("Name")
@@ -185,15 +176,15 @@ namespace FSH.Starter.Migrations.PostgreSQL.Catalog
 
                     b.HasIndex("CategoryId");
 
-                    b.HasIndex("IsDeleted");
+                    b.HasIndex("DeletedAt");
 
                     b.HasIndex("Sku")
                         .IsUnique()
-                        .HasFilter("\"IsDeleted\" = FALSE");
+                        .HasFilter("\"DeletedAt\" IS NULL");
 
                     b.HasIndex("Slug")
                         .IsUnique()
-                        .HasFilter("\"IsDeleted\" = FALSE");
+                        .HasFilter("\"DeletedAt\" IS NULL");
 
                     b.ToTable("Products", "catalog");
                 });

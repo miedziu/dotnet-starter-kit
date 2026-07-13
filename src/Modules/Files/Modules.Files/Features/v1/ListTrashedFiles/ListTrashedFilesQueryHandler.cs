@@ -23,8 +23,8 @@ public sealed class ListTrashedFilesQueryHandler(FilesDbContext db)
         var baseQuery = db.FileAssets
             .AsNoTracking()
             .IgnoreQueryFilters()
-            .Where(f => f.IsDeleted)
-            .OrderByDescending(f => f.DeletedOnUtc);
+            .Where(f => f.DeletedAt != null)
+            .OrderByDescending(f => f.DeletedAt);
 
         long total = await baseQuery.LongCountAsync(cancellationToken).ConfigureAwait(false);
 

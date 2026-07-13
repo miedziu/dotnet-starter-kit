@@ -23,7 +23,7 @@ public sealed class PurgeDeletedFilesJob(
         var cutoff = DateTimeOffset.UtcNow.AddDays(-options.Value.SoftDeleteRetentionDays);
         var candidates = await db.FileAssets
             .IgnoreQueryFilters()
-            .Where(f => f.IsDeleted && f.DeletedOnUtc != null && f.DeletedOnUtc < cutoff)
+            .Where(f => f.DeletedAt != null && f.DeletedAt < cutoff)
             .ToListAsync(cancellationToken)
             .ConfigureAwait(false);
 

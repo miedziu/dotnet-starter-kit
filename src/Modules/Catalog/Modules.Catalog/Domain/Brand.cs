@@ -13,8 +13,7 @@ public sealed class Brand : AggregateRoot<Guid>, ISoftDeletable
 
     // Soft-delete metadata, set by AuditableEntitySaveChangesInterceptor on dbContext.Remove(). A
     // BaseDbContext global query filter hides deleted rows; use IgnoreQueryFilters() for trash views.
-    public bool IsDeleted { get; private set; }
-    public DateTimeOffset? DeletedOnUtc { get; private set; }
+    public DateTimeOffset? DeletedAt { get; private set; }
     public string? DeletedBy { get; private set; }
 
     /// <summary>
@@ -22,9 +21,8 @@ public sealed class Brand : AggregateRoot<Guid>, ISoftDeletable
     /// </summary>
     public void Restore()
     {
-        if (!IsDeleted) return;
-        IsDeleted = false;
-        DeletedOnUtc = null;
+        if (DeletedAt == null) return;
+        DeletedAt = null;
         DeletedBy = null;
         UpdatedAtUtc = DateTime.UtcNow;
     }

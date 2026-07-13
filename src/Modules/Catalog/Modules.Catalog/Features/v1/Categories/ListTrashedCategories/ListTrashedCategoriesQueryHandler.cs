@@ -22,8 +22,8 @@ public sealed class ListTrashedCategoriesQueryHandler(CatalogDbContext dbContext
         var q = dbContext.Categories
             .AsNoTracking()
             .IgnoreQueryFilters([QueryFilters.SoftDelete])
-            .Where(c => c.IsDeleted)
-            .OrderByDescending(c => c.DeletedOnUtc);
+            .Where(c => c.DeletedAt != null)
+            .OrderByDescending(c => c.DeletedAt);
 
         long total = await q.LongCountAsync(cancellationToken).ConfigureAwait(false);
         var items = await q
@@ -31,7 +31,7 @@ public sealed class ListTrashedCategoriesQueryHandler(CatalogDbContext dbContext
             .Take(size)
             .Select(c => new CategoryDto(
                 c.Id, c.Name, c.Slug, c.Description, c.ParentCategoryId,
-                c.CreatedAtUtc, c.UpdatedAtUtc, c.DeletedOnUtc, c.DeletedBy))
+                c.CreatedAtUtc, c.UpdatedAtUtc, c.DeletedAt, c.DeletedBy))
             .ToListAsync(cancellationToken)
             .ConfigureAwait(false);
 

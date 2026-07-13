@@ -22,8 +22,8 @@ public sealed class ListTrashedProductsQueryHandler(CatalogDbContext dbContext)
         var q = dbContext.Products
             .AsNoTracking()
             .IgnoreQueryFilters([QueryFilters.SoftDelete])
-            .Where(p => p.IsDeleted)
-            .OrderByDescending(p => p.DeletedOnUtc);
+            .Where(p => p.DeletedAt != null)
+            .OrderByDescending(p => p.DeletedAt);
 
         long total = await q.LongCountAsync(cancellationToken).ConfigureAwait(false);
         var products = await q

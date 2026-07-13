@@ -246,20 +246,17 @@ namespace FSH.Starter.Migrations.PostgreSQL.Identity
                         .HasColumnName("CreatedAt")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<int?>("DeletedBy")
                         .HasColumnType("integer");
-
-                    b.Property<DateTimeOffset?>("DeletedOnUtc")
-                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Description")
                         .HasMaxLength(1024)
                         .HasColumnType("character varying(1024)");
 
                     b.Property<bool>("IsDefault")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
                     b.Property<bool>("IsSystemGroup")
@@ -280,9 +277,9 @@ namespace FSH.Starter.Migrations.PostgreSQL.Identity
 
                     b.HasKey("Id");
 
-                    b.HasIndex("IsDefault");
+                    b.HasIndex("DeletedAt");
 
-                    b.HasIndex("IsDeleted");
+                    b.HasIndex("IsDefault");
 
                     b.HasIndex("Name");
 
