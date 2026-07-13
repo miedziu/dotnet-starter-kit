@@ -17,8 +17,7 @@ public class ApplicationUserConfig : IEntityTypeConfiguration<FshUser>
         builder
             .Property(u => u.IntId)
             .IsRequired()
-            .ValueGeneratedOnAdd()
-            .HasColumnName("IntId");
+            .ValueGeneratedOnAdd();
 
         builder
             .Property(u => u.ObjectId)

@@ -262,11 +262,11 @@ namespace FSH.Starter.Migrations.PostgreSQL.Identity
                     b.Property<bool>("IsSystemGroup")
                         .HasColumnType("boolean");
 
-                    b.Property<int?>("LastModifiedBy")
+                    b.Property<int?>("ModifiedBy")
                         .HasColumnType("integer")
                         .HasColumnName("ModifiedBy");
 
-                    b.Property<DateTimeOffset?>("LastModifiedAt")
+                    b.Property<DateTimeOffset?>("ModifiedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("ModifiedAt");
 

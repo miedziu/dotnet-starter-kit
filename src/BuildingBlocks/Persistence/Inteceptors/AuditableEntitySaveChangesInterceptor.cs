@@ -89,8 +89,8 @@ public sealed class AuditableEntitySaveChangesInterceptor : SaveChangesIntercept
                 }
                 else if (entry.State == EntityState.Modified || entry.HasChangedOwnedEntities())
                 {
-                    entry.Property(nameof(IAuditableEntity.LastModifiedAt)).CurrentValue = now;
-                    entry.Property(nameof(IAuditableEntity.LastModifiedBy)).CurrentValue = userId;
+                    entry.Property(nameof(IAuditableEntity.ModifiedAt)).CurrentValue = now;
+                    entry.Property(nameof(IAuditableEntity.ModifiedBy)).CurrentValue = userId;
                 }
             }
 

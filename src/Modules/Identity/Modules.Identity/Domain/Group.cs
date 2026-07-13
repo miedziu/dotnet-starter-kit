@@ -13,8 +13,8 @@ public class Group : IAuditableEntity, ISoftDeletableInt
     // IAuditableEntity implementation
     public DateTimeOffset CreatedAt { get; private set; }
     public string? CreatedBy { get; private set; }
-    public DateTimeOffset? LastModifiedAt { get; private set; }
-    public int? LastModifiedBy { get; private set; }
+    public DateTimeOffset? ModifiedAt { get; private set; }
+    public int? ModifiedBy { get; private set; }
 
     // ISoftDeletable implementation
     public DateTimeOffset? DeletedAt { get; private set; }
@@ -44,15 +44,15 @@ public class Group : IAuditableEntity, ISoftDeletableInt
     {
         Name = name;
         Description = description;
-        LastModifiedAt = TimeProvider.System.GetUtcNow();
-        LastModifiedBy = modifiedBy;
+        ModifiedAt = TimeProvider.System.GetUtcNow();
+        ModifiedBy = modifiedBy;
     }
 
     public void SetAsDefault(bool isDefault, int? modifiedBy = null)
     {
         IsDefault = isDefault;
-        LastModifiedAt = TimeProvider.System.GetUtcNow();
-        LastModifiedBy = modifiedBy;
+        ModifiedAt = TimeProvider.System.GetUtcNow();
+        ModifiedBy = modifiedBy;
     }
 
     public void Delete(int? deletedBy = null)

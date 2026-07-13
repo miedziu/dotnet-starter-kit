@@ -18,10 +18,10 @@ public interface IAuditableEntity
     /// <summary>
     /// Gets the UTC timestamp when the entity was last modified.
     /// </summary>
-    DateTimeOffset? LastModifiedAt { get; }
+    DateTimeOffset? ModifiedAt { get; }
 
     /// <summary>
     /// Gets the identifier of the last modifier.
     /// </summary>
-    int? LastModifiedBy { get; }
+    int? ModifiedBy { get; }
 }
