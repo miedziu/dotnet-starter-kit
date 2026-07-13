@@ -144,7 +144,7 @@ public sealed class BillingService : IBillingService
 
         await _eventBus.PublishAsync(new InvoiceIssuedIntegrationEvent(
             Id: Guid.NewGuid(),
-            OccurredOnUtc: now,
+            OccurredAt: now,
             CorrelationId: Guid.NewGuid().ToString(),
             Source: "Billing",
             InvoiceId: invoice.Id,
@@ -251,7 +251,7 @@ public sealed class BillingService : IBillingService
 
         await _eventBus.PublishAsync(new InvoiceIssuedIntegrationEvent(
             Id: Guid.NewGuid(),
-            OccurredOnUtc: _timeProvider.GetUtcNow().UtcDateTime,
+            OccurredAt: _timeProvider.GetUtcNow().UtcDateTime,
             CorrelationId: Guid.NewGuid().ToString(),
             Source: "Billing",
             InvoiceId: invoice.Id,

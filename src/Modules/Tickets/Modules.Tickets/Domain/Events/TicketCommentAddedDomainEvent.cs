@@ -7,4 +7,4 @@ public sealed record TicketCommentAddedDomainEvent(
     Guid CommentId,
     int? AuthorUserId,
     Guid EventId,
-    DateTimeOffset OccurredOnUtc) : DomainEvent(EventId, OccurredOnUtc);
+    DateTimeOffset OccurredAt) : DomainEvent(EventId, OccurredAt);

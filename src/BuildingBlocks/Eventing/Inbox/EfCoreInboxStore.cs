@@ -42,7 +42,7 @@ public sealed class EfCoreInboxStore<TDbContext> : IInboxStore
             Id = eventId,
             EventType = eventType,
             HandlerName = handlerName,
-            ProcessedOnUtc = _timeProvider.GetUtcNow().UtcDateTime
+            ProcessedAt = _timeProvider.GetUtcNow().UtcDateTime
         };
 
         _dbContext.Set<InboxMessage>().Add(message);

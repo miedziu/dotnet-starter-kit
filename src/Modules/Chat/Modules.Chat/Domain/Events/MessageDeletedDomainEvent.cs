@@ -7,4 +7,4 @@ public sealed record MessageDeletedDomainEvent(
     Guid MessageId,
     string AuthorUserId,
     Guid EventId,
-    DateTimeOffset OccurredOnUtc) : DomainEvent(EventId, OccurredOnUtc);
+    DateTimeOffset OccurredAt) : DomainEvent(EventId, OccurredAt);

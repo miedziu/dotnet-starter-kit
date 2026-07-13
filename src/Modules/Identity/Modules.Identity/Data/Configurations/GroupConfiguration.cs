@@ -36,12 +36,12 @@ public class GroupConfiguration : IEntityTypeConfiguration<Group>
             .Property(g => g.DeletedBy);
 
         builder
-            .Property(g => g.CreatedOnUtc)
+            .Property(g => g.CreatedAt)
             .HasColumnName("CreatedAt")
             .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
         builder
-            .Property(g => g.LastModifiedOnUtc)
+            .Property(g => g.LastModifiedAt)
             .HasColumnName("ModifiedAt");
 
         // Indexes

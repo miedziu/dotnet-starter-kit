@@ -151,7 +151,7 @@ public sealed class UpdateGroupCommandHandler : ICommandHandler<UpdateGroupComma
             MemberCount = memberCount,
             RoleIds = roleIds.ToList().AsReadOnly(),
             RoleNames = roleNames.AsReadOnly(),
-            CreatedAt = group.CreatedOnUtc
+            CreatedAt = group.CreatedAt
         };
     }
 }

@@ -11,9 +11,9 @@ public class Group : IAuditableEntity, ISoftDeletableInt
     public bool IsSystemGroup { get; private set; }
 
     // IAuditableEntity implementation
-    public DateTimeOffset CreatedOnUtc { get; private set; }
+    public DateTimeOffset CreatedAt { get; private set; }
     public string? CreatedBy { get; private set; }
-    public DateTimeOffset? LastModifiedOnUtc { get; private set; }
+    public DateTimeOffset? LastModifiedAt { get; private set; }
     public int? LastModifiedBy { get; private set; }
 
     // ISoftDeletable implementation
@@ -35,7 +35,7 @@ public class Group : IAuditableEntity, ISoftDeletableInt
             Description = description,
             IsDefault = isDefault,
             IsSystemGroup = isSystemGroup,
-            CreatedOnUtc = TimeProvider.System.GetUtcNow(),
+            CreatedAt = TimeProvider.System.GetUtcNow(),
             CreatedBy = createdBy
         };
     }
@@ -44,14 +44,14 @@ public class Group : IAuditableEntity, ISoftDeletableInt
     {
         Name = name;
         Description = description;
-        LastModifiedOnUtc = TimeProvider.System.GetUtcNow();
+        LastModifiedAt = TimeProvider.System.GetUtcNow();
         LastModifiedBy = modifiedBy;
     }
 
     public void SetAsDefault(bool isDefault, int? modifiedBy = null)
     {
         IsDefault = isDefault;
-        LastModifiedOnUtc = TimeProvider.System.GetUtcNow();
+        LastModifiedAt = TimeProvider.System.GetUtcNow();
         LastModifiedBy = modifiedBy;
     }
 

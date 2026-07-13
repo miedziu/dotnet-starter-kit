@@ -8,7 +8,7 @@ namespace FSH.Modules.Identity.Contracts.Events;
 /// </summary>
 public sealed record TokenGeneratedIntegrationEvent(
     Guid Id,
-    DateTime OccurredOnUtc,
+    DateTime OccurredAt,
     string CorrelationId,
     string Source,
     string UserId,

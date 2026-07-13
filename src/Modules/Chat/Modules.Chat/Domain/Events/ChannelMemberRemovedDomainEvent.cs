@@ -7,4 +7,4 @@ public sealed record ChannelMemberRemovedDomainEvent(
     string RemovedUserId,
     string RemovedByUserId,
     Guid EventId,
-    DateTimeOffset OccurredOnUtc) : DomainEvent(EventId, OccurredOnUtc);
+    DateTimeOffset OccurredAt) : DomainEvent(EventId, OccurredAt);

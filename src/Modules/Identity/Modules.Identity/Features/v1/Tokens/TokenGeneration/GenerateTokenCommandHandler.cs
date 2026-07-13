@@ -120,7 +120,7 @@ public sealed class GenerateTokenCommandHandler
 
         var integrationEvent = new TokenGeneratedIntegrationEvent(
             Id: Guid.NewGuid(),
-            OccurredOnUtc: TimeProvider.System.GetUtcNow().UtcDateTime,
+            OccurredAt: TimeProvider.System.GetUtcNow().UtcDateTime,
             CorrelationId: correlationId,
             Source: "Identity",
             UserId: subject,

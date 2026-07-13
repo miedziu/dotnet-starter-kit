@@ -16,7 +16,7 @@ public class InboxMessage
 
     public string HandlerName { get; set; } = default!;
 
-    public DateTime ProcessedOnUtc { get; set; }
+    public DateTime ProcessedAt { get; set; }
 }
 
 public sealed class InboxMessageConfiguration : IEntityTypeConfiguration<InboxMessage>

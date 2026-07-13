@@ -76,7 +76,7 @@ public sealed class CreateGroupCommandHandler : ICommandHandler<CreateGroupComma
             MemberCount = 0,
             RoleIds = resolvedRoles.Select(r => r.Id).ToList().AsReadOnly(),
             RoleNames = resolvedRoles.Select(r => r.Name).ToList().AsReadOnly(),
-            CreatedAt = group.CreatedOnUtc
+            CreatedAt = group.CreatedAt
         };
     }
 }

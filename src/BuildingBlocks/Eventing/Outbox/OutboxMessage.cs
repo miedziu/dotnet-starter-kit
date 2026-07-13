@@ -12,7 +12,7 @@ public class OutboxMessage
 {
     public Guid Id { get; set; }
 
-    public DateTime CreatedOnUtc { get; set; }
+    public DateTime CreatedAt { get; set; }
 
     public string Type { get; set; } = default!;
 
@@ -20,7 +20,7 @@ public class OutboxMessage
 
     public string? CorrelationId { get; set; }
 
-    public DateTime? ProcessedOnUtc { get; set; }
+    public DateTime? ProcessedAt { get; set; }
 
     public int RetryCount { get; set; }
 
@@ -56,7 +56,7 @@ public sealed class OutboxMessageConfiguration : IEntityTypeConfiguration<Outbox
         builder.Property(o => o.CorrelationId)
             .HasMaxLength(128);
 
-        builder.Property(o => o.CreatedOnUtc)
+        builder.Property(o => o.CreatedAt)
             .IsRequired();
     }
 }

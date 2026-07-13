@@ -31,7 +31,7 @@ namespace FSH.Starter.Migrations.PostgreSQL.Chat
                     UpdatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     LastMessageAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
-                    DeletedOnUtc = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true)
+                    DeletedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {

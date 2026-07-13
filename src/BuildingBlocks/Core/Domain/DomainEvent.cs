@@ -4,11 +4,11 @@
 /// Base domain event with correlation context.
 /// </summary>
 /// <param name="EventId">The unique event identifier.</param>
-/// <param name="OccurredOnUtc">The UTC timestamp when the event occurred.</param>
+/// <param name="OccurredAt">The UTC timestamp when the event occurred.</param>
 /// <param name="CorrelationId">The optional correlation identifier.</param>
 public abstract record DomainEvent(
     Guid EventId,
-    DateTimeOffset OccurredOnUtc,
+    DateTimeOffset OccurredAt,
     string? CorrelationId = null
 ) : IDomainEvent
 {

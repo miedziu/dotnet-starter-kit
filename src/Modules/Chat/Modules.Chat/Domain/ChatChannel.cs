@@ -30,7 +30,7 @@ public sealed class ChatChannel : AggregateRoot<Guid>
     public DateTime? LastMessageAtUtc { get; private set; }
 
     public bool IsDeleted { get; private set; }
-    public DateTimeOffset? DeletedOnUtc { get; private set; }
+    public DateTimeOffset? DeletedAt { get; private set; }
 
     private readonly List<ChannelMember> _members = [];
     public IReadOnlyList<ChannelMember> Members => _members;
@@ -47,7 +47,7 @@ public sealed class ChatChannel : AggregateRoot<Guid>
         ArgumentException.ThrowIfNullOrWhiteSpace(deletedByUserId);
         if (IsDeleted) return;
         IsDeleted = true;
-        DeletedOnUtc = DateTimeOffset.UtcNow;
+        DeletedAt = DateTimeOffset.UtcNow;
         UpdatedAtUtc = DateTime.UtcNow;
     }
 
@@ -55,7 +55,7 @@ public sealed class ChatChannel : AggregateRoot<Guid>
     {
         if (!IsDeleted) return;
         IsDeleted = false;
-        DeletedOnUtc = null;
+        DeletedAt = null;
         UpdatedAtUtc = DateTime.UtcNow;
     }
 

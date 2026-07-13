@@ -73,7 +73,7 @@ namespace FSH.Starter.Migrations.PostgreSQL.Identity
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     HandlerName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
                     EventType = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: false),
-                    ProcessedOnUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    ProcessedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -86,11 +86,11 @@ namespace FSH.Starter.Migrations.PostgreSQL.Identity
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    CreatedOnUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     Type = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: false),
                     Payload = table.Column<string>(type: "text", nullable: false),
                     CorrelationId = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: true),
-                    ProcessedOnUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    ProcessedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     RetryCount = table.Column<int>(type: "integer", nullable: false),
                     LastError = table.Column<string>(type: "text", nullable: true),
                     IsDead = table.Column<bool>(type: "boolean", nullable: false)

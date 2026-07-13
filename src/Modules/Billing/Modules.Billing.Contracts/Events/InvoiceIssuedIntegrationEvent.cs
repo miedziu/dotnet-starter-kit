@@ -8,7 +8,7 @@ namespace FSH.Modules.Billing.Contracts.Events;
 /// </summary>
 public sealed record InvoiceIssuedIntegrationEvent(
     Guid Id,
-    DateTime OccurredOnUtc,
+    DateTime OccurredAt,
     string CorrelationId,
     string Source,
     Guid InvoiceId,

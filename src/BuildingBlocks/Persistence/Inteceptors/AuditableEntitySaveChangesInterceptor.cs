@@ -84,12 +84,12 @@ public sealed class AuditableEntitySaveChangesInterceptor : SaveChangesIntercept
             {
                 if (entry.State == EntityState.Added)
                 {
-                    entry.Property(nameof(IAuditableEntity.CreatedOnUtc)).CurrentValue = now;
+                    entry.Property(nameof(IAuditableEntity.CreatedAt)).CurrentValue = now;
                     entry.Property(nameof(IAuditableEntity.CreatedBy)).CurrentValue = userId;
                 }
                 else if (entry.State == EntityState.Modified || entry.HasChangedOwnedEntities())
                 {
-                    entry.Property(nameof(IAuditableEntity.LastModifiedOnUtc)).CurrentValue = now;
+                    entry.Property(nameof(IAuditableEntity.LastModifiedAt)).CurrentValue = now;
                     entry.Property(nameof(IAuditableEntity.LastModifiedBy)).CurrentValue = userId;
                 }
             }

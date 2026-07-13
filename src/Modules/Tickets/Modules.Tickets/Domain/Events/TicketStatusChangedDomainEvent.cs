@@ -8,4 +8,4 @@ public sealed record TicketStatusChangedDomainEvent(
     TicketStatus PreviousStatus,
     TicketStatus NewStatus,
     Guid EventId,
-    DateTimeOffset OccurredOnUtc) : DomainEvent(EventId, OccurredOnUtc);
+    DateTimeOffset OccurredAt) : DomainEvent(EventId, OccurredAt);

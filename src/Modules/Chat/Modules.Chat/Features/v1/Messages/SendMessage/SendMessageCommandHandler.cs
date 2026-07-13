@@ -108,7 +108,7 @@ public sealed class SendMessageCommandHandler(
                 await eventBus.PublishAsync(
                     new MentionedInChannelIntegrationEvent(
                         Id: Guid.NewGuid(),
-                        OccurredOnUtc: DateTime.UtcNow,
+                        OccurredAt: DateTime.UtcNow,
                         CorrelationId: correlationId,
                         Source: "Chat",
                         ChannelId: channel.Id,

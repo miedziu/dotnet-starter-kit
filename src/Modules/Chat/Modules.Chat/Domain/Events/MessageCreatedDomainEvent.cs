@@ -8,4 +8,4 @@ public sealed record MessageCreatedDomainEvent(
     string AuthorUserId,
     Guid? ParentMessageId,
     Guid EventId,
-    DateTimeOffset OccurredOnUtc) : DomainEvent(EventId, OccurredOnUtc);
+    DateTimeOffset OccurredAt) : DomainEvent(EventId, OccurredAt);

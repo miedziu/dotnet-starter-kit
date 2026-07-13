@@ -36,7 +36,7 @@ namespace FSH.Starter.Migrations.PostgreSQL.Identity
                         .HasMaxLength(512)
                         .HasColumnType("character varying(512)");
 
-                    b.Property<DateTime>("ProcessedOnUtc")
+                    b.Property<DateTime>("ProcessedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id", "HandlerName");
@@ -54,7 +54,7 @@ namespace FSH.Starter.Migrations.PostgreSQL.Identity
                         .HasMaxLength(128)
                         .HasColumnType("character varying(128)");
 
-                    b.Property<DateTime>("CreatedOnUtc")
+                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<bool>("IsDead")
@@ -67,7 +67,7 @@ namespace FSH.Starter.Migrations.PostgreSQL.Identity
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTime?>("ProcessedOnUtc")
+                    b.Property<DateTime?>("ProcessedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("RetryCount")
@@ -240,7 +240,7 @@ namespace FSH.Starter.Migrations.PostgreSQL.Identity
                         .HasMaxLength(450)
                         .HasColumnType("character varying(450)");
 
-                    b.Property<DateTimeOffset>("CreatedOnUtc")
+                    b.Property<DateTimeOffset>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("CreatedAt")
@@ -266,7 +266,7 @@ namespace FSH.Starter.Migrations.PostgreSQL.Identity
                         .HasColumnType("integer")
                         .HasColumnName("ModifiedBy");
 
-                    b.Property<DateTimeOffset?>("LastModifiedOnUtc")
+                    b.Property<DateTimeOffset?>("LastModifiedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("ModifiedAt");
 

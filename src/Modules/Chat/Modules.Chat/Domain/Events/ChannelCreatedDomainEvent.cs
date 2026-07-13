@@ -9,4 +9,4 @@ public sealed record ChannelCreatedDomainEvent(
     string? Name,
     string CreatedByUserId,
     Guid EventId,
-    DateTimeOffset OccurredOnUtc) : DomainEvent(EventId, OccurredOnUtc);
+    DateTimeOffset OccurredAt) : DomainEvent(EventId, OccurredAt);

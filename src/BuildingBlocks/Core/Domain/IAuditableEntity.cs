@@ -8,7 +8,7 @@ public interface IAuditableEntity
     /// <summary>
     /// Gets the UTC timestamp when the entity was created.
     /// </summary>
-    DateTimeOffset CreatedOnUtc { get; }
+    DateTimeOffset CreatedAt { get; }
 
     /// <summary>
     /// Gets the identifier of the creator.
@@ -18,7 +18,7 @@ public interface IAuditableEntity
     /// <summary>
     /// Gets the UTC timestamp when the entity was last modified.
     /// </summary>
-    DateTimeOffset? LastModifiedOnUtc { get; }
+    DateTimeOffset? LastModifiedAt { get; }
 
     /// <summary>
     /// Gets the identifier of the last modifier.

@@ -42,7 +42,7 @@ public sealed class EfCoreOutboxStore<TDbContext> : IOutboxStore
         var message = new OutboxMessage
         {
             Id = @event.Id,
-            CreatedOnUtc = @event.OccurredOnUtc,
+            CreatedAt = @event.OccurredAt,
             Type = @event.GetType().AssemblyQualifiedName ?? @event.GetType().FullName!,
             Payload = payload,
             CorrelationId = @event.CorrelationId,
@@ -57,8 +57,8 @@ public sealed class EfCoreOutboxStore<TDbContext> : IOutboxStore
     public async Task<IReadOnlyList<OutboxMessage>> GetPendingBatchAsync(int batchSize, CancellationToken ct = default)
     {
         return await _dbContext.Set<OutboxMessage>()
-            .Where(m => !m.IsDead && m.ProcessedOnUtc == null)
-            .OrderBy(m => m.CreatedOnUtc)
+            .Where(m => !m.IsDead && m.ProcessedAt == null)
+            .OrderBy(m => m.CreatedAt)
             .Take(batchSize)
             .ToListAsync(ct)
             .ConfigureAwait(false);
@@ -68,7 +68,7 @@ public sealed class EfCoreOutboxStore<TDbContext> : IOutboxStore
     {
         ArgumentNullException.ThrowIfNull(message);
 
-        message.ProcessedOnUtc = _timeProvider.GetUtcNow().UtcDateTime;
+        message.ProcessedAt = _timeProvider.GetUtcNow().UtcDateTime;
         _dbContext.Set<OutboxMessage>().Update(message);
         await _dbContext.SaveChangesAsync(ct).ConfigureAwait(false);
     }

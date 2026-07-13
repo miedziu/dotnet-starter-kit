@@ -7,7 +7,7 @@ public interface IIntegrationEvent
 {
     Guid Id { get; }
 
-    DateTime OccurredOnUtc { get; }
+    DateTime OccurredAt { get; }
 
     /// <summary>
     /// Correlation identifier to tie events to requests and traces.

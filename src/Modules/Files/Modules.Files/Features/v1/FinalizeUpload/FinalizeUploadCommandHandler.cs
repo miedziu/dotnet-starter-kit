@@ -77,7 +77,7 @@ public sealed class FinalizeUploadCommandHandler(
         var correlationId = Activity.Current?.Id ?? Guid.NewGuid().ToString();
         await events.PublishAsync(new FileFinalizedIntegrationEvent(
             Id: Guid.NewGuid(),
-            OccurredOnUtc: DateTime.UtcNow,
+            OccurredAt: DateTime.UtcNow,
             CorrelationId: correlationId,
             Source: "Files",
             FileAssetId: asset.Id,

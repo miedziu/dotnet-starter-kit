@@ -16,7 +16,7 @@ public interface IDomainEvent : INotification
     /// <summary>
     /// Gets the UTC timestamp when the event occurred.
     /// </summary>
-    DateTimeOffset OccurredOnUtc { get; }
+    DateTimeOffset OccurredAt { get; }
 
     /// <summary>
     /// Gets the correlation identifier for tracing across boundaries.

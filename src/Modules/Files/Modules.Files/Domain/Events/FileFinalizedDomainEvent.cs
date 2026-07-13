@@ -9,4 +9,4 @@ public sealed record FileFinalizedDomainEvent(
     Guid? OwnerId,
     FileAssetStatus FinalStatus,
     Guid EventId,
-    DateTimeOffset OccurredOnUtc) : DomainEvent(EventId, OccurredOnUtc);
+    DateTimeOffset OccurredAt) : DomainEvent(EventId, OccurredAt);

@@ -7,4 +7,4 @@ public sealed record MessagePinnedDomainEvent(
     Guid MessageId,
     string PinnedByUserId,
     Guid EventId,
-    DateTimeOffset OccurredOnUtc) : DomainEvent(EventId, OccurredOnUtc);
+    DateTimeOffset OccurredAt) : DomainEvent(EventId, OccurredAt);
