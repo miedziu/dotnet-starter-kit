@@ -1,4 +1,3 @@
-using FSH.Modules.Billing.Contracts;
 using FSH.Modules.Billing.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;

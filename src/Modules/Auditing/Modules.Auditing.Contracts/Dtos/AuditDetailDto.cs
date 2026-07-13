@@ -1,4 +1,3 @@
-using FSH.Modules.Auditing.Contracts;
 using System.Text.Json;
 
 namespace FSH.Modules.Auditing.Contracts.Dtos;

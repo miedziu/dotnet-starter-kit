@@ -1,4 +1,3 @@
-using System.Text.Encodings.Web;
 using FSH.Framework.Core.Context;
 using FSH.Framework.Core.Exceptions;
 using FSH.Modules.Identity.Contracts.DTOs;
@@ -6,6 +5,7 @@ using FSH.Modules.Identity.Contracts.v1.TwoFactor;
 using FSH.Modules.Identity.Domain;
 using Mediator;
 using Microsoft.AspNetCore.Identity;
+using System.Text.Encodings.Web;
 
 namespace FSH.Modules.Identity.Features.v1.TwoFactor.Enroll;
 

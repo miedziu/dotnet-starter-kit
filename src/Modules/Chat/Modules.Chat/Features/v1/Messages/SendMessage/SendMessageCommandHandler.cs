@@ -1,5 +1,3 @@
-using System.Diagnostics;
-using System.Net;
 using FSH.Framework.Core.Context;
 using FSH.Framework.Core.Exceptions;
 using FSH.Framework.Eventing.Abstractions;
@@ -14,6 +12,8 @@ using FSH.Modules.Chat.Services;
 using Mediator;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
+using System.Net;
 
 namespace FSH.Modules.Chat.Features.v1.Messages.SendMessage;
 

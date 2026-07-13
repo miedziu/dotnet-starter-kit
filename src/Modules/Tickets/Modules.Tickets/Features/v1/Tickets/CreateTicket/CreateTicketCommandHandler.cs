@@ -1,5 +1,3 @@
-using System.Globalization;
-using System.Net;
 using FSH.Framework.Core.Context;
 using FSH.Framework.Core.Exceptions;
 using FSH.Framework.Persistence;
@@ -9,6 +7,8 @@ using FSH.Modules.Tickets.Data;
 using FSH.Modules.Tickets.Domain;
 using Mediator;
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
+using System.Net;
 
 namespace FSH.Modules.Tickets.Features.v1.Tickets.CreateTicket;
 

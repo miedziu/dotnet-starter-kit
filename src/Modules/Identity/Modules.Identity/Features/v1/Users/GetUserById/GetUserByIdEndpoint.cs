@@ -1,5 +1,5 @@
-using FSH.Modules.Identity.Contracts.Authorization;
 using FSH.Framework.Shared.Identity.Authorization;
+using FSH.Modules.Identity.Contracts.Authorization;
 using FSH.Modules.Identity.Contracts.DTOs;
 using FSH.Modules.Identity.Contracts.v1.Users.GetUser;
 using Mediator;

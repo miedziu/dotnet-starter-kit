@@ -1,5 +1,4 @@
 using FSH.Framework.Core.Context;
-using FSH.Framework.Core.Exceptions;
 using FSH.Modules.Billing.Contracts.v1.Wallets;
 using FSH.Modules.Billing.Data;
 using FSH.Modules.Billing.Domain;

@@ -1,5 +1,3 @@
-using FSH.Modules.Auditing.Contracts;
-
 namespace FSH.Modules.Auditing.Contracts.Dtos;
 
 public sealed class AuditSummaryAggregateDto

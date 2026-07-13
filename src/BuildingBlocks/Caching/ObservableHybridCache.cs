@@ -1,6 +1,6 @@
-using System.Diagnostics;
 using FSH.Framework.Caching.Telemetry;
 using Microsoft.Extensions.Caching.Hybrid;
+using System.Diagnostics;
 
 namespace FSH.Framework.Caching;
 

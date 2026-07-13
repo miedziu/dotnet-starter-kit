@@ -1,4 +1,5 @@
 using Asp.Versioning;
+using FSH.Framework.Eventing.Abstractions;
 using FSH.Framework.Persistence;
 using FSH.Framework.Shared.Constants;
 using FSH.Framework.Web.HttpResilience;
@@ -10,12 +11,10 @@ using FSH.Modules.Webhooks.Features.v1.DeleteWebhookSubscription;
 using FSH.Modules.Webhooks.Features.v1.GetWebhookDeliveries;
 using FSH.Modules.Webhooks.Features.v1.GetWebhookSubscriptions;
 using FSH.Modules.Webhooks.Features.v1.TestWebhookSubscription;
-using FSH.Framework.Eventing.Abstractions;
 using FSH.Modules.Webhooks.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;

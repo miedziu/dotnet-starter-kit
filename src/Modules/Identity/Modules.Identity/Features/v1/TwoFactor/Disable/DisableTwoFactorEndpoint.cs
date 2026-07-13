@@ -1,6 +1,5 @@
 using FSH.Modules.Identity.Contracts.v1.TwoFactor;
 using Mediator;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;

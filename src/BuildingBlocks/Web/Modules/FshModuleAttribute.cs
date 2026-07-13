@@ -1,5 +1,3 @@
-using System;
-
 namespace FSH.Framework.Web.Modules;
 
 [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = true)]

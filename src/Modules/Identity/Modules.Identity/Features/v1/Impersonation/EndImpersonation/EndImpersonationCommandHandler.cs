@@ -8,7 +8,6 @@ using FSH.Modules.Identity.Contracts.v1.Impersonation.EndImpersonation;
 using Mediator;
 using Microsoft.Extensions.Logging;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 
 namespace FSH.Modules.Identity.Features.v1.Impersonation.EndImpersonation;
 

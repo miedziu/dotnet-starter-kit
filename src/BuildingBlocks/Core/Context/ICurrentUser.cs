@@ -29,7 +29,7 @@ public interface ICurrentUser
     /// </summary>
     /// <returns>The user's email address, or null if not available.</returns>
     string? GetUserEmail();
-    
+
     /// <summary>
     /// Determines whether the current user is authenticated.
     /// </summary>

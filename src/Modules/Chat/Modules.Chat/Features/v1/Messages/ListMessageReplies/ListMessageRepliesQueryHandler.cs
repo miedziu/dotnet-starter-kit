@@ -1,4 +1,3 @@
-using System.Collections.ObjectModel;
 using FSH.Framework.Core.Context;
 using FSH.Framework.Core.Exceptions;
 using FSH.Modules.Chat.Contracts.v1.DTOs;
@@ -7,6 +6,7 @@ using FSH.Modules.Chat.Data;
 using FSH.Modules.Chat.Features.v1.Internal;
 using Mediator;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.ObjectModel;
 
 namespace FSH.Modules.Chat.Features.v1.Messages.ListMessageReplies;
 

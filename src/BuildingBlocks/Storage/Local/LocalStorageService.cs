@@ -4,7 +4,6 @@ using FSH.Framework.Storage.Services;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.StaticFiles;
 using System.Text.RegularExpressions;
-using System.Threading;
 
 namespace FSH.Framework.Storage.Local;
 

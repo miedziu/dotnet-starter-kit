@@ -1,5 +1,5 @@
-using System.Security.Claims;
 using FSH.Modules.Identity.Contracts.DTOs;
+using System.Security.Claims;
 
 namespace FSH.Modules.Identity.Contracts.Services;
 

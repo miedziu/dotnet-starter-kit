@@ -10,17 +10,17 @@ public static class ChatPermissions
 {
     public static class Channels
     {
-        public const string Resource  = "Chat.Channels";
-        public const string View      = $"Permissions.{Resource}.View";
-        public const string Create    = $"Permissions.{Resource}.Create";
+        public const string Resource = "Chat.Channels";
+        public const string View = $"Permissions.{Resource}.View";
+        public const string Create = $"Permissions.{Resource}.Create";
         public const string ManageAll = $"Permissions.{Resource}.ManageAll";
     }
 
     public static class Messages
     {
-        public const string Resource  = "Chat.Messages";
-        public const string Send      = $"Permissions.{Resource}.Send";
-        public const string EditOwn   = $"Permissions.{Resource}.EditOwn";
+        public const string Resource = "Chat.Messages";
+        public const string Send = $"Permissions.{Resource}.Send";
+        public const string EditOwn = $"Permissions.{Resource}.EditOwn";
         public const string DeleteOwn = $"Permissions.{Resource}.DeleteOwn";
         public const string DeleteAny = $"Permissions.{Resource}.DeleteAny";
     }

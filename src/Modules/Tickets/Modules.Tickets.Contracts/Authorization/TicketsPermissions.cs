@@ -7,16 +7,16 @@ public static class TicketsPermissions
     public static class Tickets
     {
         public const string Resource = "Tickets";
-        public const string View     = $"Permissions.{Resource}.View";
-        public const string Create   = $"Permissions.{Resource}.Create";
-        public const string Update   = $"Permissions.{Resource}.Update";
-        public const string Delete   = $"Permissions.{Resource}.Delete";
-        public const string Restore  = $"Permissions.{Resource}.Restore";
-        public const string Assign   = $"Permissions.{Resource}.Assign";
-        public const string Resolve  = $"Permissions.{Resource}.Resolve";
-        public const string Reopen   = $"Permissions.{Resource}.Reopen";
-        public const string Close    = $"Permissions.{Resource}.Close";
-        public const string Comment  = $"Permissions.{Resource}.Comment";
+        public const string View = $"Permissions.{Resource}.View";
+        public const string Create = $"Permissions.{Resource}.Create";
+        public const string Update = $"Permissions.{Resource}.Update";
+        public const string Delete = $"Permissions.{Resource}.Delete";
+        public const string Restore = $"Permissions.{Resource}.Restore";
+        public const string Assign = $"Permissions.{Resource}.Assign";
+        public const string Resolve = $"Permissions.{Resource}.Resolve";
+        public const string Reopen = $"Permissions.{Resource}.Reopen";
+        public const string Close = $"Permissions.{Resource}.Close";
+        public const string Comment = $"Permissions.{Resource}.Comment";
     }
 
     public static IReadOnlyList<FshPermission> All { get; } =

@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Net;
 
 namespace FSH.Framework.Core.Exceptions;

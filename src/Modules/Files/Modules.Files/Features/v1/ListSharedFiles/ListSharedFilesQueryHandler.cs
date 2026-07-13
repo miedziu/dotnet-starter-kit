@@ -1,12 +1,11 @@
-using System.Collections.ObjectModel;
 using FSH.Framework.Storage.Services;
 using FSH.Modules.Files.Contracts.v1.DTOs;
 using FSH.Modules.Files.Contracts.v1.Queries;
 using FSH.Modules.Files.Data;
-using FSH.Modules.Files.Domain;
 using FSH.Modules.Files.Features.v1.Internal;
 using Mediator;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.ObjectModel;
 
 namespace FSH.Modules.Files.Features.v1.ListSharedFiles;
 

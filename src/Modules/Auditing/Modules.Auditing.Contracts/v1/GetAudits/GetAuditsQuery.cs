@@ -1,5 +1,4 @@
 using FSH.Framework.Shared.Persistence;
-using FSH.Modules.Auditing.Contracts;
 using FSH.Modules.Auditing.Contracts.Dtos;
 using Mediator;
 

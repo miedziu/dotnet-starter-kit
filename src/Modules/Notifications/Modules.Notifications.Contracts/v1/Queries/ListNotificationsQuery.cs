@@ -1,6 +1,6 @@
-using System.Collections.ObjectModel;
 using FSH.Modules.Notifications.Contracts.v1.DTOs;
 using Mediator;
+using System.Collections.ObjectModel;
 
 namespace FSH.Modules.Notifications.Contracts.v1.Queries;
 

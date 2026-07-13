@@ -1,6 +1,6 @@
+using FSH.Framework.Jobs.Services;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
-using FSH.Framework.Jobs.Services;
 
 namespace FSH.Starter.DbMigrator;
 

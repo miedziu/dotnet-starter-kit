@@ -11,11 +11,11 @@ public static class FilesPermissions
 {
     public const string Resource = "Files";
 
-    public const string Upload    = $"Permissions.{Resource}.Upload";
+    public const string Upload = $"Permissions.{Resource}.Upload";
     public const string DeleteOwn = $"Permissions.{Resource}.DeleteOwn";
     public const string DeleteAny = $"Permissions.{Resource}.DeleteAny";
     public const string ViewTrash = $"Permissions.{Resource}.ViewTrash";
-    public const string Restore   = $"Permissions.{Resource}.Restore";
+    public const string Restore = $"Permissions.{Resource}.Restore";
 
     public static IReadOnlyList<FshPermission> All { get; } =
     [

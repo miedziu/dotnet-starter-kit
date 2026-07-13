@@ -5,7 +5,6 @@ using FSH.Modules.Files.Contracts;
 using FSH.Modules.Files.Contracts.v1.DTOs;
 using FSH.Modules.Files.Contracts.v1.Queries;
 using FSH.Modules.Files.Data;
-using FSH.Modules.Files.Domain;
 using FSH.Modules.Files.Features.v1.Internal;
 using FSH.Modules.Files.Services;
 using Mediator;

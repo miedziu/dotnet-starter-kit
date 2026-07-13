@@ -12,7 +12,7 @@
         "**/Properties": true,
         "**/.git": true,
         "**/.gitignore": true,
-        "**/.editorconfig": true,
+        //"**/.editorconfig": true,
         "**/.vs": true,
         //"**/*.json": true,
         "**/*.http": true,

@@ -1,5 +1,5 @@
-using System.Text.Json;
 using Microsoft.Extensions.Caching.Distributed;
+using System.Text.Json;
 
 namespace FSH.Framework.Web.Sse;
 

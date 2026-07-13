@@ -1,5 +1,5 @@
-using FSH.Modules.Auditing.Contracts.Authorization;
 using FSH.Framework.Shared.Identity.Authorization;
+using FSH.Modules.Auditing.Contracts.Authorization;
 using FSH.Modules.Auditing.Contracts.Dtos;
 using FSH.Modules.Auditing.Contracts.v1.GetAuditsByTrace;
 using Mediator;

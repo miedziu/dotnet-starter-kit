@@ -11,7 +11,7 @@ public static class NotificationPermissions
     public static class Inbox
     {
         public const string Resource = "Notifications.Inbox";
-        public const string View     = $"Permissions.{Resource}.View";
+        public const string View = $"Permissions.{Resource}.View";
         public const string MarkRead = $"Permissions.{Resource}.MarkRead";
     }
 

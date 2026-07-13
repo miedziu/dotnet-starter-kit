@@ -1,7 +1,7 @@
-using System.Collections.ObjectModel;
 using FSH.Framework.Mailing;
 using FSH.Framework.Mailing.Services;
 using Microsoft.Extensions.Logging;
+using System.Collections.ObjectModel;
 
 namespace FSH.Modules.Notifications.IntegrationEventHandlers;
 

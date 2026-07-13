@@ -37,7 +37,7 @@ public interface IIdentityService
     /// </summary>
     Task<(string Subject, IEnumerable<Claim> Claims)?>
         BuildClaimsForUserAsync(string userId, CancellationToken ct = default);
-        
+
     /// <summary>
     /// Finds a user by their email address. Used for OAuth login to link external providers.
     /// Returns basic user info without exposing domain entities to the Contracts layer.

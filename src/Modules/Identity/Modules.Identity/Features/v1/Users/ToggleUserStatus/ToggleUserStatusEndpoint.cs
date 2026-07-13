@@ -1,5 +1,5 @@
-using FSH.Modules.Identity.Contracts.Authorization;
 using FSH.Framework.Shared.Identity.Authorization;
+using FSH.Modules.Identity.Contracts.Authorization;
 using FSH.Modules.Identity.Contracts.v1.Users.ToggleUserStatus;
 using Mediator;
 using Microsoft.AspNetCore.Builder;

@@ -7,10 +7,10 @@ public static class WebhooksPermissions
     public static class Subscriptions
     {
         public const string Resource = "Webhooks";
-        public const string View   = $"Permissions.{Resource}.View";
+        public const string View = $"Permissions.{Resource}.View";
         public const string Create = $"Permissions.{Resource}.Create";
         public const string Delete = $"Permissions.{Resource}.Delete";
-        public const string Test   = $"Permissions.{Resource}.Test";
+        public const string Test = $"Permissions.{Resource}.Test";
     }
 
     public static IReadOnlyList<FshPermission> All { get; } =

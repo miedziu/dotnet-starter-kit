@@ -1,4 +1,3 @@
-using FSH.Framework.Core.Context;
 using FSH.Framework.Core.Exceptions;
 using FSH.Framework.Shared.Identity.Claims;
 using FSH.Modules.Identity.Contracts.Services;
@@ -26,7 +25,7 @@ internal sealed class CurrentUserService : ICurrentUserService
     {
         if (!IsAuthenticated())
             return _intUserId;
-        
+
         return _user?.GetIntUserId();
     }
 

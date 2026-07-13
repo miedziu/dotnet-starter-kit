@@ -1,4 +1,3 @@
-using FSH.Framework.Core.Exceptions;
 using FSH.Framework.Shared.Persistence;
 using FSH.Modules.Identity.Contracts.Services;
 using FSH.Modules.Tickets.Contracts.Dtos;
@@ -86,10 +85,10 @@ public sealed class SearchTicketsQueryHandler(
         bool desc = !string.Equals(sortDir, "asc", StringComparison.OrdinalIgnoreCase);
         return (sortBy?.ToUpperInvariant()) switch
         {
-            "TITLE"    => desc ? q.OrderByDescending(t => t.Title)    : q.OrderBy(t => t.Title),
+            "TITLE" => desc ? q.OrderByDescending(t => t.Title) : q.OrderBy(t => t.Title),
             "PRIORITY" => desc ? q.OrderByDescending(t => t.Priority) : q.OrderBy(t => t.Priority),
-            "STATUS"   => desc ? q.OrderByDescending(t => t.Status)   : q.OrderBy(t => t.Status),
-            "NUMBER"   => desc ? q.OrderByDescending(t => t.Number)   : q.OrderBy(t => t.Number),
+            "STATUS" => desc ? q.OrderByDescending(t => t.Status) : q.OrderBy(t => t.Status),
+            "NUMBER" => desc ? q.OrderByDescending(t => t.Number) : q.OrderBy(t => t.Number),
             _ => desc ? q.OrderByDescending(t => t.CreatedAtUtc) : q.OrderBy(t => t.CreatedAtUtc),
         };
     }

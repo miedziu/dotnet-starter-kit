@@ -3,7 +3,6 @@ using FSH.Framework.Core.Exceptions;
 using FSH.Framework.Web.Realtime;
 using FSH.Modules.Chat.Contracts.v1.Commands;
 using FSH.Modules.Chat.Data;
-using FSH.Modules.Chat.Domain;
 using FSH.Modules.Chat.Features.v1.Internal;
 using Mediator;
 using Microsoft.AspNetCore.SignalR;

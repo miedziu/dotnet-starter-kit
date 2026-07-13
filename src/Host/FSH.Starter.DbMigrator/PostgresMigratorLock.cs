@@ -1,8 +1,8 @@
-using System.Globalization;
-using System.Net.Sockets;
 using Microsoft.Extensions.Logging;
 using Npgsql;
 using NpgsqlTypes;
+using System.Globalization;
+using System.Net.Sockets;
 
 namespace FSH.Starter.DbMigrator;
 

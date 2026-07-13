@@ -1,4 +1,3 @@
-using FSH.Framework.Core.Exceptions;
 using FSH.Modules.Identity.Contracts.Services;
 using FSH.Modules.Tickets.Contracts.Dtos;
 
