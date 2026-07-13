@@ -20,10 +20,6 @@
     <Project Path="Modules/Billing/Modules.Billing.Contracts/Modules.Billing.Contracts.csproj" />
     <Project Path="Modules/Billing/Modules.Billing/Modules.Billing.csproj" />
   </Folder>
-  <Folder Name="/Modules/Catalog/">
-    <Project Path="Modules/Catalog/Modules.Catalog.Contracts/Modules.Catalog.Contracts.csproj" />
-    <Project Path="Modules/Catalog/Modules.Catalog/Modules.Catalog.csproj" />
-  </Folder>
   <Folder Name="/Modules/Chat/">
     <Project Path="Modules/Chat/Modules.Chat.Contracts/Modules.Chat.Contracts.csproj" />
     <Project Path="Modules/Chat/Modules.Chat/Modules.Chat.csproj" />

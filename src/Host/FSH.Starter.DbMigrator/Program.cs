@@ -110,7 +110,6 @@ builder.Services.AddMediator(o =>
         typeof(FSH.Modules.Webhooks.WebhooksModule),
         typeof(FSH.Modules.Billing.Contracts.BillingContractsMarker),
         typeof(FSH.Modules.Billing.BillingModule),
-        typeof(FSH.Modules.Catalog.Contracts.CatalogContractsMarker),
         typeof(FSH.Modules.Tickets.Contracts.TicketsContractsMarker),
         typeof(FSH.Modules.Tickets.TicketsModule),
         typeof(FSH.Modules.Files.Contracts.v1.Commands.RequestUploadUrlCommand),

@@ -3,7 +3,6 @@ using FSH.Framework.Web.Modules;
 using FSH.Modules.Billing.Contracts;
 using FSH.Modules.Billing.Data;
 using FSH.Modules.Billing.Domain;
-using FSH.Modules.Catalog.Contracts.Authorization;
 using FSH.Modules.Chat.Data;
 using FSH.Modules.Chat.Domain;
 using FSH.Modules.Identity.Contracts.Authorization;
@@ -632,18 +631,6 @@ internal sealed class DemoSeeder
                 IdentityPermissions.Sessions.View,
                 IdentityPermissions.Sessions.Revoke,
                 IdentityPermissions.Groups.View,
-                CatalogPermissions.Brands.View,
-                CatalogPermissions.Brands.Create,
-                CatalogPermissions.Brands.Update,
-                CatalogPermissions.Brands.Delete,
-                CatalogPermissions.Categories.View,
-                CatalogPermissions.Categories.Create,
-                CatalogPermissions.Categories.Update,
-                CatalogPermissions.Categories.Delete,
-                CatalogPermissions.Products.View,
-                CatalogPermissions.Products.Create,
-                CatalogPermissions.Products.Update,
-                CatalogPermissions.Products.Delete,
                 TicketsPermissions.Tickets.View,
                 TicketsPermissions.Tickets.Create,
                 TicketsPermissions.Tickets.Update,
