@@ -5,9 +5,7 @@ description: Implement read queries — paginated lists, search/filter/sort, and
 
 # Query Patterns
 
-The dominant pattern is **raw `IQueryable` on the module DbContext** (`AsNoTracking`) with manual
-pagination. There is **no generic repository** and **no `PaginatedListAsync`/`EntitiesByPaginationFilterSpec`/
-`PaginationFilter`**. Paged results are `PagedResponse<T>` (`FSH.Framework.Shared.Persistence`) — there is no `PagedList<T>`.
+Raw `IQueryable` on DbContext (`AsNoTracking`) with manual pagination. **No generic repository** or `PaginatedListAsync`. Paged results: `PagedResponse<T>`.
 
 ## Paginated search query
 
@@ -28,7 +26,7 @@ public sealed class Search{Entities}QueryHandler({X}DbContext dbContext)
     : IQueryHandler<Search{Entities}Query, PagedResponse<{Entity}Dto>>
 {
     public async ValueTask<PagedResponse<{Entity}Dto>> Handle(
-        Search{Entities}Query query, CancellationToken cancellationToken)
+        Search{Entities}Query query, CancellationToken ct)
     {
         ArgumentNullException.ThrowIfNull(query);
         int page = query.PageNumber < 1 ? 1 : query.PageNumber;
@@ -42,9 +40,9 @@ public sealed class Search{Entities}QueryHandler({X}DbContext dbContext)
 
         q = ApplySort(q, query.SortBy, query.SortDir);
 
-        long total = await q.LongCountAsync(cancellationToken).ConfigureAwait(false);
+        long total = await q.LongCountAsync(ct).ConfigureAwait(false);
         var items = await q.Skip((page - 1) * size).Take(size)
-            .ToListAsync(cancellationToken).ConfigureAwait(false);
+            .ToListAsync(ct).ConfigureAwait(false);
 
         return new PagedResponse<{Entity}Dto>
         {
@@ -55,19 +53,17 @@ public sealed class Search{Entities}QueryHandler({X}DbContext dbContext)
         };
     }
 
-    private static IQueryable<{Entity}> ApplySort(IQueryable<{Entity}> q, string? by, string? dir)
-    {
-        bool desc = string.Equals(dir, "desc", StringComparison.OrdinalIgnoreCase);
-        return by?.ToLowerInvariant() switch
+    private static IQueryable<{Entity}> ApplySort(IQueryable<{Entity}> q, string? by, string? dir) =>
+        by?.ToLowerInvariant() switch
         {
-            "name" => desc ? q.OrderByDescending(x => x.Name) : q.OrderBy(x => x.Name),
-            _      => q.OrderByDescending(x => x.CreatedOnUtc)
+            "name" => string.Equals(dir, "desc", StringComparison.OrdinalIgnoreCase) 
+                ? q.OrderByDescending(x => x.Name) : q.OrderBy(x => x.Name),
+            _ => q.OrderByDescending(x => x.CreatedOnUtc)
         };
-    }
 }
 ```
 
-Soft-delete filters apply automatically — don't re-filter them. Project to a DTO (`.ToDto()` mapper); never return entities.
+Soft-delete filters apply automatically. Project to DTO; never return entities.
 
 ## Single-entity query
 
@@ -77,11 +73,11 @@ public sealed record Get{Entity}Query(Guid Id) : IQuery<{Entity}Dto>;
 public sealed class Get{Entity}QueryHandler({X}DbContext dbContext)
     : IQueryHandler<Get{Entity}Query, {Entity}Dto>
 {
-    public async ValueTask<{Entity}Dto> Handle(Get{Entity}Query query, CancellationToken cancellationToken)
+    public async ValueTask<{Entity}Dto> Handle(Get{Entity}Query query, CancellationToken ct)
     {
         ArgumentNullException.ThrowIfNull(query);
         var entity = await dbContext.{Entities}.AsNoTracking()
-            .FirstOrDefaultAsync(x => x.Id == query.Id, cancellationToken).ConfigureAwait(false)
+            .FirstOrDefaultAsync(x => x.Id == query.Id, ct).ConfigureAwait(false)
             ?? throw new NotFoundException($"{Entity} {query.Id} not found");
         return entity.ToDto();
     }
@@ -91,22 +87,19 @@ public sealed class Get{Entity}QueryHandler({X}DbContext dbContext)
 ## Endpoints
 
 ```csharp
-// list — bind the query with [AsParameters]
+// list
 endpoints.MapGet("/{entities}", async ([AsParameters] Search{Entities}Query query,
         IMediator mediator, CancellationToken ct) => Results.Ok(await mediator.Send(query, ct)))
     .WithName("Search{Entities}").RequirePermission({X}Permissions.{Entities}.View);
 
 // single
-endpoints.MapGet("/{entities}/{id:guid}", async (Guid id,
-        IMediator mediator, CancellationToken ct) => Results.Ok(await mediator.Send(new Get{Entity}Query(id), ct)))
+endpoints.MapGet("/{entities}/{id:guid}", async (Guid id, IMediator mediator, CancellationToken ct) =>
+    Results.Ok(await mediator.Send(new Get{Entity}Query(id), ct)))
     .WithName("Get{Entity}").RequirePermission({X}Permissions.{Entities}.View);
 ```
 
-A paginated query **needs a validator** (`Search{Entities}QueryValidator`: `PageNumber >= 1`, `PageSize` in `[1,100]`).
+**Paginated query needs validator** (`PageNumber >= 1`, `PageSize` in `[1,100]`).
 
-## When to use a Specification instead
+## When to use Specification
 
-`Specification<T>` (`src/BuildingBlocks/Persistence/Specifications/`) is for **composing reusable query
-shapes** (`protected Where(...)`/`Include(...)`/`OrderBy(...)` in a derived spec's ctor; `AsNoTracking`
-defaults true; specs never paginate). Reach for it when the same filter/include set is shared across
-handlers; otherwise inline LINQ is the norm here.
+`Specification<T>` for reusable query shapes shared across handlers. Otherwise inline LINQ.

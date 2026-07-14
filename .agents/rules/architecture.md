@@ -1,97 +1,72 @@
-# Architecture rules
+# Architecture
 
-Modular Monolith + Vertical Slice Architecture (VSA). Read this before adding/moving modules or touching wiring.
+**Layers:** Host → Modules.{Name} → Modules.{Name}.Contracts → BuildingBlocks
 
-## Layers & dependency direction
+**Module = runtime + Contracts**
+- Runtime: handlers, services, domain, data
+- Contracts: commands, queries, events, DTOs, interfaces
 
-```
-Host (composition root)  →  Modules.{Name} (runtime)  →  Modules.{Name}.Contracts (public API)
-                         →  BuildingBlocks (shared framework)
-```
+Cross-module comms: Contracts service interfaces or integration events only.
 
-- **BuildingBlocks** (`src/BuildingBlocks/`) — Core, Persistence, Web, Caching, Eventing, Storage, Jobs, Mailing, Shared. Consumed by all modules. **Do not modify without explicit approval.**
-- **Modules** (`src/Modules/{Name}/`) — bounded contexts. Each = a runtime project (internal) + a `.Contracts` project (public API: commands, queries, events, DTOs, service interfaces).
-- A module **MUST NOT** reference another module's runtime project — only its `.Contracts`.
-
-## Module = runtime + Contracts
+## Feature layout (VSA)
 
 ```
-Modules.Identity/            ← runtime (internal): handlers, services, domain, data
-Modules.Identity.Contracts/  ← public: ICommand/IQuery types, DTOs, events, service interfaces
+Features/v1/{Area}/{Feature}/
+├── {Feature}Endpoint.cs
+├── {Feature}CommandHandler.cs
+└── {Feature}CommandValidator.cs
 ```
-
-Cross-module communication: through Contracts service interfaces or integration events only.
-
-## Feature folder layout (VSA)
-
-Each feature is a vertical slice in `Features/v{version}/{Area}/{Feature}/`:
-
-```
-Features/v1/Users/RegisterUser/
-├── RegisterUserEndpoint.cs          # minimal API endpoint
-├── RegisterUserCommandHandler.cs    # CQRS handler (public sealed)
-└── RegisterUserCommandValidator.cs  # FluentValidation
-```
-
-Module support folders: `Domain/`, `Data/`, `Services/`, `Events/`, `Authorization/`.
 
 ## IModule registration
 
-Each module implements `IModule`, declared via an **assembly-level** `[FshModule]` attribute (positional `(Type moduleType, int order = 0)`) — **not** a class-level `[FshModule(Order = n)]`:
+**Assembly-level:** `[assembly: FshModule(typeof(XModule), order)]` (not class-level)
 
 ```csharp
-[assembly: FshModule(typeof(FSH.Modules.Identity.IdentityModule), 1)]   // above the namespace
+[assembly: FshModule(typeof(FSH.Modules.Identity.IdentityModule), 1)]
 
 namespace FSH.Modules.Identity;
 
 public sealed class IdentityModule : IModule
 {
-    public void ConfigureServices(IHostApplicationBuilder builder) { ... }
-    public void ConfigureMiddleware(IApplicationBuilder app) { ... }   // optional, runs AFTER UseAuthentication
-    public void MapEndpoints(IEndpointRouteBuilder endpoints) { ... }
+    public void ConfigureServices(IHostApplicationBuilder builder) { }
+    public void ConfigureMiddleware(IApplicationBuilder app) { }
+    public void MapEndpoints(IEndpointRouteBuilder endpoints) { }
 }
 ```
 
-`ModuleLoader.AddModules` (`src/BuildingBlocks/Web/Modules/ModuleLoader.cs`) discovers `[FshModule]` attributes, orders by `Order` then name, instantiates each, and calls `ConfigureServices`. Endpoints map under `api/v{version:apiVersion}/{module}`.
+## ⚠️ Four-place registration (the footgun)
 
-## ⚠️ The four-place registration footgun
-
-Adding a module requires editing **four** lists. Miss one and it fails *silently*:
-
-| Place | File | Symptom if missed |
+| Place | File | Symptom |
 |---|---|---|
-| Mediator `o.Assemblies` (two markers: Contracts type **and** module type) | `src/Host/FSH.Starter.Api/Program.cs` | Handlers silently undiscovered |
-| `moduleAssemblies` array | `src/Host/FSH.Starter.Api/Program.cs` | Module never loaded |
-| Mediator assemblies (same pair) | `src/Host/FSH.Starter.DbMigrator/Program.cs` | Migrate/seed misses the module |
-| module assemblies array | `src/Host/FSH.Starter.DbMigrator/Program.cs` | Migrate/seed misses the module |
+| Mediator `o.Assemblies` (2 markers) | Program.cs | Handlers undiscovered |
+| `moduleAssemblies` array | Program.cs | Module not loaded |
+| Mediator assemblies | DbMigrator/Program.cs | Migrate/seed misses module |
+| module assemblies array | DbMigrator/Program.cs | Migrate/seed misses module |
 
-After wiring, the fastest sanity check is: build, hit the endpoint, confirm the handler runs.
+## DI & handlers
 
-## DI & handler conventions
+- `public sealed`, `ICommandHandler/IQueryHandler`, return `ValueTask<T>`, `.ConfigureAwait(false)`
+- Validators: `{Command}Validator`, auto-registered
+- Constructor injection; thread-safe singletons
 
-- Mediator handlers: `public sealed`, implement `ICommandHandler<T,TResponse>` / `IQueryHandler<T,TResponse>`, return `ValueTask<T>`, `.ConfigureAwait(false)` on every await. `ServiceLifetime.Scoped`.
-- Validators auto-register via `ModuleLoader` (`AddValidatorsFromAssemblies`). Name them `{Command}Validator`.
-- Prefer constructor injection / primary constructors. Watch DI lifetimes: stateful singletons must be thread-safe (use `ConcurrentDictionary` / immutable snapshots).
-
-## Middleware ordering (critical)
-
-In `src/BuildingBlocks/Web/Extensions.cs` (`UseHeroPlatform`):
+## Middleware order
 
 1. ExceptionHandler → ResponseCompression
-2. **CORS before HTTPS redirect** (so OPTIONS preflight isn't 307-redirected)
-3. HttpsRedirection → SecurityHeaders → static files → Routing
-4. **`UseAuthentication`**
-5. **`UseModuleMiddlewares`** — each module's `ConfigureMiddleware`, runs **after** auth
+2. **CORS before HTTPS redirect** (OPTIONS not 307-redirected)
+3. HttpsRedirection → SecurityHeaders → Routing
+4. `UseAuthentication`
+5. `UseModuleMiddlewares` (after auth)
 6. RateLimiting → `UseAuthorization` → `MapModules`
 
-## Static/global state
+## Global state
 
-No global mutable static collections enumerated under concurrency. `Audit` (Auditing module) swaps an immutable `IAuditEnricher[]` atomically; `ModuleLoader` guards with a lock. Follow that pattern if you must hold process-global state.
+No mutable static collections under concurrency. Use atomic swaps (`IAuditEnricher[]`) or locks.
 
-## Configuration & options
+## Configuration
 
-- `appsettings.json` (+ `.Development`/`.Production`) live in `src/Host/FSH.Starter.Api/`. DbMigrator links the same files.
-- Bind config with the Options pattern: `AddOptions<T>().BindConfiguration(nameof(T))`, section name == type name (e.g. `JwtOptions`, `DatabaseOptions`, `CachingOptions`, `CorsOptions`, `RateLimitingOptions`; **storage section is `Storage`**, not `StorageOptions`). Add `.ValidateDataAnnotations().ValidateOnStart()` for fail-fast.
-- Validate critical options via `IValidatableObject` — `JwtOptions` requires `SigningKey` ≥32 chars and **rejects placeholder strings containing `"replace-with"`**; `DatabaseOptions` rejects empty connection strings.
-- **Production fail-fast** (`Program.cs`, before service registration): missing `DatabaseOptions:ConnectionString`, `CachingOptions:Redis`, or `JwtOptions:SigningKey` throws. Dev secrets via `dotnet user-secrets` (AppHost has a `UserSecretsId`); MinIO creds are Aspire secret parameters.
-- Platform composition is one call each: `builder.AddHeroPlatform(o => { o.Enable... })` (DI) and `app.UseHeroPlatform(...)` (middleware). Feature flags toggle Caching/Jobs/Mailing/Sse/Realtime/OpenTelemetry/CORS/Idempotency.
+- `appsettings.json` in `FSH.Starter.Api/`
+- Bind: `AddOptions<T>().BindConfiguration(nameof(T))`
+- Section name = type name (e.g., `JwtOptions`, `Storage` not `StorageOptions`)
+- Validate with `.ValidateDataAnnotations().ValidateOnStart()`
+- Production fail-fast: missing `DatabaseOptions:ConnectionString`, `CachingOptions:Redis`, or `JwtOptions:SigningKey` throws
+- Composition: `builder.AddHeroPlatform(o => { o.Enable... })` / `app.UseHeroPlatform(...)`

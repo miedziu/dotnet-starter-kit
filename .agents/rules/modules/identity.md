@@ -4,7 +4,7 @@ Auth (JWT + ASP.NET Identity), users, roles, permissions, sessions, impersonatio
 
 ## Service shape
 
-`IUserService` is a **facade** that delegates to focused single-responsibility services — change behavior in the specific service, not the facade:
+`IUserService` is a **facade** delegating to focused services — change behavior in specific service, not facade:
 
 | Interface | Concern |
 |---|---|
@@ -15,19 +15,19 @@ Auth (JWT + ASP.NET Identity), users, roles, permissions, sessions, impersonatio
 | `IUserPasswordService` | forgot/reset/change password, history + expiry |
 | `IUserPermissionService` | effective permissions, cache invalidation |
 
-`ChangePassword`/`Update`/`Delete` etc. flow facade → service → EF/UserManager. `CancellationToken` is `= default` on these interfaces and propagated into EF sinks (note: `UserManager`/`RoleManager` have no CT overloads, so private helpers that only call them don't take one).
+`ChangePassword`/`Update`/`Delete` flow: facade → service → EF/UserManager. `CancellationToken` = `default` on interfaces; propagated to EF sinks (note: `UserManager`/`RoleManager` have no CT overloads).
 
 ## Permission gating footgun
 
-`RequiredPermissionAttribute` implements `FSH.Framework.Shared.Identity.Authorization.IRequiredPermissionMetadata`. **Never let a second/duplicate `IRequiredPermissionMetadata` appear** — it silently disables **all** `.RequirePermission()` gates across the app. Permission constants live in `Shared/Identity/*Permissions.cs`.
+`RequiredPermissionAttribute` implements `IRequiredPermissionMetadata`. **Never let a second/duplicate appear** — it silently disables **all** `.RequirePermission()` gates. Permission constants in `Shared/Identity/*Permissions.cs`.
 
 ## Hosted services (background)
 
-- `RolePermissionSyncHostedService` — best-effort sync of the permission catalog; loops, catches `Exception` *with* an `OperationCanceledException` filter, logs and continues.
-- `SessionCleanupHostedService` — hourly expired-session purge; OCE handled by a preceding catch.
+- `RolePermissionSyncHostedService` — best-effort permission catalog sync; loops with `OperationCanceledException` filter, logs and continues.
+- `SessionCleanupHostedService` — hourly expired-session purge; OCE handled by preceding catch.
 
-These are the model for background loops: stay alive, log with context, never swallow cancellation. See `api-conventions.md`.
+Model for background loops: stay alive, log with context, never swallow cancellation.
 
 ## Tokens / sessions
 
-Login `POST /api/v1/identity/token/issue` (header `X-FSH-App` enforces the operator app boundary). Refresh `POST /api/v1/identity/token/refresh` cross-checks subject. Session rows are written best-effort during login — failures log a warning and login still succeeds. Admin can't demote/deactivate the last admin or the seed admin (guards in `UserRoleService`/`UserStatusService`).
+Login `POST /api/v1/identity/token/issue` (header `X-FSH-App` enforces operator app boundary). Refresh `POST /api/v1/identity/token/refresh` cross-checks subject. Session rows written best-effort during login — failures log warning, login succeeds. Admin can't demote/deactivate last admin or seed admin (guards in `UserRoleService`/`UserStatusService`).

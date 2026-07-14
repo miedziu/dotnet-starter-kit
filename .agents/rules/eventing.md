@@ -1,39 +1,37 @@
 # Eventing — domain events, integration events, Outbox/Inbox
 
-Read before publishing/handling cross-module events. `src/BuildingBlocks/Eventing/`.
+`src/BuildingBlocks/Eventing/`. Use outbox for publishing.
 
 ## Two tiers
 
-- **Domain events** (in-process, pre-commit) — inherit `DomainEvent` (record: `EventId`, `OccurredOnUtc`, `CorrelationId`). Raised on aggregates (`IHasDomainEvents`).
-- **Integration events** (cross-module, async) — implement `IIntegrationEvent` (`Id`, `OccurredOnUtc`, `CorrelationId`, `Source`). Handlers implement `IIntegrationEventHandler<T>` (single `HandleAsync(T, ct)`), are `sealed`, live in `Events/` or `IntegrationEventHandlers/`.
+- **Domain events** (in-process, pre-commit): inherit `DomainEvent` (`EventId`, `OccurredOnUtc`, `CorrelationId`). Raised on aggregates (`IHasDomainEvents`).
+- **Integration events** (cross-module, async): implement `IIntegrationEvent` (`Id`, `OccurredOnUtc`, `CorrelationId`, `Source`). Handlers: `IIntegrationEventHandler<T>`, `sealed`, in `Events/` or `IntegrationEventHandlers/`.
 
 ## The Outbox is the only way to publish
-
-**Do not call `IEventBus` directly from a handler.** Publish via the outbox so it commits in the same transaction and survives crashes:
 
 ```csharp
 await _outboxStore.AddAsync(integrationEvent, ct).ConfigureAwait(false);
 ```
 
-`EfCoreOutboxStore.AddAsync` serializes + `SaveChanges` immediately. `OutboxDispatcherHostedService` polls every `OutboxDispatchIntervalSeconds` (default 10), `OutboxDispatcher` pulls a batch (`OutboxBatchSize`, default 100), publishes via `IEventBus`, and dead-letters after `OutboxMaxRetries` (default 5) → `IsDead`. `OutboxMessage`/`InboxMessage`.
+`EfCoreOutboxStore.AddAsync` serializes + `SaveChanges` immediately. `OutboxDispatcherHostedService` polls every `OutboxDispatchIntervalSeconds` (default 10), `OutboxDispatcher` pulls batch (`OutboxBatchSize`, default 100), publishes via `IEventBus`, dead-letters after `OutboxMaxRetries` (default 5) → `IsDead`.
 
-## Idempotency is free (in-memory bus)
+## Idempotency (in-memory bus)
 
-`InMemoryEventBus` resolves handlers in a fresh DI scope and applies the **Inbox**: skips if `IInboxStore.HasProcessedAsync(eventId, handlerName)`, marks processed after success. Composite key `{Id, HandlerName}`; concurrent-insert race is swallowed. Don't hand-roll dedup.
+`InMemoryEventBus` applies **Inbox**: skips if `IInboxStore.HasProcessedAsync(eventId, handlerName)`, marks processed after success. Composite key `{Id, HandlerName}`. Don't hand-roll dedup.
 
-## Wiring (3 calls in the module's `ConfigureServices`)
+## Wiring (3 calls in `ConfigureServices`)
 
 ```csharp
-services.AddEventingCore(builder.Configuration);                        // serializer + bus + hosted dispatcher
-services.AddEventingForDbContext<MyDbContext>();                        // outbox/inbox stores (scoped)
-services.AddIntegrationEventHandlers(typeof(MyModule).Assembly);        // scans IIntegrationEventHandler<>
+services.AddEventingCore(builder.Configuration);
+services.AddEventingForDbContext<MyDbContext>();
+services.AddIntegrationEventHandlers(typeof(MyModule).Assembly);
 ```
 
-Bus = `EventingOptions.Provider`: `"RabbitMQ"` → `RabbitMqEventBus` (durable topic exchange); else `InMemoryEventBus` (default).
+Bus: `EventingOptions.Provider` = `"RabbitMQ"` → `RabbitMqEventBus`; else `InMemoryEventBus`.
 
 ## Gotchas
 
-- **Renaming/moving an integration event type breaks deserialization** — the outbox stores the assembly-qualified type name; `Type.GetType()` returns null → the message dead-letters. Keep event type names/namespaces stable, or migrate dead rows.
-- **Background handlers carry no HTTP context.** An open-generic or background handler that reads a DbContext (see `WebhookFanoutHandler`, `modules/webhooks.md`).
-- In-memory bus runs handlers **synchronously in the publisher's scope** — keep handler work minimal; exceptions surface to the originating request (relevant for Notifications consuming Chat events).
-- Set `UseHostedServiceDispatcher=false` to drive the outbox via Hangfire instead of the hosted service.
+- **Renaming integration event breaks deserialization** — outbox stores assembly-qualified type name. Keep event type names stable.
+- **Background handlers carry no HTTP context.** See `WebhookFanoutHandler`.
+- In-memory bus runs handlers **synchronously** in publisher's scope — keep work minimal; exceptions surface to request.
+- Set `UseHostedServiceDispatcher=false` to drive outbox via Hangfire.

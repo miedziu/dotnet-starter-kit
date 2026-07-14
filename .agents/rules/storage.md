@@ -1,23 +1,23 @@
 # Storage & file uploads
 
-`src/BuildingBlocks/Storage/`. Read before working with files/blobs.
+`src/BuildingBlocks/Storage/`. Use `IStorageService` for files/blobs.
 
 ## `IStorageService`
 
-`UploadAsync<T>(FileUploadRequest, FileType, ct)`, `RemoveAsync(path, ct)`, `DownloadAsync`, `ExistsAsync`, `GetSizeAsync` (0 if absent), `GenerateUploadUrlAsync`/`GenerateDownloadUrlAsync` (presigned), `HeadObjectAsync`, `BuildPublicUrl(key)→string` (string, not Uri — local storage returns a server-relative path).
+Methods: `UploadAsync<T>`, `RemoveAsync`, `DownloadAsync`, `ExistsAsync`, `GetSizeAsync`, `GenerateUploadUrlAsync`/`GenerateDownloadUrlAsync` (presigned), `HeadObjectAsync`, `BuildPublicUrl(key)` → string (server-relative path for local storage).
 
-`FileType`: `Image` (5MB), `Document`, `Pdf` (10MB) — `FileTypeMetadata.GetRules` enforces extension + size. **Always propagate `CancellationToken`.**
+`FileType`: `Image` (5MB), `Document`, `Pdf` (10MB). `FileTypeMetadata.GetRules` enforces extension + size. **Always propagate `CancellationToken`.**
 
 ## Providers
 
-`AddHeroStorage(config)` reads `Storage:Provider` **eagerly at registration**: `"s3"` → `S3StorageService` (supports MinIO via `ServiceUrl` + `ForcePathStyle`), else `LocalStorageService`.
+`AddHeroStorage(config)` reads `Storage:Provider` eagerly: `"s3"` → `S3StorageService` (supports MinIO via `ServiceUrl` + `ForcePathStyle`); else `LocalStorageService`.
 
-## Presigned upload flow (preferred for user uploads)
+## Presigned upload flow (preferred)
 
-Don't stream large files through the API. The pattern (see Files module):
-1. `RequestUploadUrl` — server validates category/extension/size pre-check, returns a presigned PUT URL, persists a `PendingUpload` record.
-2. Client uploads **directly** to storage.
-3. `FinalizeUpload` — flips to `Available`, **debits the here** (not at request time), publishes `FileFinalizedIntegrationEvent`.
+Don't stream large files through API:
+
+1. `RequestUploadUrl` — validates category/extension/size, returns presigned PUT URL, persists `PendingUpload`
+2. Client uploads **directly** to storage
+3. `FinalizeUpload` — flips to `Available`, debits here (not at request time), publishes `FileFinalizedIntegrationEvent`
 
 Local/dev without MinIO uses `LocalPresignTokenStore` (in-memory one-shot tokens).
-

@@ -2,14 +2,15 @@
 
 Append-only audit trail (entity changes, security events, exceptions, HTTP activity) with async channel-buffered persistence + DLQ. Module `Order = 300`.
 
-**Entities / DbContext:** `AuditRecord`, `AuditDbContext`. `AuditEnvelope` is the in-flight event. Rich Contracts surface: `IAuditClient`, `ISecurityAudit`, `IAuditPublisher`, `IAuditSink`, `IAuditDlqSink`, `IAuditEnricher`, `NoAuditAttribute`, payload records.
-**Areas:** read-only query side — GetAudits / ByCorrelation / ByTrace / Summary / Exception / Security. Full list: `Features/v1/` or `/scalar`.
+**Entities:** `AuditRecord`, `AuditDbContext`. `AuditEnvelope` is in-flight event. Rich Contracts: `IAuditClient`, `ISecurityAudit`, `IAuditPublisher`, `IAuditSink`, `IAuditDlqSink`, `IAuditEnricher`, `NoAuditAttribute`, payload records.
+
+**Areas:** read-only query side — GetAudits / ByCorrelation / ByTrace / Summary / Exception / Security.
 
 ## Gotchas
 
-- **Static `Audit` fluent API** — `Audit.ForSecurity(...).WithUser(...).WriteAsync(ct)` (also `ForEntityChange`/`ForActivity`/`ForException`). Configured once at startup via `Audit.Configure(publisher, serializer, enrichers)`. Enrichers are held in a **volatile immutable array swapped atomically** — never mutate a live enricher list (it'd race the enrich loop).
-- **Two interceptors, don't confuse them:** `AuditingSaveChangesInterceptor` (this module) captures EF entity diffs → EntityChange events and **skips `AuditDbContext`** (no recursive self-audit). `AuditableEntitySaveChangesInterceptor` (BuildingBlocks) stamps audit/soft-delete fields — different file, different job.
-- **Channel-buffered, never blocks the request** — `ChannelAuditPublisher` has two lanes: default (`DropOldest` under pressure) and a **security lane that back-pressures and never drops** (login/permission/impersonation ride here). `AuditBackgroundWorker` drains both (security first), batches, writes via `IAuditSink`; on sink failure it retries then spills to `IAuditDlqSink` (file) so events survive a Postgres outage.
-- `SqlAuditSink` sets context per group in a fresh scope (null → Root) — background writer.
-- **JSON masking** redacts fields by keyword (password/secret/token/apiKey/connectionString…) → `****`. Add sensitive keys there.
-- Exclude an endpoint from activity auditing with `[NoAudit]` / the `NoAudit` endpoint extension.
+- **Static `Audit` fluent API** — `Audit.ForSecurity(...).WithUser(...).WriteAsync(ct)` (also `ForEntityChange`/`ForActivity`/`ForException`). Configured once via `Audit.Configure(publisher, serializer, enrichers)`. Enrichers held in **volatile immutable array swapped atomically** — never mutate live enricher list.
+- **Two interceptors:** `AuditingSaveChangesInterceptor` (this module) captures EF diffs → EntityChange events, skips `AuditDbContext`. `AuditableEntitySaveChangesInterceptor` (BuildingBlocks) stamps audit/soft-delete fields.
+- **Channel-buffered, never blocks request** — `ChannelAuditPublisher` has two lanes: default (`DropOldest` under pressure) and **security lane that back-pressures and never drops**. `AuditBackgroundWorker` drains both (security first), batches, writes via `IAuditSink`; on failure retries then spills to `IAuditDlqSink` (file).
+- `SqlAuditSink` sets context per group in fresh scope (null → Root).
+- **JSON masking** redacts fields by keyword (password/secret/token/apiKey/connectionString…) → `****`.
+- Exclude endpoint from activity auditing with `[NoAudit]` / `NoAudit` endpoint extension.
