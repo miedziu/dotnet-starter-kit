@@ -14,9 +14,9 @@ public static class CreateGroupEndpoint
 {
     public static RouteHandlerBuilder MapCreateGroupEndpoint(this IEndpointRouteBuilder endpoints)
     {
-        return endpoints.MapPost("/groups", async (IMediator mediator, [FromBody] CreateGroupCommand request, CancellationToken cancellationToken) =>
+        return endpoints.MapPost("/groups", async (IMediator mediator, [FromBody] CreateGroupCommand request, CancellationToken ct) =>
         {
-            var result = await mediator.Send(request, cancellationToken);
+            var result = await mediator.Send(request, ct);
             return TypedResults.Created($"/api/v1/groups/{result.Id}", result);
         })
         .WithName("CreateGroup")

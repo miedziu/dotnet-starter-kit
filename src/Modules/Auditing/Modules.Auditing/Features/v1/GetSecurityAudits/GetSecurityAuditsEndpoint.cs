@@ -15,8 +15,8 @@ public static class GetSecurityAuditsEndpoint
     {
         return group.MapGet(
                 "/security",
-                async ([AsParameters] GetSecurityAuditsQuery query, IMediator mediator, CancellationToken cancellationToken) =>
-                    TypedResults.Ok(await mediator.Send(query, cancellationToken)))
+                async ([AsParameters] GetSecurityAuditsQuery query, IMediator mediator, CancellationToken ct) =>
+                    TypedResults.Ok(await mediator.Send(query, ct)))
             .WithName("GetSecurityAudits")
             .WithSummary("Get security-related audit events")
             .WithDescription("Retrieve security audit events such as login, logout, and permission denials.")

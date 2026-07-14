@@ -15,8 +15,8 @@ public static class GetExceptionAuditsEndpoint
     {
         return group.MapGet(
                 "/exceptions",
-                async ([AsParameters] GetExceptionAuditsQuery query, IMediator mediator, CancellationToken cancellationToken) =>
-                    TypedResults.Ok(await mediator.Send(query, cancellationToken)))
+                async ([AsParameters] GetExceptionAuditsQuery query, IMediator mediator, CancellationToken ct) =>
+                    TypedResults.Ok(await mediator.Send(query, ct)))
             .WithName("GetExceptionAudits")
             .WithSummary("Get exception audit events")
             .WithDescription("Retrieve audit events related to exceptions.")

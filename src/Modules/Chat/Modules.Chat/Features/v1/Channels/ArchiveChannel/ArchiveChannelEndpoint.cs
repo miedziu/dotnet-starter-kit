@@ -12,9 +12,9 @@ public static class ArchiveChannelEndpoint
 {
     internal static RouteHandlerBuilder MapArchiveChannelEndpoint(this IEndpointRouteBuilder endpoints)
         => endpoints.MapDelete("/channels/{id:guid}",
-                async (Guid id, IMediator mediator, CancellationToken cancellationToken) =>
+                async (Guid id, IMediator mediator, CancellationToken ct) =>
                 {
-                    await mediator.Send(new ArchiveChannelCommand(id), cancellationToken);
+                    await mediator.Send(new ArchiveChannelCommand(id), ct);
                     return Results.NoContent();
                 })
             .WithName("ArchiveChannel")

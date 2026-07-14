@@ -20,7 +20,7 @@ public sealed class MonthlyInvoiceJob
         _logger = logger;
     }
 
-    public async Task RunAsync(CancellationToken cancellationToken)
+    public async Task RunAsync(CancellationToken ct)
     {
         var previous = _timeProvider.GetUtcNow().UtcDateTime.AddMonths(-1);
         if (_logger.IsEnabled(LogLevel.Information))
@@ -29,7 +29,7 @@ public sealed class MonthlyInvoiceJob
                 previous.Year, previous.Month);
         }
 
-        var count = await _billing.GenerateInvoicesAsync(previous.Year, previous.Month, cancellationToken).ConfigureAwait(false);
+        var count = await _billing.GenerateInvoicesAsync(previous.Year, previous.Month, ct).ConfigureAwait(false);
         if (_logger.IsEnabled(LogLevel.Information))
         {
             _logger.LogInformation("[Billing] MonthlyInvoiceJob generated {Count} draft invoices for {Year}-{Month:00}",

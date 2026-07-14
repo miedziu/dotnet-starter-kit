@@ -54,7 +54,7 @@ public sealed class SessionCleanupHostedService : BackgroundService
         _logger.LogInformation("Session cleanup service stopped");
     }
 
-    private async Task CleanupExpiredSessionsAsync(CancellationToken cancellationToken)
+    private async Task CleanupExpiredSessionsAsync(CancellationToken ct)
     {
         using var scope = _scopeFactory.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<IdentityDbContext>();
@@ -64,7 +64,7 @@ public sealed class SessionCleanupHostedService : BackgroundService
         var deleted = await db.UserSessions
             .IgnoreQueryFilters()
             .Where(s => s.ExpiresAt < cutoffDate)
-            .ExecuteDeleteAsync(cancellationToken);
+            .ExecuteDeleteAsync(ct);
 
         if (deleted > 0 && _logger.IsEnabled(LogLevel.Information))
         {

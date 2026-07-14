@@ -18,32 +18,32 @@ internal sealed class UserRoleService(
     ICurrentUser currentUser,
     IUserPermissionService userPermissionService) : IUserRoleService
 {
-    public async Task<string> AssignRolesAsync(string userId, List<UserRoleDto> userRoles, CancellationToken cancellationToken)
+    public async Task<string> AssignRolesAsync(string userId, List<UserRoleDto> userRoles, CancellationToken ct)
     {
         var user = await userManager.Users
             .Where(u => u.Id == userId)
-            .FirstOrDefaultAsync(cancellationToken)
+            .FirstOrDefaultAsync(ct)
             ?? throw new NotFoundException("user not found");
 
         await ValidateAdminRoleChangeAsync(user, userRoles);
 
         var assignedRoles = await ProcessRoleAssignmentsAsync(user, userRoles);
 
-        await RaiseRolesAssignedEventAsync(user, assignedRoles, cancellationToken);
+        await RaiseRolesAssignedEventAsync(user, assignedRoles, ct);
 
         // Any role mutation (add or remove) invalidates the cached permission set; flush
         // unconditionally rather than gating on assignedRoles, which only tracks additions.
-        await userPermissionService.InvalidatePermissionCacheAsync(userId, cancellationToken).ConfigureAwait(false);
+        await userPermissionService.InvalidatePermissionCacheAsync(userId, ct).ConfigureAwait(false);
 
         return "User Roles Updated Successfully.";
     }
 
-    public async Task<List<UserRoleDto>> GetUserRolesAsync(string userId, CancellationToken cancellationToken)
+    public async Task<List<UserRoleDto>> GetUserRolesAsync(string userId, CancellationToken ct)
     {
         var user = await userManager.FindByIdAsync(userId)
             ?? throw new NotFoundException("user not found");
 
-        var roles = await roleManager.Roles.AsNoTracking().ToListAsync(cancellationToken)
+        var roles = await roleManager.Roles.AsNoTracking().ToListAsync(ct)
             ?? throw new NotFoundException("roles not found");
 
         // Single membership query instead of one IsInRoleAsync round-trip per role.
@@ -135,7 +135,7 @@ internal sealed class UserRoleService(
         return assignedRoles;
     }
 
-    private async Task RaiseRolesAssignedEventAsync(FshUser user, List<string> assignedRoles, CancellationToken cancellationToken)
+    private async Task RaiseRolesAssignedEventAsync(FshUser user, List<string> assignedRoles, CancellationToken ct)
     {
         if (assignedRoles.Count == 0)
         {
@@ -143,6 +143,6 @@ internal sealed class UserRoleService(
         }
 
         user.RecordRolesAssigned(assignedRoles);
-        await db.SaveChangesAsync(cancellationToken);
+        await db.SaveChangesAsync(ct);
     }
 }

@@ -12,9 +12,9 @@ public static class PinMessageEndpoint
 {
     internal static RouteHandlerBuilder MapPinMessageEndpoint(this IEndpointRouteBuilder endpoints)
         => endpoints.MapPost("/messages/{id:guid}/pin",
-                async (Guid id, IMediator mediator, CancellationToken cancellationToken) =>
+                async (Guid id, IMediator mediator, CancellationToken ct) =>
                 {
-                    await mediator.Send(new PinMessageCommand(id), cancellationToken);
+                    await mediator.Send(new PinMessageCommand(id), ct);
                     return Results.NoContent();
                 })
             .WithName("PinMessage")

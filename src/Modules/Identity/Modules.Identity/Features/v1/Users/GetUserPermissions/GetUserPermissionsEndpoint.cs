@@ -15,14 +15,14 @@ public static class GetUserPermissionsEndpoint
     // gated routes); gating behind Users.View would lock out non-user-managing roles. Fallback policy → 401.
     internal static RouteHandlerBuilder MapGetCurrentUserPermissionsEndpoint(this IEndpointRouteBuilder endpoints)
     {
-        return endpoints.MapGet("/permissions", async (ClaimsPrincipal user, IMediator mediator, CancellationToken cancellationToken) =>
+        return endpoints.MapGet("/permissions", async (ClaimsPrincipal user, IMediator mediator, CancellationToken ct) =>
         {
             if (user.GetUserId() is not { } userId || string.IsNullOrEmpty(userId))
             {
                 throw new UnauthorizedException();
             }
 
-            return TypedResults.Ok(await mediator.Send(new GetCurrentUserPermissionsQuery(userId), cancellationToken));
+            return TypedResults.Ok(await mediator.Send(new GetCurrentUserPermissionsQuery(userId), ct));
         })
         .WithName("GetCurrentUserPermissions")
         .WithSummary("Get current user permissions")

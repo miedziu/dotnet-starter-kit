@@ -12,8 +12,8 @@ public static class FindOrCreateDmEndpoint
 {
     internal static RouteHandlerBuilder MapFindOrCreateDmEndpoint(this IEndpointRouteBuilder endpoints)
         => endpoints.MapPost("/dms",
-                async (FindOrCreateDmCommand command, IMediator mediator, CancellationToken cancellationToken) =>
-                    Results.Ok(await mediator.Send(command, cancellationToken)))
+                async (FindOrCreateDmCommand command, IMediator mediator, CancellationToken ct) =>
+                    Results.Ok(await mediator.Send(command, ct)))
             .WithName("FindOrCreateDm")
             .WithSummary("Find existing DM or create a new DM / group DM")
             .RequirePermission(ChatPermissions.Channels.Create);

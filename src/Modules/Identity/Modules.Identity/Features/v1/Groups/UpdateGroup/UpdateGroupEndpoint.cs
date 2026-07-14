@@ -14,8 +14,8 @@ public static class UpdateGroupEndpoint
 {
     public static RouteHandlerBuilder MapUpdateGroupEndpoint(this IEndpointRouteBuilder endpoints)
     {
-        return endpoints.MapPut("/groups/{id:guid}", async (Guid id, IMediator mediator, [FromBody] UpdateGroupRequest request, CancellationToken cancellationToken) =>
-            TypedResults.Ok(await mediator.Send(new UpdateGroupCommand(id, request.Name, request.Description, request.IsDefault, request.RoleIds), cancellationToken)))
+        return endpoints.MapPut("/groups/{id:guid}", async (Guid id, IMediator mediator, [FromBody] UpdateGroupRequest request, CancellationToken ct) =>
+            TypedResults.Ok(await mediator.Send(new UpdateGroupCommand(id, request.Name, request.Description, request.IsDefault, request.RoleIds), ct)))
         .WithName("UpdateGroup")
         .WithSummary("Update a group")
         .RequirePermission(IdentityPermissions.Groups.Update)

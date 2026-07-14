@@ -14,11 +14,11 @@ public static class SelfRegisterUserEndpoint
         return endpoints.MapPost("/self-register", async (RegisterUserCommand command,
             HttpContext context,
             IMediator mediator,
-            CancellationToken cancellationToken) =>
+            CancellationToken ct) =>
         {
             var origin = $"{context.Request.Scheme}://{context.Request.Host.Value}{context.Request.PathBase.Value}";
             command.Origin = origin;
-            var result = await mediator.Send(command, cancellationToken);
+            var result = await mediator.Send(command, ct);
             return TypedResults.Created($"/api/v1/identity/users/{result.UserId}", result);
         })
         .WithName("SelfRegisterUser")

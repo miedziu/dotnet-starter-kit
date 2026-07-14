@@ -34,7 +34,7 @@ public sealed class ChangePasswordValidator : AbstractValidator<ChangePasswordCo
             .WithMessage("Passwords do not match.");
     }
 
-    private async Task<bool> NotBeInPasswordHistoryAsync(string newPassword, CancellationToken cancellationToken)
+    private async Task<bool> NotBeInPasswordHistoryAsync(string newPassword, CancellationToken ct)
     {
         if (!_currentUser.IsAuthenticated())
         {
@@ -44,7 +44,7 @@ public sealed class ChangePasswordValidator : AbstractValidator<ChangePasswordCo
         var userId = _currentUser.GetUserId().ToString();
 
         // Check if password is in history
-        var isInHistory = await _passwordHistoryService.IsPasswordInHistoryAsync(userId, newPassword, cancellationToken);
+        var isInHistory = await _passwordHistoryService.IsPasswordInHistoryAsync(userId, newPassword, ct);
         return !isInHistory; // Return true if NOT in history (validation passes)
     }
 }

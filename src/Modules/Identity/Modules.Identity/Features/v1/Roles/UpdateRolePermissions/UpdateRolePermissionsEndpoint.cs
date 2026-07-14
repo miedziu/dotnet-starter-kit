@@ -30,14 +30,14 @@ public static class UpdateRolePermissionsEndpoint
         string id,
         [FromBody] UpdatePermissionsCommand request,
         IMediator mediator,
-        CancellationToken cancellationToken)
+        CancellationToken ct)
     {
         if (id != request.RoleId)
         {
             return TypedResults.BadRequest();
         }
 
-        var response = await mediator.Send(request, cancellationToken);
+        var response = await mediator.Send(request, ct);
         return TypedResults.Ok(response);
     }
 }

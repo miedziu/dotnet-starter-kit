@@ -23,7 +23,7 @@ internal sealed class PasswordExpiryService : IPasswordExpiryService
         _timeProvider = timeProvider;
     }
 
-    public async Task<bool> IsPasswordExpiredAsync(string userId, CancellationToken cancellationToken = default)
+    public async Task<bool> IsPasswordExpiredAsync(string userId, CancellationToken ct = default)
     {
         var user = await _userManager.FindByIdAsync(userId);
         if (user is null)
@@ -34,7 +34,7 @@ internal sealed class PasswordExpiryService : IPasswordExpiryService
         return IsPasswordExpired(user);
     }
 
-    public async Task<int> GetDaysUntilExpiryAsync(string userId, CancellationToken cancellationToken = default)
+    public async Task<int> GetDaysUntilExpiryAsync(string userId, CancellationToken ct = default)
     {
         var user = await _userManager.FindByIdAsync(userId);
         if (user is null)
@@ -45,7 +45,7 @@ internal sealed class PasswordExpiryService : IPasswordExpiryService
         return GetDaysUntilExpiry(user);
     }
 
-    public async Task<bool> IsPasswordExpiringWithinWarningPeriodAsync(string userId, CancellationToken cancellationToken = default)
+    public async Task<bool> IsPasswordExpiringWithinWarningPeriodAsync(string userId, CancellationToken ct = default)
     {
         var user = await _userManager.FindByIdAsync(userId);
         if (user is null)
@@ -56,7 +56,7 @@ internal sealed class PasswordExpiryService : IPasswordExpiryService
         return IsPasswordExpiringWithinWarningPeriod(user);
     }
 
-    public async Task<PasswordExpiryStatusDto> GetPasswordExpiryStatusAsync(string userId, CancellationToken cancellationToken = default)
+    public async Task<PasswordExpiryStatusDto> GetPasswordExpiryStatusAsync(string userId, CancellationToken ct = default)
     {
         var user = await _userManager.FindByIdAsync(userId);
         if (user is null)
@@ -73,7 +73,7 @@ internal sealed class PasswordExpiryService : IPasswordExpiryService
         return GetPasswordExpiryStatus(user);
     }
 
-    public async Task UpdateLastPasswordChangeDateAsync(string userId, CancellationToken cancellationToken = default)
+    public async Task UpdateLastPasswordChangeDateAsync(string userId, CancellationToken ct = default)
     {
         var user = await _userManager.FindByIdAsync(userId);
         if (user is not null)

@@ -32,8 +32,8 @@ public sealed class RequiredPermissionAuthorizationHandler(IUserService userServ
             return;
         }
 
-        var cancellationToken = httpContext?.RequestAborted ?? CancellationToken.None;
-        if (context.User?.GetUserId() is { } userId && await userService.HasPermissionAsync(userId, requiredPermissions.First(), cancellationToken).ConfigureAwait(false))
+        var ct = httpContext?.RequestAborted ?? CancellationToken.None;
+        if (context.User?.GetUserId() is { } userId && await userService.HasPermissionAsync(userId, requiredPermissions.First(), ct).ConfigureAwait(false))
         {
             context.Succeed(requirement);
         }

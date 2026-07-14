@@ -15,9 +15,9 @@ public static class ForgotPasswordEndpoint
             HttpRequest request,
             [FromBody] ForgotPasswordCommand command,
             IMediator mediator,
-            CancellationToken cancellationToken) =>
+            CancellationToken ct) =>
         {
-            var result = await mediator.Send(command, cancellationToken);
+            var result = await mediator.Send(command, ct);
             return TypedResults.Ok(result);
         })
         .WithName("RequestPasswordReset")

@@ -39,7 +39,7 @@ internal sealed partial class S3StorageService : IStorageService
         }
     }
 
-    public async Task<string> UploadAsync<T>(FileUploadRequest request, FileType fileType, CancellationToken cancellationToken = default) where T : class
+    public async Task<string> UploadAsync<T>(FileUploadRequest request, FileType fileType, CancellationToken ct = default) where T : class
     {
         ArgumentNullException.ThrowIfNull(request);
 
@@ -69,7 +69,7 @@ internal sealed partial class S3StorageService : IStorageService
         };
 
         // Rely on bucket policy for public access; do not set ACLs to avoid conflicts with ACL-disabled buckets.
-        await _s3.PutObjectAsync(putRequest, cancellationToken).ConfigureAwait(false);
+        await _s3.PutObjectAsync(putRequest, ct).ConfigureAwait(false);
         if (_logger.IsEnabled(LogLevel.Information))
         {
             _logger.LogInformation("Uploaded file to S3 bucket {Bucket} with key {Key}", _options.Bucket, key);
@@ -78,7 +78,7 @@ internal sealed partial class S3StorageService : IStorageService
         return BuildPublicUrl(key);
     }
 
-    public async Task RemoveAsync(string path, CancellationToken cancellationToken = default)
+    public async Task RemoveAsync(string path, CancellationToken ct = default)
     {
         if (string.IsNullOrWhiteSpace(path))
         {
@@ -88,7 +88,7 @@ internal sealed partial class S3StorageService : IStorageService
         try
         {
             var key = NormalizeKey(path);
-            await _s3.DeleteObjectAsync(_options.Bucket, key, cancellationToken).ConfigureAwait(false);
+            await _s3.DeleteObjectAsync(_options.Bucket, key, ct).ConfigureAwait(false);
         }
         catch (AmazonS3Exception ex)
         {
@@ -100,7 +100,7 @@ internal sealed partial class S3StorageService : IStorageService
         }
     }
 
-    public async Task<FileDownloadResponse?> DownloadAsync(string path, CancellationToken cancellationToken = default)
+    public async Task<FileDownloadResponse?> DownloadAsync(string path, CancellationToken ct = default)
     {
         if (string.IsNullOrWhiteSpace(path))
         {
@@ -116,7 +116,7 @@ internal sealed partial class S3StorageService : IStorageService
                 Key = key
             };
 
-            var response = await _s3.GetObjectAsync(request, cancellationToken).ConfigureAwait(false);
+            var response = await _s3.GetObjectAsync(request, ct).ConfigureAwait(false);
             var fileName = Path.GetFileName(key);
 
             // Use response ContentType if available, otherwise determine from extension
@@ -155,7 +155,7 @@ internal sealed partial class S3StorageService : IStorageService
         }
     }
 
-    public async Task<bool> ExistsAsync(string path, CancellationToken cancellationToken = default)
+    public async Task<bool> ExistsAsync(string path, CancellationToken ct = default)
     {
         if (string.IsNullOrWhiteSpace(path))
         {
@@ -171,7 +171,7 @@ internal sealed partial class S3StorageService : IStorageService
                 Key = key
             };
 
-            await _s3.GetObjectMetadataAsync(request, cancellationToken).ConfigureAwait(false);
+            await _s3.GetObjectMetadataAsync(request, ct).ConfigureAwait(false);
             return true;
         }
         catch (AmazonS3Exception ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
@@ -196,7 +196,7 @@ internal sealed partial class S3StorageService : IStorageService
         string contentType,
         long maxBytes,
         TimeSpan ttl,
-        CancellationToken cancellationToken = default)
+        CancellationToken ct = default)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(storageKey);
         ArgumentException.ThrowIfNullOrWhiteSpace(contentType);
@@ -234,7 +234,7 @@ internal sealed partial class S3StorageService : IStorageService
         string storageKey,
         TimeSpan ttl,
         string? responseContentDisposition = null,
-        CancellationToken cancellationToken = default)
+        CancellationToken ct = default)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(storageKey);
 
@@ -260,7 +260,7 @@ internal sealed partial class S3StorageService : IStorageService
 
     public async Task<StoredObjectMetadata?> HeadObjectAsync(
         string storageKey,
-        CancellationToken cancellationToken = default)
+        CancellationToken ct = default)
     {
         if (string.IsNullOrWhiteSpace(storageKey))
         {
@@ -274,7 +274,7 @@ internal sealed partial class S3StorageService : IStorageService
             {
                 BucketName = _options.Bucket,
                 Key = key
-            }, cancellationToken).ConfigureAwait(false);
+            }, ct).ConfigureAwait(false);
 
             var contentType = string.IsNullOrWhiteSpace(metadata.Headers.ContentType)
                 ? "application/octet-stream"

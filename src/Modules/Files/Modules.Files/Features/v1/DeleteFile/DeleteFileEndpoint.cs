@@ -12,9 +12,9 @@ public static class DeleteFileEndpoint
 {
     internal static RouteHandlerBuilder MapDeleteFileEndpoint(this IEndpointRouteBuilder endpoints)
         => endpoints.MapDelete("/{id:guid}",
-                async (Guid id, IMediator mediator, CancellationToken cancellationToken) =>
+                async (Guid id, IMediator mediator, CancellationToken ct) =>
                 {
-                    await mediator.Send(new DeleteFileCommand(id), cancellationToken);
+                    await mediator.Send(new DeleteFileCommand(id), ct);
                     return Results.NoContent();
                 })
             .WithName("DeleteFile")

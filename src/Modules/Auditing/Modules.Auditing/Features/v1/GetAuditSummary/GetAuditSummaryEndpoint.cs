@@ -15,8 +15,8 @@ public static class GetAuditSummaryEndpoint
     {
         return group.MapGet(
                 "/summary",
-                async ([AsParameters] GetAuditSummaryQuery query, IMediator mediator, CancellationToken cancellationToken) =>
-                    TypedResults.Ok(await mediator.Send(query, cancellationToken)))
+                async ([AsParameters] GetAuditSummaryQuery query, IMediator mediator, CancellationToken ct) =>
+                    TypedResults.Ok(await mediator.Send(query, ct)))
             .WithName("GetAuditSummary")
             .WithSummary("Get audit summary")
             .WithDescription("Retrieve aggregate counts of audit events by type, severity, source, and tenant.")

@@ -12,8 +12,8 @@ public static class GetUnreadCountEndpoint
 {
     internal static RouteHandlerBuilder MapGetUnreadCountEndpoint(this IEndpointRouteBuilder endpoints)
         => endpoints.MapGet("/unread-count",
-                async (IMediator mediator, CancellationToken cancellationToken) =>
-                    Results.Ok(await mediator.Send(new GetUnreadCountQuery(), cancellationToken)))
+                async (IMediator mediator, CancellationToken ct) =>
+                    Results.Ok(await mediator.Send(new GetUnreadCountQuery(), ct)))
             .WithName("GetUnreadNotificationCount")
             .WithSummary("Count of caller's unread notifications (bell badge)")
             .RequirePermission(NotificationPermissions.Inbox.View);

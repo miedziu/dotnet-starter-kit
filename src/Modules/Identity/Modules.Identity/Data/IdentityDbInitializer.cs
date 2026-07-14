@@ -19,9 +19,9 @@ internal sealed class IdentityDbInitializer(
     IOptions<OriginOptions> originSettings,
     IConfiguration configuration) : IDbInitializer
 {
-    public async Task MigrateAsync(CancellationToken cancellationToken)
+    public async Task MigrateAsync(CancellationToken ct)
     {
-        var pendingMigrations = (await context.Database.GetPendingMigrationsAsync(cancellationToken).ConfigureAwait(false)).ToList();
+        var pendingMigrations = (await context.Database.GetPendingMigrationsAsync(ct).ConfigureAwait(false)).ToList();
         if (pendingMigrations.Count > 0)
         {
             if (logger.IsEnabled(LogLevel.Information))
@@ -30,7 +30,7 @@ internal sealed class IdentityDbInitializer(
                     "Applying {Count} pending migration(s) for Identity module: {Migrations}",
                     pendingMigrations.Count, string.Join(", ", pendingMigrations));
             }
-            await context.Database.MigrateAsync(cancellationToken).ConfigureAwait(false);
+            await context.Database.MigrateAsync(ct).ConfigureAwait(false);
             if (logger.IsEnabled(LogLevel.Information))
             {
                 logger.LogInformation("Applied database migrations for Identity module");
@@ -38,18 +38,18 @@ internal sealed class IdentityDbInitializer(
         }
     }
 
-    public async Task SeedAsync(CancellationToken cancellationToken)
+    public async Task SeedAsync(CancellationToken ct)
     {
-        await SeedRolesAsync(cancellationToken);
-        await SeedSystemGroupsAsync(cancellationToken);
-        await SeedAdminUserAsync(cancellationToken);
+        await SeedRolesAsync(ct);
+        await SeedSystemGroupsAsync(ct);
+        await SeedAdminUserAsync(ct);
     }
 
-    private async Task SeedRolesAsync(CancellationToken cancellationToken = default)
+    private async Task SeedRolesAsync(CancellationToken ct = default)
     {
         foreach (string roleName in RoleConstants.DefaultRoles)
         {
-            if (await roleManager.Roles.SingleOrDefaultAsync(r => r.Name == roleName, cancellationToken)
+            if (await roleManager.Roles.SingleOrDefaultAsync(r => r.Name == roleName, ct)
                 is not FshRole role)
             {
                 // create role - roles are global (shared across tenants)
@@ -60,17 +60,17 @@ internal sealed class IdentityDbInitializer(
             // Assign permissions
             if (roleName == RoleConstants.Basic)
             {
-                await AssignPermissionsToRoleAsync(context, PermissionConstants.Basic, role, cancellationToken);
+                await AssignPermissionsToRoleAsync(context, PermissionConstants.Basic, role, ct);
             }
             else if (roleName == RoleConstants.Admin)
             {
-                await AssignPermissionsToRoleAsync(context, PermissionConstants.Admin, role, cancellationToken);
-                await AssignPermissionsToRoleAsync(context, PermissionConstants.Root, role, cancellationToken);
+                await AssignPermissionsToRoleAsync(context, PermissionConstants.Admin, role, ct);
+                await AssignPermissionsToRoleAsync(context, PermissionConstants.Root, role, ct);
             }
         }
     }
 
-    private async Task AssignPermissionsToRoleAsync(IdentityDbContext dbContext, IReadOnlyList<FshPermission> permissions, FshRole role, CancellationToken cancellationToken = default)
+    private async Task AssignPermissionsToRoleAsync(IdentityDbContext dbContext, IReadOnlyList<FshPermission> permissions, FshRole role, CancellationToken ct = default)
     {
         var currentClaims = await roleManager.GetClaimsAsync(role);
         var newClaims = permissions
@@ -91,24 +91,24 @@ internal sealed class IdentityDbInitializer(
             {
                 logger.LogInformation("Seeding {Role} Permission '{Permission}'.", role.Name, claim.ClaimValue);
             }
-            await dbContext.RoleClaims.AddAsync(claim, cancellationToken);
+            await dbContext.RoleClaims.AddAsync(claim, ct);
         }
 
         // Save changes to the database context
         if (newClaims.Count != 0)
         {
-            await dbContext.SaveChangesAsync(cancellationToken);
+            await dbContext.SaveChangesAsync(ct);
         }
 
     }
 
-    private async Task SeedSystemGroupsAsync(CancellationToken cancellationToken = default)
+    private async Task SeedSystemGroupsAsync(CancellationToken ct = default)
     {
         // Seed "All Users" default group - all new users are automatically added to this group
         const string allUsersGroupName = "All Users";
         var allUsersGroup = await context.Groups
             .AsNoTracking()
-            .FirstOrDefaultAsync(g => g.Name == allUsersGroupName && g.IsSystemGroup, cancellationToken);
+            .FirstOrDefaultAsync(g => g.Name == allUsersGroupName && g.IsSystemGroup, ct);
 
         if (allUsersGroup is null)
         {
@@ -119,7 +119,7 @@ internal sealed class IdentityDbInitializer(
                 isSystemGroup: true,
                 createdBy: "System");
 
-            await context.Groups.AddAsync(allUsersGroup, cancellationToken);
+            await context.Groups.AddAsync(allUsersGroup, ct);
             if (logger.IsEnabled(LogLevel.Information))
             {
                 logger.LogInformation("Seeding '{GroupName}' system group.", allUsersGroupName);
@@ -130,7 +130,7 @@ internal sealed class IdentityDbInitializer(
         const string administratorsGroupName = "Administrators";
         var administratorsGroup = await context.Groups
             .AsNoTracking()
-            .FirstOrDefaultAsync(g => g.Name == administratorsGroupName && g.IsSystemGroup, cancellationToken);
+            .FirstOrDefaultAsync(g => g.Name == administratorsGroupName && g.IsSystemGroup, ct);
 
         if (administratorsGroup is null)
         {
@@ -141,14 +141,14 @@ internal sealed class IdentityDbInitializer(
                 isSystemGroup: true,
                 createdBy: "System");
 
-            await context.Groups.AddAsync(administratorsGroup, cancellationToken);
+            await context.Groups.AddAsync(administratorsGroup, ct);
             if (logger.IsEnabled(LogLevel.Information))
             {
                 logger.LogInformation("Seeding '{GroupName}' system group.", administratorsGroupName);
             }
         }
 
-        await context.SaveChangesAsync(cancellationToken);
+        await context.SaveChangesAsync(ct);
 
         // Assign Admin role to Administrators group
         var adminRole = await roleManager.FindByNameAsync(RoleConstants.Admin);
@@ -156,13 +156,13 @@ internal sealed class IdentityDbInitializer(
         {
             var existingGroupRole = await context.GroupRoles
                 .AsNoTracking()
-                .FirstOrDefaultAsync(gr => gr.GroupId == administratorsGroup.Id && gr.RoleId == adminRole.Id, cancellationToken);
+                .FirstOrDefaultAsync(gr => gr.GroupId == administratorsGroup.Id && gr.RoleId == adminRole.Id, ct);
 
             if (existingGroupRole is null)
             {
                 context.GroupRoles.Add(GroupRole.Create(administratorsGroup.Id, adminRole.Id));
 
-                await context.SaveChangesAsync(cancellationToken);
+                await context.SaveChangesAsync(ct);
                 if (logger.IsEnabled(LogLevel.Information))
                 {
                     logger.LogInformation("Assigned Admin role to '{GroupName}' group.", administratorsGroupName);
@@ -171,7 +171,7 @@ internal sealed class IdentityDbInitializer(
         }
     }
 
-    private async Task SeedAdminUserAsync(CancellationToken cancellationToken = default)
+    private async Task SeedAdminUserAsync(CancellationToken ct = default)
     {
         var adminEmail = configuration["Seed:DefaultAdminEmail"];
         if (string.IsNullOrWhiteSpace(adminEmail))
@@ -179,7 +179,7 @@ internal sealed class IdentityDbInitializer(
             return;
         }
 
-        if (await userManager.Users.FirstOrDefaultAsync(u => u.Email == adminEmail, cancellationToken)
+        if (await userManager.Users.FirstOrDefaultAsync(u => u.Email == adminEmail, ct)
             is not FshUser adminUser)
         {
             string adminUserName = $"{RoleConstants.Admin}".ToUpperInvariant();

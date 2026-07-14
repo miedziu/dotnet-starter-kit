@@ -14,9 +14,9 @@ public static class ResetPasswordEndpoint
         return endpoints.MapPost("/reset-password",
             async ([FromBody] ResetPasswordCommand command,
             IMediator mediator,
-            CancellationToken cancellationToken) =>
+            CancellationToken ct) =>
         {
-            var result = await mediator.Send(command, cancellationToken);
+            var result = await mediator.Send(command, ct);
             return TypedResults.Ok(result);
         })
         .WithName("ResetPassword")

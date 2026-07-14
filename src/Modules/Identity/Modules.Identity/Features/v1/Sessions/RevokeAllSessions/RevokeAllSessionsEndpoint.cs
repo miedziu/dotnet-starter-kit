@@ -12,9 +12,9 @@ public static class RevokeAllSessionsEndpoint
 {
     internal static RouteHandlerBuilder MapRevokeAllSessionsEndpoint(this IEndpointRouteBuilder endpoints)
     {
-        return endpoints.MapPost("/sessions/revoke-all", async (RevokeAllSessionsCommand? command, IMediator mediator, CancellationToken cancellationToken) =>
+        return endpoints.MapPost("/sessions/revoke-all", async (RevokeAllSessionsCommand? command, IMediator mediator, CancellationToken ct) =>
         {
-            var result = await mediator.Send(command ?? new RevokeAllSessionsCommand(), cancellationToken);
+            var result = await mediator.Send(command ?? new RevokeAllSessionsCommand(), ct);
             return TypedResults.Ok(new { RevokedCount = result });
         })
         .WithName("RevokeAllSessions")

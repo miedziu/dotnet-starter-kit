@@ -13,9 +13,9 @@ public static class UpdateChannelEndpoint
 {
     internal static RouteHandlerBuilder MapUpdateChannelEndpoint(this IEndpointRouteBuilder endpoints)
         => endpoints.MapPut("/channels/{id:guid}",
-                async (Guid id, [FromBody] UpdateChannelBody body, IMediator mediator, CancellationToken cancellationToken) =>
+                async (Guid id, [FromBody] UpdateChannelBody body, IMediator mediator, CancellationToken ct) =>
                 {
-                    await mediator.Send(new UpdateChannelCommand(id, body.Name, body.Description, body.IsPrivate), cancellationToken);
+                    await mediator.Send(new UpdateChannelCommand(id, body.Name, body.Description, body.IsPrivate), ct);
                     return Results.NoContent();
                 })
             .WithName("UpdateChannel")

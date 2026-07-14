@@ -10,13 +10,13 @@ namespace FSH.Modules.Chat.Services;
 /// </summary>
 public sealed class UserChannelLookup(ChatDbContext db) : IUserChannelLookup
 {
-    public async ValueTask<IReadOnlyList<Guid>> ListMyChannelIdsAsync(string userId, CancellationToken cancellationToken = default)
+    public async ValueTask<IReadOnlyList<Guid>> ListMyChannelIdsAsync(string userId, CancellationToken ct = default)
     {
         if (string.IsNullOrEmpty(userId)) return [];
         return await db.Channels
             .Where(c => c.Members.Any(m => m.UserId == userId))
             .Select(c => c.Id)
-            .ToListAsync(cancellationToken)
+            .ToListAsync(ct)
             .ConfigureAwait(false);
     }
 }

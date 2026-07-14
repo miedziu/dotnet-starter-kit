@@ -28,14 +28,14 @@ public static class AssignUserRolesEndpoint
         string id,
         AssignUserRolesCommand command,
         IMediator mediator,
-        CancellationToken cancellationToken)
+        CancellationToken ct)
     {
         if (!string.Equals(id, command.UserId, StringComparison.Ordinal))
         {
             return TypedResults.BadRequest();
         }
 
-        var result = await mediator.Send(command, cancellationToken);
+        var result = await mediator.Send(command, ct);
         return TypedResults.Ok(result);
     }
 }

@@ -15,13 +15,13 @@ public static class GetAuditsByCorrelationEndpoint
     {
         return group.MapGet(
                 "/by-correlation/{correlationId}",
-                async (string correlationId, DateTime? fromUtc, DateTime? toUtc, IMediator mediator, CancellationToken cancellationToken) =>
+                async (string correlationId, DateTime? fromUtc, DateTime? toUtc, IMediator mediator, CancellationToken ct) =>
                     TypedResults.Ok(await mediator.Send(new GetAuditsByCorrelationQuery
                     {
                         CorrelationId = correlationId,
                         FromUtc = fromUtc,
                         ToUtc = toUtc
-                    }, cancellationToken)))
+                    }, ct)))
             .WithName("GetAuditsByCorrelation")
             .WithSummary("Get audit events by correlation id")
             .WithDescription("Retrieve audit events associated with a given correlation id.")

@@ -13,8 +13,8 @@ public static class GetAllSessionsEndpoint
 {
     internal static RouteHandlerBuilder MapGetAllSessionsEndpoint(this IEndpointRouteBuilder endpoints)
     {
-        return endpoints.MapGet("/sessions", async (CancellationToken cancellationToken, IMediator mediator) =>
-            TypedResults.Ok(await mediator.Send(new GetAllSessionsQuery(), cancellationToken)))
+        return endpoints.MapGet("/sessions", async (CancellationToken ct, IMediator mediator) =>
+            TypedResults.Ok(await mediator.Send(new GetAllSessionsQuery(), ct)))
         .WithName("GetAllSessions")
         .WithSummary("Get all sessions (Admin)")
         .RequirePermission(IdentityPermissions.Sessions.ViewAll)

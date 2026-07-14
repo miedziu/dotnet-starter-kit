@@ -18,7 +18,7 @@ public sealed class PurgeOrphanedFilesJob(
     ILogger<PurgeOrphanedFilesJob> logger)
 {
     [AutomaticRetry(Attempts = 3, DelaysInSeconds = [30, 120, 600])]
-    public async Task RunAsync(CancellationToken cancellationToken)
+    public async Task RunAsync(CancellationToken ct)
     {
         var now = DateTimeOffset.UtcNow;
         var orphans = await db.FileAssets
@@ -26,7 +26,7 @@ public sealed class PurgeOrphanedFilesJob(
             .Where(f => f.Status == FileAssetStatus.PendingUpload
                         && f.UploadDeadline != null
                         && f.UploadDeadline < now)
-            .ToListAsync(cancellationToken)
+            .ToListAsync(ct)
             .ConfigureAwait(false);
 
         if (orphans.Count == 0)
@@ -38,7 +38,7 @@ public sealed class PurgeOrphanedFilesJob(
         {
             try
             {
-                await storage.RemoveAsync(f.StorageKey, cancellationToken).ConfigureAwait(false);
+                await storage.RemoveAsync(f.StorageKey, ct).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -53,7 +53,7 @@ public sealed class PurgeOrphanedFilesJob(
         await db.FileAssets
             .IgnoreQueryFilters()
             .Where(f => ids.Contains(f.Id))
-            .ExecuteDeleteAsync(cancellationToken)
+            .ExecuteDeleteAsync(ct)
             .ConfigureAwait(false);
 
         if (logger.IsEnabled(LogLevel.Information))

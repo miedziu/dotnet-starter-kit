@@ -49,7 +49,7 @@ public sealed class WebhookDispatchJob
         string eventType,
         string payloadJson,
         PerformContext? context,
-        CancellationToken cancellationToken)
+        CancellationToken ct)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(eventType);
         ArgumentException.ThrowIfNullOrWhiteSpace(payloadJson);
@@ -60,7 +60,7 @@ public sealed class WebhookDispatchJob
         var dbContext = scope.ServiceProvider.GetRequiredService<WebhookDbContext>();
         var subscription = await dbContext.Subscriptions
             .AsNoTracking()
-            .FirstOrDefaultAsync(s => s.Id == subscriptionId, cancellationToken)
+            .FirstOrDefaultAsync(s => s.Id == subscriptionId, ct)
             .ConfigureAwait(false);
 
         if (subscription is null || !subscription.IsActive)
@@ -93,12 +93,12 @@ public sealed class WebhookDispatchJob
             content.Headers.Add("X-Webhook-Event", eventType);
             content.Headers.Add("X-Webhook-Delivery-Id", delivery.Id.ToString());
 
-            var response = await client.PostAsync(new Uri(subscription.Url), content, cancellationToken).ConfigureAwait(false);
+            var response = await client.PostAsync(new Uri(subscription.Url), content, ct).ConfigureAwait(false);
             var statusCode = (int)response.StatusCode;
             delivery.RecordResult(statusCode, response.IsSuccessStatusCode, null);
 
             dbContext.Deliveries.Add(delivery);
-            await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            await dbContext.SaveChangesAsync(ct).ConfigureAwait(false);
 
             if (response.IsSuccessStatusCode)
             {
@@ -136,7 +136,7 @@ public sealed class WebhookDispatchJob
         {
             delivery.RecordResult(0, false, ex.Message);
             dbContext.Deliveries.Add(delivery);
-            await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            await dbContext.SaveChangesAsync(ct).ConfigureAwait(false);
 
             _logger.LogWarning(ex,
                 "Webhook delivery {DeliveryId} attempt {Attempt} to {Url} failed transiently.",

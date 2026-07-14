@@ -22,14 +22,14 @@ internal sealed class UserProfileService(
 {
     private readonly Uri? _originUrl = originOptions.Value.OriginUrl;
 
-    public async Task<UserDto> GetAsync(string userId, CancellationToken cancellationToken)
+    public async Task<UserDto> GetAsync(string userId, CancellationToken ct)
     {
         // Relies on Finbuckle's tenant filter — callers can only ever read
         // their own user record, which is in the request's resolved tenant.
         var user = await userManager.Users
             .AsNoTracking()
             .Where(u => u.Id == userId)
-            .FirstOrDefaultAsync(cancellationToken);
+            .FirstOrDefaultAsync(ct);
 
         _ = user ?? throw new NotFoundException("user not found");
 
@@ -50,12 +50,12 @@ internal sealed class UserProfileService(
         };
     }
 
-    public Task<int> GetCountAsync(CancellationToken cancellationToken) =>
-        userManager.Users.AsNoTracking().CountAsync(cancellationToken);
+    public Task<int> GetCountAsync(CancellationToken ct) =>
+        userManager.Users.AsNoTracking().CountAsync(ct);
 
-    public async Task<List<UserDto>> GetListAsync(CancellationToken cancellationToken)
+    public async Task<List<UserDto>> GetListAsync(CancellationToken ct)
     {
-        var users = await userManager.Users.AsNoTracking().ToListAsync(cancellationToken);
+        var users = await userManager.Users.AsNoTracking().ToListAsync(ct);
         var result = new List<UserDto>(users.Count);
         foreach (var user in users)
         {
@@ -76,7 +76,7 @@ internal sealed class UserProfileService(
         return result;
     }
 
-    public async Task UpdateAsync(string userId, string firstName, string lastName, string phoneNumber, FileUploadRequest image, bool deleteCurrentImage, CancellationToken cancellationToken = default)
+    public async Task UpdateAsync(string userId, string firstName, string lastName, string phoneNumber, FileUploadRequest image, bool deleteCurrentImage, CancellationToken ct = default)
     {
         var user = await userManager.FindByIdAsync(userId);
 
@@ -87,16 +87,16 @@ internal sealed class UserProfileService(
         // dereferencing Data or the common no-image update path NREs.
         if (image?.Data != null)
         {
-            var imageString = await storageService.UploadAsync<FshUser>(image, FileType.Image, cancellationToken);
+            var imageString = await storageService.UploadAsync<FshUser>(image, FileType.Image, ct);
             user.ImageUrl = new Uri(imageString, UriKind.RelativeOrAbsolute);
             if (deleteCurrentImage && imageUri != null)
             {
-                await storageService.RemoveAsync(imageUri.ToString(), cancellationToken);
+                await storageService.RemoveAsync(imageUri.ToString(), ct);
             }
         }
         else if (deleteCurrentImage && imageUri != null)
         {
-            await storageService.RemoveAsync(imageUri.ToString(), cancellationToken);
+            await storageService.RemoveAsync(imageUri.ToString(), ct);
             user.ImageUrl = null;
         }
 
@@ -117,7 +117,7 @@ internal sealed class UserProfileService(
         }
     }
 
-    public async Task SetImageUrlAsync(string userId, string? imageUrl, CancellationToken cancellationToken)
+    public async Task SetImageUrlAsync(string userId, string? imageUrl, CancellationToken ct)
     {
         var user = await userManager.FindByIdAsync(userId)
             ?? throw new NotFoundException("user not found");
@@ -135,27 +135,27 @@ internal sealed class UserProfileService(
         await signInManager.RefreshSignInAsync(user);
     }
 
-    public async Task<bool> ExistsWithEmailAsync(string email, string? exceptId = null, CancellationToken cancellationToken = default)
+    public async Task<bool> ExistsWithEmailAsync(string email, string? exceptId = null, CancellationToken ct = default)
     {
         return await userManager.FindByEmailAsync(email.Normalize()) is FshUser user && user.Id != exceptId;
     }
 
-    public async Task<bool> ExistsWithNameAsync(string name, CancellationToken cancellationToken = default)
+    public async Task<bool> ExistsWithNameAsync(string name, CancellationToken ct = default)
     {
         return await userManager.FindByNameAsync(name) is not null;
     }
 
-    public async Task<bool> ExistsWithPhoneNumberAsync(string phoneNumber, string? exceptId = null, CancellationToken cancellationToken = default)
+    public async Task<bool> ExistsWithPhoneNumberAsync(string phoneNumber, string? exceptId = null, CancellationToken ct = default)
     {
-        return await userManager.Users.FirstOrDefaultAsync(x => x.PhoneNumber == phoneNumber, cancellationToken) is FshUser user && user.Id != exceptId;
+        return await userManager.Users.FirstOrDefaultAsync(x => x.PhoneNumber == phoneNumber, ct) is FshUser user && user.Id != exceptId;
     }
 
-    public async Task<int> GetIntIdAsync(string userId, CancellationToken cancellationToken = default)
+    public async Task<int> GetIntIdAsync(string userId, CancellationToken ct = default)
     {
         var intId = await userManager.Users
             .Where(u => u.Id == userId)
             .Select(u => (int?)u.IntId)
-            .FirstOrDefaultAsync(cancellationToken);
+            .FirstOrDefaultAsync(ct);
 
         if (!intId.HasValue)
         {
@@ -165,13 +165,13 @@ internal sealed class UserProfileService(
         return intId.Value;
     }
 
-    public async Task<Guid> GetGuidAsync(int intId, CancellationToken cancellationToken = default)
+    public async Task<Guid> GetGuidAsync(int intId, CancellationToken ct = default)
     {
         var userId = await userManager.Users
             .AsNoTracking()
             .Where(u => u.IntId == intId)
             .Select(u => u.Id)
-            .FirstOrDefaultAsync(cancellationToken);
+            .FirstOrDefaultAsync(ct);
 
         if (string.IsNullOrEmpty(userId))
         {

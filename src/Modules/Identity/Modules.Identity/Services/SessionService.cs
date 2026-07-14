@@ -38,13 +38,13 @@ public sealed class SessionService : ISessionService
         string ipAddress,
         string userAgent,
         DateTime expiresAt,
-        CancellationToken cancellationToken = default)
+        CancellationToken ct = default)
     {
         // Fetch IntId from the user
         var intId = await _db.Users
             .Where(u => u.Id == userId)
             .Select(u => u.IntId)
-            .FirstOrDefaultAsync(cancellationToken);
+            .FirstOrDefaultAsync(ct);
 
         if (intId == 0)
         {
@@ -66,7 +66,7 @@ public sealed class SessionService : ISessionService
             osVersion: clientInfo.OS.Major);
 
         _db.UserSessions.Add(session);
-        await _db.SaveChangesAsync(cancellationToken);
+        await _db.SaveChangesAsync(ct);
 
         if (_logger.IsEnabled(LogLevel.Information))
         {
@@ -78,7 +78,7 @@ public sealed class SessionService : ISessionService
 
     public async Task<List<UserSessionDto>> GetUserSessionsAsync(
         string userId,
-        CancellationToken cancellationToken = default)
+        CancellationToken ct = default)
     {
         var currentUserId = _currentUser.GetUserId().ToString();
         if (!string.Equals(userId, currentUserId, StringComparison.OrdinalIgnoreCase))
@@ -90,27 +90,27 @@ public sealed class SessionService : ISessionService
         var intId = await _db.Users
             .Where(u => u.Id == userId)
             .Select(u => u.IntId)
-            .FirstOrDefaultAsync(cancellationToken);
+            .FirstOrDefaultAsync(ct);
 
         var now = _timeProvider.GetUtcNow().UtcDateTime;
         var sessions = await _db.UserSessions
             .AsNoTracking()
             .Where(s => s.UserId == intId && !s.IsRevoked && s.ExpiresAt > now)
             .OrderByDescending(s => s.LastActivityAt)
-            .ToListAsync(cancellationToken);
+            .ToListAsync(ct);
 
         return sessions.Select(s => MapToDto(s, isCurrentSession: false)).ToList();
     }
 
     public async Task<List<UserSessionDto>> GetUserSessionsForAdminAsync(
         string userId,
-        CancellationToken cancellationToken = default)
+        CancellationToken ct = default)
     {
         // Fetch IntId from the user
         var intId = await _db.Users
             .Where(u => u.Id == userId)
             .Select(u => u.IntId)
-            .FirstOrDefaultAsync(cancellationToken);
+            .FirstOrDefaultAsync(ct);
 
         var now = _timeProvider.GetUtcNow().UtcDateTime;
         var sessions = await _db.UserSessions
@@ -118,7 +118,7 @@ public sealed class SessionService : ISessionService
             .Include(s => s.User)
             .Where(s => s.UserId == intId && !s.IsRevoked && s.ExpiresAt > now)
             .OrderByDescending(s => s.LastActivityAt)
-            .ToListAsync(cancellationToken);
+            .ToListAsync(ct);
 
         return sessions.Select(s => MapToDto(s, isCurrentSession: false)).ToList();
     }
@@ -128,7 +128,7 @@ public sealed class SessionService : ISessionService
         string? search,
         int skip,
         int take,
-        CancellationToken cancellationToken = default)
+        CancellationToken ct = default)
     {
         // Cap server-side so an over-eager client can't pull the full
         // session table in one round-trip.
@@ -155,25 +155,25 @@ public sealed class SessionService : ISessionService
                 || (s.IpAddress != null && EF.Functions.ILike(s.IpAddress, $"%{term}%")));
         }
 
-        long total = await q.LongCountAsync(cancellationToken);
+        long total = await q.LongCountAsync(ct);
 
         var sessions = await q
             .OrderByDescending(s => s.LastActivityAt)
             .Skip(skip)
             .Take(take)
-            .ToListAsync(cancellationToken);
+            .ToListAsync(ct);
 
         return (sessions.Select(s => MapToDto(s, isCurrentSession: false)).ToList(), total);
     }
 
     public async Task<UserSessionDto?> GetSessionAsync(
         Guid sessionId,
-        CancellationToken cancellationToken = default)
+        CancellationToken ct = default)
     {
         var session = await _db.UserSessions
             .AsNoTracking()
             .Include(s => s.User)
-            .FirstOrDefaultAsync(s => s.Id == sessionId, cancellationToken);
+            .FirstOrDefaultAsync(s => s.Id == sessionId, ct);
 
         return session is null ? null : MapToDto(session, isCurrentSession: false);
     }
@@ -182,11 +182,11 @@ public sealed class SessionService : ISessionService
         Guid sessionId,
         string revokedBy,
         string? reason = null,
-        CancellationToken cancellationToken = default)
+        CancellationToken ct = default)
     {
         var session = await _db.UserSessions
             .Include(s => s.User)
-            .FirstOrDefaultAsync(s => s.Id == sessionId && !s.IsRevoked, cancellationToken);
+            .FirstOrDefaultAsync(s => s.Id == sessionId && !s.IsRevoked, ct);
 
         if (session is null)
         {
@@ -201,7 +201,7 @@ public sealed class SessionService : ISessionService
 
         session.Revoke(revokedBy, reason ?? "User requested");
 
-        await _db.SaveChangesAsync(cancellationToken);
+        await _db.SaveChangesAsync(ct);
 
         if (_logger.IsEnabled(LogLevel.Information))
         {
@@ -216,7 +216,7 @@ public sealed class SessionService : ISessionService
         string revokedBy,
         Guid? exceptSessionId = null,
         string? reason = null,
-        CancellationToken cancellationToken = default)
+        CancellationToken ct = default)
     {
         var currentUserId = _currentUser.GetUserId().ToString();
         if (!string.Equals(userId, currentUserId, StringComparison.OrdinalIgnoreCase))
@@ -228,7 +228,7 @@ public sealed class SessionService : ISessionService
         var intId = await _db.Users
             .Where(u => u.Id == userId)
             .Select(u => u.IntId)
-            .FirstOrDefaultAsync(cancellationToken);
+            .FirstOrDefaultAsync(ct);
 
         var query = _db.UserSessions
             .Where(s => s.UserId == intId && !s.IsRevoked);
@@ -238,14 +238,14 @@ public sealed class SessionService : ISessionService
             query = query.Where(s => s.Id != exceptSessionId.Value);
         }
 
-        var sessions = await query.ToListAsync(cancellationToken);
+        var sessions = await query.ToListAsync(ct);
 
         foreach (var session in sessions)
         {
             session.Revoke(revokedBy, reason ?? "User requested logout from all devices");
         }
 
-        await _db.SaveChangesAsync(cancellationToken);
+        await _db.SaveChangesAsync(ct);
 
         if (_logger.IsEnabled(LogLevel.Information))
         {
@@ -259,24 +259,24 @@ public sealed class SessionService : ISessionService
         string userId,
         string revokedBy,
         string? reason = null,
-        CancellationToken cancellationToken = default)
+        CancellationToken ct = default)
     {
         // Fetch IntId from the user
         var intId = await _db.Users
             .Where(u => u.Id == userId)
             .Select(u => u.IntId)
-            .FirstOrDefaultAsync(cancellationToken);
+            .FirstOrDefaultAsync(ct);
 
         var sessions = await _db.UserSessions
             .Where(s => s.UserId == intId && !s.IsRevoked)
-            .ToListAsync(cancellationToken);
+            .ToListAsync(ct);
 
         foreach (var session in sessions)
         {
             session.Revoke(revokedBy, reason ?? "Admin requested");
         }
 
-        await _db.SaveChangesAsync(cancellationToken);
+        await _db.SaveChangesAsync(ct);
 
         if (_logger.IsEnabled(LogLevel.Information))
         {
@@ -291,10 +291,10 @@ public sealed class SessionService : ISessionService
         Guid sessionId,
         string revokedBy,
         string? reason = null,
-        CancellationToken cancellationToken = default)
+        CancellationToken ct = default)
     {
         var session = await _db.UserSessions
-            .FirstOrDefaultAsync(s => s.Id == sessionId && !s.IsRevoked, cancellationToken);
+            .FirstOrDefaultAsync(s => s.Id == sessionId && !s.IsRevoked, ct);
 
         if (session is null)
         {
@@ -303,7 +303,7 @@ public sealed class SessionService : ISessionService
 
         session.Revoke(revokedBy, reason ?? "Admin requested");
 
-        await _db.SaveChangesAsync(cancellationToken);
+        await _db.SaveChangesAsync(ct);
 
         if (_logger.IsEnabled(LogLevel.Information))
         {
@@ -315,15 +315,15 @@ public sealed class SessionService : ISessionService
 
     public async Task UpdateSessionActivityAsync(
         string refreshTokenHash,
-        CancellationToken cancellationToken = default)
+        CancellationToken ct = default)
     {
         var session = await _db.UserSessions
-            .FirstOrDefaultAsync(s => s.RefreshTokenHash == refreshTokenHash && !s.IsRevoked, cancellationToken);
+            .FirstOrDefaultAsync(s => s.RefreshTokenHash == refreshTokenHash && !s.IsRevoked, ct);
 
         if (session is not null)
         {
             session.UpdateActivity();
-            await _db.SaveChangesAsync(cancellationToken);
+            await _db.SaveChangesAsync(ct);
         }
     }
 
@@ -331,15 +331,15 @@ public sealed class SessionService : ISessionService
         string oldRefreshTokenHash,
         string newRefreshTokenHash,
         DateTime newExpiresAt,
-        CancellationToken cancellationToken = default)
+        CancellationToken ct = default)
     {
         var session = await _db.UserSessions
-            .FirstOrDefaultAsync(s => s.RefreshTokenHash == oldRefreshTokenHash && !s.IsRevoked, cancellationToken);
+            .FirstOrDefaultAsync(s => s.RefreshTokenHash == oldRefreshTokenHash && !s.IsRevoked, ct);
 
         if (session is not null)
         {
             session.UpdateRefreshToken(newRefreshTokenHash, newExpiresAt);
-            await _db.SaveChangesAsync(cancellationToken);
+            await _db.SaveChangesAsync(ct);
 
             if (_logger.IsEnabled(LogLevel.Information))
             {
@@ -350,11 +350,11 @@ public sealed class SessionService : ISessionService
 
     public async Task<bool> ValidateSessionAsync(
         string refreshTokenHash,
-        CancellationToken cancellationToken = default)
+        CancellationToken ct = default)
     {
         var session = await _db.UserSessions
             .AsNoTracking()
-            .FirstOrDefaultAsync(s => s.RefreshTokenHash == refreshTokenHash, cancellationToken);
+            .FirstOrDefaultAsync(s => s.RefreshTokenHash == refreshTokenHash, ct);
 
         if (session is null)
         {
@@ -366,23 +366,23 @@ public sealed class SessionService : ISessionService
 
     public async Task<Guid?> GetSessionIdByRefreshTokenAsync(
         string refreshTokenHash,
-        CancellationToken cancellationToken = default)
+        CancellationToken ct = default)
     {
         var session = await _db.UserSessions
             .AsNoTracking()
-            .FirstOrDefaultAsync(s => s.RefreshTokenHash == refreshTokenHash && !s.IsRevoked, cancellationToken);
+            .FirstOrDefaultAsync(s => s.RefreshTokenHash == refreshTokenHash && !s.IsRevoked, ct);
 
         return session?.Id;
     }
 
     public async Task CleanupExpiredSessionsAsync(
-        CancellationToken cancellationToken = default)
+        CancellationToken ct = default)
     {
         var now = _timeProvider.GetUtcNow().UtcDateTime;
         var cutoffDate = now.AddDays(-30); // Keep revoked sessions for 30 days for audit
         var deleted = await _db.UserSessions
             .Where(s => s.ExpiresAt < now && s.ExpiresAt < cutoffDate)
-            .ExecuteDeleteAsync(cancellationToken);
+            .ExecuteDeleteAsync(ct);
 
         if (deleted > 0 && _logger.IsEnabled(LogLevel.Information))
         {

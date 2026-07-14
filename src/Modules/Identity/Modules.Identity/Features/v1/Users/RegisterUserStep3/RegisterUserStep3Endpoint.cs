@@ -12,9 +12,9 @@ public static class RegisterUserStep3Endpoint
     {
         return endpoints.MapPut("/register/step3", async (RegisterUserStep3Command command,
             IMediator mediator,
-            CancellationToken cancellationToken) =>
+            CancellationToken ct) =>
         {
-            var result = await mediator.Send(command, cancellationToken);
+            var result = await mediator.Send(command, ct);
             return Results.Ok(result);
         })
         .WithName("RegisterUserStep3")

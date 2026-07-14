@@ -10,8 +10,8 @@ public static class GetFileMetadataEndpoint
 {
     internal static RouteHandlerBuilder MapGetFileMetadataEndpoint(this IEndpointRouteBuilder endpoints)
         => endpoints.MapGet("/{id:guid}",
-                async (Guid id, IMediator mediator, CancellationToken cancellationToken) =>
-                    Results.Ok(await mediator.Send(new GetFileMetadataQuery(id), cancellationToken)))
+                async (Guid id, IMediator mediator, CancellationToken ct) =>
+                    Results.Ok(await mediator.Send(new GetFileMetadataQuery(id), ct)))
             .WithName("GetFileMetadata")
             .WithSummary("Get FileAsset metadata (plus a public URL if Visibility=Public)")
             .RequireAuthorization();

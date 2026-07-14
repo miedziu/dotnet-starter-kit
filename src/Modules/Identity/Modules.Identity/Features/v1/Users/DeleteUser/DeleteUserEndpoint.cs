@@ -12,9 +12,9 @@ public static class DeleteUserEndpoint
 {
     internal static RouteHandlerBuilder MapDeleteUserEndpoint(this IEndpointRouteBuilder endpoints)
     {
-        return endpoints.MapDelete("/users/{id:guid}", async (string id, IMediator mediator, CancellationToken cancellationToken) =>
+        return endpoints.MapDelete("/users/{id:guid}", async (string id, IMediator mediator, CancellationToken ct) =>
         {
-            await mediator.Send(new DeleteUserCommand(id), cancellationToken);
+            await mediator.Send(new DeleteUserCommand(id), ct);
             return TypedResults.NoContent();
         })
         .WithName("DeleteUser")

@@ -14,5 +14,5 @@ public interface IWebhookDispatcher
     /// background job can restore the tenant context before touching <see cref="Data.WebhookDbContext"/>
     /// — its Finbuckle query filter and tenant-id auto-write both require it.
     /// </summary>
-    Task EnqueueAsync(Guid subscriptionId, string eventType, string payloadJson, CancellationToken cancellationToken = default);
+    Task EnqueueAsync(Guid subscriptionId, string eventType, string payloadJson, CancellationToken ct = default);
 }

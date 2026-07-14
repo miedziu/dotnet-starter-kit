@@ -10,5 +10,5 @@ namespace FSH.Modules.Files.Services;
 /// </summary>
 public interface IFileScanner
 {
-    ValueTask<ScanStatus> ScanAsync(string storageKey, CancellationToken cancellationToken = default);
+    ValueTask<ScanStatus> ScanAsync(string storageKey, CancellationToken ct = default);
 }

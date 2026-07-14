@@ -17,13 +17,13 @@ public static class PaginationExtensions
     /// <typeparam name="T">The type of items in the query.</typeparam>
     /// <param name="source">The queryable source to paginate.</param>
     /// <param name="pagination">The pagination parameters including page number and page size.</param>
-    /// <param name="cancellationToken">Cancellation token to cancel the operation.</param>
+    /// <param name="ct">Cancellation token to cancel the operation.</param>
     /// <returns>A paged response containing the requested page of data and pagination metadata.</returns>
     /// <exception cref="ArgumentNullException">Thrown when source or pagination is null.</exception>
     public static Task<PagedResponse<T>> ToPagedResponseAsync<T>(
         this IQueryable<T> source,
         IPagedQuery pagination,
-        CancellationToken cancellationToken = default)
+        CancellationToken ct = default)
         where T : class
     {
         ArgumentNullException.ThrowIfNull(source);
@@ -44,17 +44,17 @@ public static class PaginationExtensions
 
         // Decoupled from specifications: the source is expected to already have any required
         // ordering applied via specifications or explicit ordering at call sites.
-        return ToPagedResponseInternalAsync(source, pageNumber, pageSize, cancellationToken);
+        return ToPagedResponseInternalAsync(source, pageNumber, pageSize, ct);
     }
 
     private static async Task<PagedResponse<T>> ToPagedResponseInternalAsync<T>(
         IQueryable<T> source,
         int pageNumber,
         int pageSize,
-        CancellationToken cancellationToken)
+        CancellationToken ct)
         where T : class
     {
-        var totalCount = await source.LongCountAsync(cancellationToken).ConfigureAwait(false);
+        var totalCount = await source.LongCountAsync(ct).ConfigureAwait(false);
 
         var totalPages = totalCount == 0
             ? 0
@@ -70,7 +70,7 @@ public static class PaginationExtensions
         var items = await source
             .Skip(skip)
             .Take(pageSize)
-            .ToListAsync(cancellationToken)
+            .ToListAsync(ct)
             .ConfigureAwait(false);
 
         return new PagedResponse<T>

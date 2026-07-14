@@ -18,7 +18,7 @@ internal static class ChatAttachmentUrls
     public static async Task<List<MessageDto>> ResolveAsync(
         IReadOnlyList<MessageDto> messages,
         IMediator mediator,
-        CancellationToken cancellationToken)
+        CancellationToken ct)
     {
         ArgumentNullException.ThrowIfNull(messages);
         ArgumentNullException.ThrowIfNull(mediator);
@@ -43,7 +43,7 @@ internal static class ChatAttachmentUrls
             try
             {
                 var presigned = await mediator
-                    .Send(new GetFileDownloadUrlQuery(id, Inline: true), cancellationToken)
+                    .Send(new GetFileDownloadUrlQuery(id, Inline: true), ct)
                     .ConfigureAwait(false);
                 resolved[id] = presigned.Url.ToString();
             }

@@ -34,7 +34,7 @@ internal sealed class UserRegistrationService(
         string confirmPassword,
         string origin,
         string[]? referralUsernames = null,
-        CancellationToken cancellationToken = default)
+        CancellationToken ct = default)
     {
         ValidatePasswordMatch(password, confirmPassword);
 
@@ -48,7 +48,7 @@ internal sealed class UserRegistrationService(
         }
 
         // Use explicit transaction to ensure all operations are atomic
-        await using var transaction = await db.Database.BeginTransactionAsync(cancellationToken);
+        await using var transaction = await db.Database.BeginTransactionAsync(ct);
 
         FshUser? user = null;
         try
@@ -57,29 +57,29 @@ internal sealed class UserRegistrationService(
             user = await CreateUserWithPasswordAsync(email, password);
 
             // Assign role and groups within transaction
-            await AssignDefaultRoleAndGroupsAsync(user, "System", cancellationToken);
+            await AssignDefaultRoleAndGroupsAsync(user, "System", ct);
 
             // Process referral usernames
             if (referralUsernames?.Length > 0)
             {
-                await ProcessReferralsAsync(user.Id, referralUsernames, cancellationToken);
+                await ProcessReferralsAsync(user.Id, referralUsernames, ct);
             }
 
             // Send confirmation email (background job - not part of transaction)
-            await SendConfirmationEmailAsync(user, origin, cancellationToken);
+            await SendConfirmationEmailAsync(user, origin, ct);
 
             // Record registration and add outbox message
-            await PublishUserRegisteredAsync(user, "Identity", cancellationToken);
+            await PublishUserRegisteredAsync(user, "Identity", ct);
 
-            await db.SaveChangesAsync(cancellationToken);
-            await transaction.CommitAsync(cancellationToken);
+            await db.SaveChangesAsync(ct);
+            await transaction.CommitAsync(ct);
 
             return user.Id;
         }
         catch
         {
             // Rollback transaction
-            await transaction.RollbackAsync(cancellationToken);
+            await transaction.RollbackAsync(ct);
 
             // Compensation: delete the user if it was created
             if (user is not null)
@@ -100,10 +100,10 @@ internal sealed class UserRegistrationService(
         string userId,
         short? districtId,
         short? communeId,
-        CancellationToken cancellationToken = default)
+        CancellationToken ct = default)
     {
         var user = await userManager.Users
-            .FirstOrDefaultAsync(u => u.Id == userId, cancellationToken);
+            .FirstOrDefaultAsync(u => u.Id == userId, ct);
 
         if (user is null)
         {
@@ -134,10 +134,10 @@ internal sealed class UserRegistrationService(
         string firstName,
         string lastName,
         string userName,
-        CancellationToken cancellationToken = default)
+        CancellationToken ct = default)
     {
         var user = await userManager.Users
-            .FirstOrDefaultAsync(u => u.Id == userId, cancellationToken);
+            .FirstOrDefaultAsync(u => u.Id == userId, ct);
 
         if (user is null)
         {
@@ -175,7 +175,7 @@ internal sealed class UserRegistrationService(
         };
     }
 
-    public async Task<string> GetOrCreateFromPrincipalAsync(ClaimsPrincipal principal, CancellationToken cancellationToken = default)
+    public async Task<string> GetOrCreateFromPrincipalAsync(ClaimsPrincipal principal, CancellationToken ct = default)
     {
         ArgumentNullException.ThrowIfNull(principal);
 
@@ -188,8 +188,8 @@ internal sealed class UserRegistrationService(
         }
 
         var user = await CreateUserFromPrincipalAsync(principal, email);
-        await AssignDefaultRoleAndGroupsAsync(user, "ExternalAuth", cancellationToken);
-        await PublishUserRegisteredAsync(user, "Identity.ExternalAuth", cancellationToken);
+        await AssignDefaultRoleAndGroupsAsync(user, "ExternalAuth", ct);
+        await PublishUserRegisteredAsync(user, "Identity.ExternalAuth", ct);
 
         return user.Id;
     }
@@ -204,12 +204,12 @@ internal sealed class UserRegistrationService(
         string phoneNumber,
         string origin,
         string[]? referralUsernames = null,
-        CancellationToken cancellationToken = default)
+        CancellationToken ct = default)
     {
         ValidatePasswordMatch(password, confirmPassword);
 
         // Use explicit transaction to ensure all operations are atomic
-        await using var transaction = await db.Database.BeginTransactionAsync(cancellationToken);
+        await using var transaction = await db.Database.BeginTransactionAsync(ct);
 
         FshUser? user = null;
         try
@@ -218,26 +218,26 @@ internal sealed class UserRegistrationService(
             user = await CreateUserWithPasswordAsync(firstName, lastName, email, userName, password, phoneNumber);
 
             // Assign role and groups within transaction
-            await AssignDefaultRoleAndGroupsAsync(user, "System", cancellationToken);
+            await AssignDefaultRoleAndGroupsAsync(user, "System", ct);
 
             // Process referral usernames
             if (referralUsernames?.Length > 0)
             {
-                await ProcessReferralsAsync(user.Id, referralUsernames, cancellationToken);
+                await ProcessReferralsAsync(user.Id, referralUsernames, ct);
             }
 
-            await SendConfirmationEmailAsync(user, origin, cancellationToken);
-            await PublishUserRegisteredAsync(user, "Identity", cancellationToken);
+            await SendConfirmationEmailAsync(user, origin, ct);
+            await PublishUserRegisteredAsync(user, "Identity", ct);
 
-            await db.SaveChangesAsync(cancellationToken);
-            await transaction.CommitAsync(cancellationToken);
+            await db.SaveChangesAsync(ct);
+            await transaction.CommitAsync(ct);
 
             return user.Id;
         }
         catch
         {
             // Rollback transaction
-            await transaction.RollbackAsync(cancellationToken);
+            await transaction.RollbackAsync(ct);
 
             // Compensation: delete the user if it was created
             if (user is not null)
@@ -254,7 +254,7 @@ internal sealed class UserRegistrationService(
         }
     }
 
-    private async Task ProcessReferralsAsync(string newReferredUserId, string[] referralUsernames, CancellationToken cancellationToken)
+    private async Task ProcessReferralsAsync(string newReferredUserId, string[] referralUsernames, CancellationToken ct)
     {
         ArgumentNullException.ThrowIfNull(newReferredUserId);
         ArgumentNullException.ThrowIfNull(referralUsernames);
@@ -278,7 +278,7 @@ internal sealed class UserRegistrationService(
             .AsNoTracking()
             .Where(u => u.Id == newReferredUserId)
             .Select(u => u.IntId)
-            .FirstOrDefaultAsync(cancellationToken);
+            .FirstOrDefaultAsync(ct);
 
         if (newReferredUserIntId == 0) throw new CustomException("Unexpected error occurred."); // should not happen, remove?
 
@@ -286,14 +286,14 @@ internal sealed class UserRegistrationService(
         var existing = await db.Referrals
             .Where(r => r.NewReferredUserId == newReferredUserIntId)
             .Select(r => r.ReferrerUserId)
-            .ToHashSetAsync(cancellationToken);
+            .ToHashSetAsync(ct);
 
         // Find valid referrers by normalized usernames and get their IntIds
         var validReferrerIntIds = await db.Users
             .AsNoTracking()
             .Where(u => u.NormalizedUserName != null && normalizedUsernames.Contains(u.NormalizedUserName))
             .Select(u => u.IntId)
-            .ToHashSetAsync(cancellationToken);
+            .ToHashSetAsync(ct);
 
         // Create new referrals
         var newReferrals = validReferrerIntIds
@@ -307,11 +307,11 @@ internal sealed class UserRegistrationService(
         }
     }
 
-    public async Task<string> ConfirmEmailAsync(string userId, string code, CancellationToken cancellationToken)
+    public async Task<string> ConfirmEmailAsync(string userId, string code, CancellationToken ct)
     {
         var user = await userManager.Users
             .Where(u => u.Id == userId && !u.EmailConfirmed)
-            .FirstOrDefaultAsync(cancellationToken);
+            .FirstOrDefaultAsync(ct);
 
         _ = user ?? throw new CustomException("An error occurred while confirming E-Mail.");
 
@@ -323,11 +323,11 @@ internal sealed class UserRegistrationService(
             : throw new CustomException(string.Format(CultureInfo.InvariantCulture, "An error occurred while confirming {0}", user.Email));
     }
 
-    public async Task AdminConfirmEmailAsync(string userId, CancellationToken cancellationToken = default)
+    public async Task AdminConfirmEmailAsync(string userId, CancellationToken ct = default)
     {
         var user = await userManager.Users
             .Where(u => u.Id == userId)
-            .FirstOrDefaultAsync(cancellationToken)
+            .FirstOrDefaultAsync(ct)
             ?? throw new NotFoundException($"User {userId} was not found.");
 
         // Idempotent: a second confirm is a no-op rather than an error.
@@ -348,11 +348,11 @@ internal sealed class UserRegistrationService(
         }
     }
 
-    public async Task ResendConfirmationEmailAsync(string userId, string origin, CancellationToken cancellationToken = default)
+    public async Task ResendConfirmationEmailAsync(string userId, string origin, CancellationToken ct = default)
     {
         var user = await userManager.Users
             .Where(u => u.Id == userId)
-            .FirstOrDefaultAsync(cancellationToken)
+            .FirstOrDefaultAsync(ct)
             ?? throw new NotFoundException($"User {userId} was not found.");
 
         if (user.EmailConfirmed)
@@ -363,14 +363,14 @@ internal sealed class UserRegistrationService(
                 user.Email));
         }
 
-        await SendConfirmationEmailAsync(user, origin, cancellationToken);
+        await SendConfirmationEmailAsync(user, origin, ct);
     }
 
-    public async Task<string> ConfirmPhoneNumberAsync(string userId, string code, CancellationToken cancellationToken = default)
+    public async Task<string> ConfirmPhoneNumberAsync(string userId, string code, CancellationToken ct = default)
     {
         var user = await userManager.Users
             .Where(u => u.Id == userId && !u.PhoneNumberConfirmed)
-            .FirstOrDefaultAsync(cancellationToken);
+            .FirstOrDefaultAsync(ct);
 
         _ = user ?? throw new CustomException("An error occurred while confirming phone number.");
 
@@ -524,7 +524,7 @@ internal sealed class UserRegistrationService(
     private async Task AssignDefaultRoleAndGroupsAsync(
         FshUser user,
         string source,
-        CancellationToken cancellationToken = default)
+        CancellationToken ct = default)
     {
         var roleResult = await userManager.AddToRoleAsync(user, RoleConstants.Basic);
         if (!roleResult.Succeeded)
@@ -539,7 +539,7 @@ internal sealed class UserRegistrationService(
         var defaultGroups = await db.Groups
             .AsNoTracking()
             .Where(g => g.IsDefault && g.DeletedAt == null)
-            .ToListAsync(cancellationToken);
+            .ToListAsync(ct);
 
         foreach (var group in defaultGroups)
         {
@@ -547,7 +547,7 @@ internal sealed class UserRegistrationService(
         }
     }
 
-    private async Task SendConfirmationEmailAsync(FshUser user, string origin, CancellationToken cancellationToken)
+    private async Task SendConfirmationEmailAsync(FshUser user, string origin, CancellationToken ct)
     {
         if (string.IsNullOrEmpty(user.Email))
         {
@@ -562,10 +562,10 @@ internal sealed class UserRegistrationService(
             "Confirm Your Email Address",
             emailBody);
 
-        jobService.Enqueue("email", () => mailService.SendAsync(mailRequest, cancellationToken));
+        jobService.Enqueue("email", () => mailService.SendAsync(mailRequest, ct));
     }
 
-    private async Task PublishUserRegisteredAsync(FshUser user, string source, CancellationToken cancellationToken = default)
+    private async Task PublishUserRegisteredAsync(FshUser user, string source, CancellationToken ct = default)
     {
         user.RecordRegistered();
 
@@ -580,7 +580,7 @@ internal sealed class UserRegistrationService(
             LastName: user.LastName ?? string.Empty);
 
         // Use AddToContextAsync to defer saving until the transaction commits
-        await outboxStore.AddToContextAsync(integrationEvent, cancellationToken).ConfigureAwait(false);
+        await outboxStore.AddToContextAsync(integrationEvent, ct).ConfigureAwait(false);
     }
 
     private async Task<string> GetEmailVerificationUriAsync(FshUser user, string origin)

@@ -7,9 +7,9 @@ public sealed record SsePrincipal(string UserId);
 
 public interface ISseTokenService
 {
-    Task<Guid> IssueAsync(string userId, CancellationToken cancellationToken);
+    Task<Guid> IssueAsync(string userId, CancellationToken ct);
 
-    Task<SsePrincipal?> ConsumeAsync(Guid token, CancellationToken cancellationToken);
+    Task<SsePrincipal?> ConsumeAsync(Guid token, CancellationToken ct);
 }
 
 /// <summary>
@@ -29,24 +29,24 @@ internal sealed class SseTokenService(IDistributedCache cache) : ISseTokenServic
         AbsoluteExpirationRelativeToNow = TokenLifetime,
     };
 
-    public async Task<Guid> IssueAsync(string userId, CancellationToken cancellationToken)
+    public async Task<Guid> IssueAsync(string userId, CancellationToken ct)
     {
         var token = Guid.CreateVersion7();
         var payload = JsonSerializer.SerializeToUtf8Bytes(new SsePrincipal(userId));
-        await cache.SetAsync(KeyFor(token), payload, EntryOptions, cancellationToken).ConfigureAwait(false);
+        await cache.SetAsync(KeyFor(token), payload, EntryOptions, ct).ConfigureAwait(false);
         return token;
     }
 
-    public async Task<SsePrincipal?> ConsumeAsync(Guid token, CancellationToken cancellationToken)
+    public async Task<SsePrincipal?> ConsumeAsync(Guid token, CancellationToken ct)
     {
         var key = KeyFor(token);
-        var payload = await cache.GetAsync(key, cancellationToken).ConfigureAwait(false);
+        var payload = await cache.GetAsync(key, ct).ConfigureAwait(false);
         if (payload is null || payload.Length == 0)
         {
             return null;
         }
 
-        await cache.RemoveAsync(key, cancellationToken).ConfigureAwait(false);
+        await cache.RemoveAsync(key, ct).ConfigureAwait(false);
         return JsonSerializer.Deserialize<SsePrincipal>(payload);
     }
 

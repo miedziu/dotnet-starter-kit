@@ -29,7 +29,7 @@ public sealed partial class LocalStorageService : IStorageService
         _contentTypeProvider = new FileExtensionContentTypeProvider();
     }
 
-    public async Task<string> UploadAsync<T>(FileUploadRequest request, FileType fileType, CancellationToken cancellationToken = default)
+    public async Task<string> UploadAsync<T>(FileUploadRequest request, FileType fileType, CancellationToken ct = default)
         where T : class
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -57,12 +57,12 @@ public sealed partial class LocalStorageService : IStorageService
 
         Directory.CreateDirectory(Path.GetDirectoryName(fullPath)!);
 
-        await File.WriteAllBytesAsync(fullPath, request.Data.ToArray(), cancellationToken);
+        await File.WriteAllBytesAsync(fullPath, request.Data.ToArray(), ct);
 
         return relativePath.Replace("\\", "/", StringComparison.Ordinal); // Normalize for URLs
     }
 
-    public Task<FileDownloadResponse?> DownloadAsync(string path, CancellationToken cancellationToken = default)
+    public Task<FileDownloadResponse?> DownloadAsync(string path, CancellationToken ct = default)
     {
         if (string.IsNullOrWhiteSpace(path))
         {
@@ -96,7 +96,7 @@ public sealed partial class LocalStorageService : IStorageService
         });
     }
 
-    public Task<bool> ExistsAsync(string path, CancellationToken cancellationToken = default)
+    public Task<bool> ExistsAsync(string path, CancellationToken ct = default)
     {
         if (string.IsNullOrWhiteSpace(path))
         {
@@ -109,7 +109,7 @@ public sealed partial class LocalStorageService : IStorageService
         return Task.FromResult(File.Exists(fullPath));
     }
 
-    public Task RemoveAsync(string path, CancellationToken cancellationToken = default)
+    public Task RemoveAsync(string path, CancellationToken ct = default)
     {
         if (string.IsNullOrWhiteSpace(path)) return Task.CompletedTask;
 
@@ -135,7 +135,7 @@ public sealed partial class LocalStorageService : IStorageService
 
     public Task<PresignedUploadUrl> GenerateUploadUrlAsync(
         string storageKey, string contentType, long maxBytes, TimeSpan ttl,
-        CancellationToken cancellationToken = default)
+        CancellationToken ct = default)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(storageKey);
         ArgumentException.ThrowIfNullOrWhiteSpace(contentType);
@@ -148,7 +148,7 @@ public sealed partial class LocalStorageService : IStorageService
 
     public Task<Uri> GenerateDownloadUrlAsync(
         string storageKey, TimeSpan ttl, string? responseContentDisposition = null,
-        CancellationToken cancellationToken = default)
+        CancellationToken ct = default)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(storageKey);
         // Local mode serves files from /wwwroot — no signing required.
@@ -168,7 +168,7 @@ public sealed partial class LocalStorageService : IStorageService
     }
 
     public Task<StoredObjectMetadata?> HeadObjectAsync(
-        string storageKey, CancellationToken cancellationToken = default)
+        string storageKey, CancellationToken ct = default)
     {
         if (string.IsNullOrWhiteSpace(storageKey))
         {

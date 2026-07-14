@@ -14,14 +14,14 @@ public static class GetUserProfileEndpoint
 {
     internal static RouteHandlerBuilder MapGetMeEndpoint(this IEndpointRouteBuilder endpoints)
     {
-        return endpoints.MapGet("/profile", async (ClaimsPrincipal user, IMediator mediator, CancellationToken cancellationToken) =>
+        return endpoints.MapGet("/profile", async (ClaimsPrincipal user, IMediator mediator, CancellationToken ct) =>
         {
             if (user.GetUserId() is not { } userId || string.IsNullOrEmpty(userId))
             {
                 throw new UnauthorizedException();
             }
 
-            return TypedResults.Ok(await mediator.Send(new GetCurrentUserProfileQuery(userId), cancellationToken));
+            return TypedResults.Ok(await mediator.Send(new GetCurrentUserProfileQuery(userId), ct));
         })
         .WithName("GetCurrentUserProfile")
         .WithSummary("Get current user profile")

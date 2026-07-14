@@ -15,13 +15,13 @@ public static class GetAuditsByTraceEndpoint
     {
         return group.MapGet(
                 "/by-trace/{traceId}",
-                async (string traceId, DateTime? fromUtc, DateTime? toUtc, IMediator mediator, CancellationToken cancellationToken) =>
+                async (string traceId, DateTime? fromUtc, DateTime? toUtc, IMediator mediator, CancellationToken ct) =>
                     TypedResults.Ok(await mediator.Send(new GetAuditsByTraceQuery
                     {
                         TraceId = traceId,
                         FromUtc = fromUtc,
                         ToUtc = toUtc
-                    }, cancellationToken)))
+                    }, ct)))
             .WithName("GetAuditsByTrace")
             .WithSummary("Get audit events by trace id")
             .WithDescription("Retrieve audit events associated with a given trace id.")

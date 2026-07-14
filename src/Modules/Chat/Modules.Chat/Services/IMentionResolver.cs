@@ -9,5 +9,5 @@ public interface IMentionResolver
 {
     Task<IReadOnlyDictionary<string, string>> ResolveUserIdsAsync(
         IReadOnlyCollection<string> usernames,
-        CancellationToken cancellationToken = default);
+        CancellationToken ct = default);
 }

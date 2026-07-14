@@ -125,7 +125,7 @@ public static class Extensions
         path.StartsWithSegments("/ready", StringComparison.OrdinalIgnoreCase) ||
         path.StartsWithSegments("/live", StringComparison.OrdinalIgnoreCase);
 
-    private static async ValueTask OnRejected(OnRejectedContext context, CancellationToken cancellationToken)
+    private static async ValueTask OnRejected(OnRejectedContext context, CancellationToken ct)
     {
         var httpContext = context.HttpContext;
 
@@ -153,6 +153,6 @@ public static class Extensions
             ?? httpContext.TraceIdentifier;
         problem.Extensions["correlationId"] = correlationId;
 
-        await httpContext.Response.WriteAsJsonAsync(problem, cancellationToken).ConfigureAwait(false);
+        await httpContext.Response.WriteAsJsonAsync(problem, ct).ConfigureAwait(false);
     }
 }

@@ -20,26 +20,26 @@ public sealed class ChatChannelFileAccessPolicy(ChatDbContext db) : IFileAccessP
 
     public string OwnerType => OwnerTypeName;
 
-    public async Task<bool> CanAttachAsync(Guid? ownerId, string currentUserId, CancellationToken cancellationToken)
+    public async Task<bool> CanAttachAsync(Guid? ownerId, string currentUserId, CancellationToken ct)
     {
         if (string.IsNullOrEmpty(currentUserId)) return false;
         if (ownerId is not { } channelId) return false;
         return await db.Channels.AsNoTracking()
-            .AnyAsync(c => c.Id == channelId && c.Members.Any(m => m.UserId == currentUserId), cancellationToken)
+            .AnyAsync(c => c.Id == channelId && c.Members.Any(m => m.UserId == currentUserId), ct)
             .ConfigureAwait(false);
     }
 
-    public async Task<bool> CanReadAsync(FileAccessContext context, string currentUserId, CancellationToken cancellationToken)
+    public async Task<bool> CanReadAsync(FileAccessContext context, string currentUserId, CancellationToken ct)
     {
         ArgumentNullException.ThrowIfNull(context);
         if (string.IsNullOrEmpty(currentUserId)) return false;
         if (context.OwnerId is not { } channelId) return false;
         return await db.Channels.AsNoTracking()
-            .AnyAsync(c => c.Id == channelId && c.Members.Any(m => m.UserId == currentUserId), cancellationToken)
+            .AnyAsync(c => c.Id == channelId && c.Members.Any(m => m.UserId == currentUserId), ct)
             .ConfigureAwait(false);
     }
 
-    public Task<bool> CanDeleteAsync(FileAccessContext context, string currentUserId, CancellationToken cancellationToken)
+    public Task<bool> CanDeleteAsync(FileAccessContext context, string currentUserId, CancellationToken ct)
     {
         ArgumentNullException.ThrowIfNull(context);
         return Task.FromResult(

@@ -16,8 +16,8 @@ public static class GetAuditsEndpoint
     {
         return group.MapGet(
                 "/",
-                async ([AsParameters] GetAuditsQuery query, IMediator mediator, CancellationToken cancellationToken) =>
-                    TypedResults.Ok(await mediator.Send(query, cancellationToken)))
+                async ([AsParameters] GetAuditsQuery query, IMediator mediator, CancellationToken ct) =>
+                    TypedResults.Ok(await mediator.Send(query, ct)))
             .WithName("GetAudits")
             .WithSummary("List and search audit events")
             .WithDescription("Retrieve audit events with pagination and filters.")

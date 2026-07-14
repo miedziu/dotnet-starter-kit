@@ -13,8 +13,8 @@ public static class GetUserSessionsEndpoint
 {
     internal static RouteHandlerBuilder MapGetUserSessionsEndpoint(this IEndpointRouteBuilder endpoints)
     {
-        return endpoints.MapGet("/users/{userId:guid}/sessions", async (Guid userId, CancellationToken cancellationToken, IMediator mediator) =>
-            TypedResults.Ok(await mediator.Send(new GetUserSessionsQuery(userId), cancellationToken)))
+        return endpoints.MapGet("/users/{userId:guid}/sessions", async (Guid userId, CancellationToken ct, IMediator mediator) =>
+            TypedResults.Ok(await mediator.Send(new GetUserSessionsQuery(userId), ct)))
         .WithName("GetUserSessions")
         .WithSummary("Get user's sessions (Admin)")
         .RequirePermission(IdentityPermissions.Sessions.ViewAll)

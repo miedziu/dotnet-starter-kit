@@ -12,9 +12,9 @@ public static class RemoveReactionEndpoint
 {
     internal static RouteHandlerBuilder MapRemoveReactionEndpoint(this IEndpointRouteBuilder endpoints)
         => endpoints.MapDelete("/messages/{id:guid}/reactions/{emoji}",
-                async (Guid id, string emoji, IMediator mediator, CancellationToken cancellationToken) =>
+                async (Guid id, string emoji, IMediator mediator, CancellationToken ct) =>
                 {
-                    await mediator.Send(new RemoveReactionCommand(id, Uri.UnescapeDataString(emoji)), cancellationToken);
+                    await mediator.Send(new RemoveReactionCommand(id, Uri.UnescapeDataString(emoji)), ct);
                     return Results.NoContent();
                 })
             .WithName("RemoveReaction")

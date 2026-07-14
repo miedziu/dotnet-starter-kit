@@ -29,7 +29,7 @@ public static class ToggleUserStatusEndpoint
         string id,
         [FromBody] ToggleUserStatusCommand command,
         IMediator mediator,
-        CancellationToken cancellationToken)
+        CancellationToken ct)
     {
         if (string.IsNullOrWhiteSpace(command.UserId))
         {
@@ -41,7 +41,7 @@ public static class ToggleUserStatusEndpoint
             return TypedResults.BadRequest();
         }
 
-        await mediator.Send(command, cancellationToken);
+        await mediator.Send(command, ct);
         return TypedResults.NoContent();
     }
 }

@@ -22,12 +22,12 @@ public static class TenantSubscriptionMaintenance
         Guid planId,
         DateTime startUtc,
         DateTime endUtc,
-        CancellationToken cancellationToken = default)
+        CancellationToken ct = default)
     {
         ArgumentNullException.ThrowIfNull(db);
 
         var existing = await db.Subscriptions
-            .FirstOrDefaultAsync(s => s.Status == SubscriptionStatus.Active, cancellationToken)
+            .FirstOrDefaultAsync(s => s.Status == SubscriptionStatus.Active, ct)
             .ConfigureAwait(false);
 
         if (existing is not null)
@@ -37,7 +37,7 @@ public static class TenantSubscriptionMaintenance
 
         var subscription = Subscription.Create(planId, startUtc, endUtc);
         db.Subscriptions.Add(subscription);
-        await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        await db.SaveChangesAsync(ct).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -47,18 +47,18 @@ public static class TenantSubscriptionMaintenance
     public static async Task ExtendActiveSubscriptionAsync(
         BillingDbContext db,
         DateTime endUtc,
-        CancellationToken cancellationToken = default)
+        CancellationToken ct = default)
     {
         ArgumentNullException.ThrowIfNull(db);
 
         var existing = await db.Subscriptions
-            .FirstOrDefaultAsync(s => s.Status == SubscriptionStatus.Active, cancellationToken)
+            .FirstOrDefaultAsync(s => s.Status == SubscriptionStatus.Active, ct)
             .ConfigureAwait(false);
 
         if (existing is not null)
         {
             existing.Extend(endUtc);
-            await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            await db.SaveChangesAsync(ct).ConfigureAwait(false);
         }
     }
 }

@@ -14,10 +14,10 @@ public static class SendMessageEndpoint
 {
     internal static RouteHandlerBuilder MapSendMessageEndpoint(this IEndpointRouteBuilder endpoints)
         => endpoints.MapPost("/channels/{id:guid}/messages",
-                async (Guid id, [FromBody] SendMessageBody body, IMediator mediator, CancellationToken cancellationToken) =>
+                async (Guid id, [FromBody] SendMessageBody body, IMediator mediator, CancellationToken ct) =>
                     Results.Ok(await mediator.Send(
                         new SendMessageCommand(id, body.Body, body.ParentMessageId, body.Attachments ?? []),
-                        cancellationToken)))
+                        ct)))
             .WithName("SendMessage")
             .WithSummary("Send a message to a channel — supports replies (parentMessageId) and attachments")
             .RequirePermission(ChatPermissions.Messages.Send)

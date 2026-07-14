@@ -21,26 +21,26 @@ public sealed class RolePermissionSyncer(
     TimeProvider timeProvider,
     ILogger<RolePermissionSyncer> logger)
 {
-    public async Task SyncAsync(CancellationToken cancellationToken)
+    public async Task SyncAsync(CancellationToken ct)
     {
-        int basicAdded = await SyncRoleAsync(RoleConstants.Basic, PermissionConstants.Basic, cancellationToken).ConfigureAwait(false);
+        int basicAdded = await SyncRoleAsync(RoleConstants.Basic, PermissionConstants.Basic, ct).ConfigureAwait(false);
 
         // Admin gets all non-root permissions; the root tenant's Admin additionally gets Root permissions.
         var adminPermissions = PermissionConstants.Admin.ToList();
-        int adminAdded = await SyncRoleAsync(RoleConstants.Admin, adminPermissions, cancellationToken).ConfigureAwait(false);
+        int adminAdded = await SyncRoleAsync(RoleConstants.Admin, adminPermissions, ct).ConfigureAwait(false);
 
         // If we wrote anything, drop the per-user permission cache so already-logged-in
         // sessions see the new perms on their next request rather than waiting for TTL.
         if (basicAdded + adminAdded > 0)
         {
-            await cache.RemoveByTagAsync(CacheKeys.Tags.Permissions, cancellationToken).ConfigureAwait(false);
+            await cache.RemoveByTagAsync(CacheKeys.Tags.Permissions, ct).ConfigureAwait(false);
         }
     }
 
-    private async Task<int> SyncRoleAsync(string roleName, IReadOnlyList<FshPermission> targetPermissions, CancellationToken cancellationToken)
+    private async Task<int> SyncRoleAsync(string roleName, IReadOnlyList<FshPermission> targetPermissions, CancellationToken ct)
     {
         var role = await roleManager.Roles
-            .SingleOrDefaultAsync(r => r.Name == roleName, cancellationToken)
+            .SingleOrDefaultAsync(r => r.Name == roleName, ct)
             .ConfigureAwait(false);
         if (role is null)
         {
@@ -51,7 +51,7 @@ public sealed class RolePermissionSyncer(
         var existing = await context.RoleClaims
             .Where(rc => rc.RoleId == role.Id && rc.ClaimType == ClaimConstants.Permission)
             .Select(rc => rc.ClaimValue!)
-            .ToListAsync(cancellationToken)
+            .ToListAsync(ct)
             .ConfigureAwait(false);
         var existingSet = existing.ToHashSet(StringComparer.Ordinal);
 
@@ -72,8 +72,8 @@ public sealed class RolePermissionSyncer(
             return 0;
         }
 
-        await context.RoleClaims.AddRangeAsync(toAdd, cancellationToken).ConfigureAwait(false);
-        await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        await context.RoleClaims.AddRangeAsync(toAdd, ct).ConfigureAwait(false);
+        await context.SaveChangesAsync(ct).ConfigureAwait(false);
 
         if (logger.IsEnabled(LogLevel.Information))
         {

@@ -15,8 +15,8 @@ public static class GetRolesEndpoint
     public static RouteHandlerBuilder MapGetRolesEndpoint(this IEndpointRouteBuilder endpoints)
     {
         return endpoints.MapGet("/roles",
-            async ([AsParameters] GetRolesQuery query, IMediator mediator, CancellationToken cancellationToken) =>
-                TypedResults.Ok(await mediator.Send(query, cancellationToken)))
+            async ([AsParameters] GetRolesQuery query, IMediator mediator, CancellationToken ct) =>
+                TypedResults.Ok(await mediator.Send(query, ct)))
         .WithName("ListRoles")
         .WithSummary("List roles (paged)")
         .RequirePermission(IdentityPermissions.Roles.View)

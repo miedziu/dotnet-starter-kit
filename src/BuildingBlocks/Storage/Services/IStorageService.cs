@@ -8,17 +8,17 @@ public interface IStorageService
     Task<string> UploadAsync<T>(
         FileUploadRequest request,
         FileType fileType,
-        CancellationToken cancellationToken = default) where T : class;
+        CancellationToken ct = default) where T : class;
 
     Task<FileDownloadResponse?> DownloadAsync(
         string path,
-        CancellationToken cancellationToken = default);
+        CancellationToken ct = default);
 
     Task<bool> ExistsAsync(
         string path,
-        CancellationToken cancellationToken = default);
+        CancellationToken ct = default);
 
-    Task RemoveAsync(string path, CancellationToken cancellationToken = default);
+    Task RemoveAsync(string path, CancellationToken ct = default);
 
     /// <summary>
     /// Mint a short-lived presigned PUT URL the browser uses to upload bytes directly to S3-compatible storage.
@@ -30,7 +30,7 @@ public interface IStorageService
         string contentType,
         long maxBytes,
         TimeSpan ttl,
-        CancellationToken cancellationToken = default);
+        CancellationToken ct = default);
 
     /// <summary>
     /// Mint a short-lived presigned GET URL. When <paramref name="responseContentDisposition"/> is
@@ -41,7 +41,7 @@ public interface IStorageService
         string storageKey,
         TimeSpan ttl,
         string? responseContentDisposition = null,
-        CancellationToken cancellationToken = default);
+        CancellationToken ct = default);
 
     /// <summary>
     /// HEAD the object at <paramref name="storageKey"/>. Returns <c>null</c> when the object does not
@@ -50,7 +50,7 @@ public interface IStorageService
     /// </summary>
     Task<StoredObjectMetadata?> HeadObjectAsync(
         string storageKey,
-        CancellationToken cancellationToken = default);
+        CancellationToken ct = default);
 
     /// <summary>
     /// Compute a durable, non-expiring public URL for an object. Used when a <c>FileAsset</c> with

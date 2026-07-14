@@ -21,11 +21,11 @@ public sealed class UsageReporter : IUsageReporter
     public async Task<IReadOnlyList<UsageSnapshot>> CaptureForPeriodAsync(
         int periodYear,
         int periodMonth,
-        CancellationToken cancellationToken = default)
+        CancellationToken ct = default)
     {
         var existing = await _db.UsageSnapshots
             .Where(s => s.PeriodYear == periodYear && s.PeriodMonth == periodMonth)
-            .ToListAsync(cancellationToken).ConfigureAwait(false);
+            .ToListAsync(ct).ConfigureAwait(false);
 
         var snapshots = new List<UsageSnapshot>(capacity: 4);
 
@@ -45,7 +45,7 @@ public sealed class UsageReporter : IUsageReporter
         }
 
 
-        await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        await _db.SaveChangesAsync(ct).ConfigureAwait(false);
         if (_logger.IsEnabled(LogLevel.Information))
         {
             _logger.LogInformation("[Billing] captured {Count} usage snapshots for period {Year}-{Month:00}",

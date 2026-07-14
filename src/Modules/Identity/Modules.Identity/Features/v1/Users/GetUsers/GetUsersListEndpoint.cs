@@ -13,8 +13,8 @@ public static class GetUsersListEndpoint
 {
     internal static RouteHandlerBuilder MapGetUsersListEndpoint(this IEndpointRouteBuilder endpoints)
     {
-        return endpoints.MapGet("/users", async (CancellationToken cancellationToken, IMediator mediator) =>
-            TypedResults.Ok(await mediator.Send(new GetUsersQuery(), cancellationToken)))
+        return endpoints.MapGet("/users", async (CancellationToken ct, IMediator mediator) =>
+            TypedResults.Ok(await mediator.Send(new GetUsersQuery(), ct)))
         .WithName("ListUsers")
         .WithSummary("List users")
         .RequirePermission(IdentityPermissions.Users.View)

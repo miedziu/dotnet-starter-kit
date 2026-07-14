@@ -12,9 +12,9 @@ public static class DeleteRoleEndpoint
 {
     public static RouteHandlerBuilder MapDeleteRoleEndpoint(this IEndpointRouteBuilder endpoints)
     {
-        return endpoints.MapDelete("/roles/{id:guid}", async (string id, IMediator mediator, CancellationToken cancellationToken) =>
+        return endpoints.MapDelete("/roles/{id:guid}", async (string id, IMediator mediator, CancellationToken ct) =>
         {
-            await mediator.Send(new DeleteRoleCommand(id), cancellationToken);
+            await mediator.Send(new DeleteRoleCommand(id), ct);
             return TypedResults.NoContent();
         })
         .WithName("DeleteRole")

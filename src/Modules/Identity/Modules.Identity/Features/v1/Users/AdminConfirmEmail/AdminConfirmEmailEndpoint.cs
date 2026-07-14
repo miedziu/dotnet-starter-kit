@@ -27,9 +27,9 @@ public static class AdminConfirmEmailEndpoint
     private static async Task<NoContent> Handler(
         Guid id,
         IMediator mediator,
-        CancellationToken cancellationToken)
+        CancellationToken ct)
     {
-        await mediator.Send(new AdminConfirmEmailCommand(id.ToString()), cancellationToken);
+        await mediator.Send(new AdminConfirmEmailCommand(id.ToString()), ct);
         return TypedResults.NoContent();
     }
 }

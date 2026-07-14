@@ -12,9 +12,9 @@ public static class RemoveUserFromGroupEndpoint
 {
     public static RouteHandlerBuilder MapRemoveUserFromGroupEndpoint(this IEndpointRouteBuilder endpoints)
     {
-        return endpoints.MapDelete("/groups/{groupId:guid}/members/{userId}", async (Guid groupId, string userId, IMediator mediator, CancellationToken cancellationToken) =>
+        return endpoints.MapDelete("/groups/{groupId:guid}/members/{userId}", async (Guid groupId, string userId, IMediator mediator, CancellationToken ct) =>
         {
-            await mediator.Send(new RemoveUserFromGroupCommand(groupId, userId), cancellationToken);
+            await mediator.Send(new RemoveUserFromGroupCommand(groupId, userId), ct);
             return TypedResults.NoContent();
         })
         .WithName("RemoveUserFromGroup")

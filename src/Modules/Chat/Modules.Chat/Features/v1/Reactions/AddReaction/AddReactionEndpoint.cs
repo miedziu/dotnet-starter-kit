@@ -13,9 +13,9 @@ public static class AddReactionEndpoint
 {
     internal static RouteHandlerBuilder MapAddReactionEndpoint(this IEndpointRouteBuilder endpoints)
         => endpoints.MapPost("/messages/{id:guid}/reactions",
-                async (Guid id, [FromBody] AddReactionBody body, IMediator mediator, CancellationToken cancellationToken) =>
+                async (Guid id, [FromBody] AddReactionBody body, IMediator mediator, CancellationToken ct) =>
                 {
-                    await mediator.Send(new AddReactionCommand(id, body.Emoji), cancellationToken);
+                    await mediator.Send(new AddReactionCommand(id, body.Emoji), ct);
                     return Results.NoContent();
                 })
             .WithName("AddReaction")

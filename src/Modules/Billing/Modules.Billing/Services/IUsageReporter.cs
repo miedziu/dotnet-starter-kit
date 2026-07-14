@@ -17,5 +17,5 @@ public interface IUsageReporter
     Task<IReadOnlyList<UsageSnapshot>> CaptureForPeriodAsync(
         int periodYear,
         int periodMonth,
-        CancellationToken cancellationToken = default);
+        CancellationToken ct = default);
 }

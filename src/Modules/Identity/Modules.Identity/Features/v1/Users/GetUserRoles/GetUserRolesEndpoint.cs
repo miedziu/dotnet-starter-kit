@@ -13,8 +13,8 @@ public static class GetUserRolesEndpoint
 {
     internal static RouteHandlerBuilder MapGetUserRolesEndpoint(this IEndpointRouteBuilder endpoints)
     {
-        return endpoints.MapGet("/users/{id:guid}/roles", async (string id, IMediator mediator, CancellationToken cancellationToken) =>
-            TypedResults.Ok(await mediator.Send(new GetUserRolesQuery(id), cancellationToken)))
+        return endpoints.MapGet("/users/{id:guid}/roles", async (string id, IMediator mediator, CancellationToken ct) =>
+            TypedResults.Ok(await mediator.Send(new GetUserRolesQuery(id), ct)))
         .WithName("GetUserRoles")
         .WithSummary("Get user roles")
         .RequirePermission(IdentityPermissions.Users.View)

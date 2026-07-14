@@ -20,7 +20,7 @@ internal sealed class UserPasswordService(
     IPasswordHistoryService passwordHistoryService,
     IPasswordExpiryService passwordExpiryService) : IUserPasswordService
 {
-    public async Task ForgotPasswordAsync(string email, string origin, CancellationToken cancellationToken)
+    public async Task ForgotPasswordAsync(string email, string origin, CancellationToken ct)
     {
         var user = await userManager.FindByEmailAsync(email);
 
@@ -53,7 +53,7 @@ internal sealed class UserPasswordService(
         jobService.Enqueue(() => mailService.SendAsync(mailRequest, CancellationToken.None));
     }
 
-    public async Task ResetPasswordAsync(string email, string password, string token, CancellationToken cancellationToken)
+    public async Task ResetPasswordAsync(string email, string password, string token, CancellationToken ct)
     {
         var user = await userManager.FindByEmailAsync(email);
         if (user == null)
@@ -72,10 +72,10 @@ internal sealed class UserPasswordService(
 
         // Raise domain event for password reset
         user.RecordPasswordChanged(wasReset: true);
-        await db.SaveChangesAsync(cancellationToken);
+        await db.SaveChangesAsync(ct);
     }
 
-    public async Task ChangePasswordAsync(string password, string newPassword, string confirmNewPassword, string userId, CancellationToken cancellationToken = default)
+    public async Task ChangePasswordAsync(string password, string newPassword, string confirmNewPassword, string userId, CancellationToken ct = default)
     {
         var user = await userManager.FindByIdAsync(userId);
 
@@ -91,12 +91,12 @@ internal sealed class UserPasswordService(
 
         // Raise domain event for password change
         user.RecordPasswordChanged(wasReset: false);
-        await db.SaveChangesAsync(cancellationToken);
+        await db.SaveChangesAsync(ct);
 
         // Update password expiry date
-        await passwordExpiryService.UpdateLastPasswordChangeDateAsync(userId, cancellationToken);
+        await passwordExpiryService.UpdateLastPasswordChangeDateAsync(userId, ct);
 
         // Save to history
-        await passwordHistoryService.SavePasswordHistoryAsync(userId, cancellationToken);
+        await passwordHistoryService.SavePasswordHistoryAsync(userId, ct);
     }
 }

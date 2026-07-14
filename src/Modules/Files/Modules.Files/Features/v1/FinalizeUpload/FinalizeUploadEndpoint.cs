@@ -10,8 +10,8 @@ public static class FinalizeUploadEndpoint
 {
     internal static RouteHandlerBuilder MapFinalizeUploadEndpoint(this IEndpointRouteBuilder endpoints)
         => endpoints.MapPost("/{id:guid}/finalize",
-                async (Guid id, IMediator mediator, CancellationToken cancellationToken) =>
-                    Results.Ok(await mediator.Send(new FinalizeUploadCommand(id), cancellationToken)))
+                async (Guid id, IMediator mediator, CancellationToken ct) =>
+                    Results.Ok(await mediator.Send(new FinalizeUploadCommand(id), ct)))
             .WithName("FinalizeFileUpload")
             .WithSummary("Finalize a file upload after the browser PUT completes")
             .RequireAuthorization();

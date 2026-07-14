@@ -12,10 +12,10 @@ public static class ListChannelMessagesEndpoint
 {
     internal static RouteHandlerBuilder MapListChannelMessagesEndpoint(this IEndpointRouteBuilder endpoints)
         => endpoints.MapGet("/channels/{id:guid}/messages",
-                async (Guid id, Guid? before, int? pageSize, IMediator mediator, CancellationToken cancellationToken) =>
+                async (Guid id, Guid? before, int? pageSize, IMediator mediator, CancellationToken ct) =>
                     Results.Ok(await mediator.Send(
                         new ListChannelMessagesQuery(id, before, pageSize ?? 50),
-                        cancellationToken)))
+                        ct)))
             .WithName("ListChannelMessages")
             .WithSummary("List top-level messages in a channel (cursor-paged, reverse chronological)")
             .RequirePermission(ChatPermissions.Channels.View);

@@ -20,9 +20,9 @@ public static class HealthEndpoints
 
         // Liveness: only process up (no external deps)
         group.MapGet("/live",
-                async Task<Ok<HealthResult>> (HealthCheckService hc, CancellationToken cancellationToken) =>
+                async Task<Ok<HealthResult>> (HealthCheckService hc, CancellationToken ct) =>
                 {
-                    var report = await hc.CheckHealthAsync(_ => false, cancellationToken);
+                    var report = await hc.CheckHealthAsync(_ => false, ct);
                     var payload = new HealthResult(
                     Status: report.Status.ToString(),
                     Results: Array.Empty<HealthEntry>());
@@ -37,9 +37,9 @@ public static class HealthEndpoints
         // Readiness: includes DB + registered checks. Full payload on both 200 and 503 so
         // operators see which check failed; probe consumers key off status code, so a 503 body is safe.
         group.MapGet("/ready",
-                    async (HealthCheckService hc, CancellationToken cancellationToken) =>
+                    async (HealthCheckService hc, CancellationToken ct) =>
                     {
-                        var report = await hc.CheckHealthAsync(cancellationToken: cancellationToken);
+                        var report = await hc.CheckHealthAsync(cancellationToken: ct);
                         var results = report.Entries.Select(e =>
                     new HealthEntry(
                         Name: e.Key,

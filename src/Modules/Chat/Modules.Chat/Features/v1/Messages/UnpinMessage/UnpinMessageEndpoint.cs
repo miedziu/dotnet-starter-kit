@@ -12,9 +12,9 @@ public static class UnpinMessageEndpoint
 {
     internal static RouteHandlerBuilder MapUnpinMessageEndpoint(this IEndpointRouteBuilder endpoints)
         => endpoints.MapDelete("/messages/{id:guid}/pin",
-                async (Guid id, IMediator mediator, CancellationToken cancellationToken) =>
+                async (Guid id, IMediator mediator, CancellationToken ct) =>
                 {
-                    await mediator.Send(new UnpinMessageCommand(id), cancellationToken);
+                    await mediator.Send(new UnpinMessageCommand(id), ct);
                     return Results.NoContent();
                 })
             .WithName("UnpinMessage")

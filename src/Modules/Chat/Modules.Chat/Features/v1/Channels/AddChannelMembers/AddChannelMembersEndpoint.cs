@@ -13,9 +13,9 @@ public static class AddChannelMembersEndpoint
 {
     internal static RouteHandlerBuilder MapAddChannelMembersEndpoint(this IEndpointRouteBuilder endpoints)
         => endpoints.MapPost("/channels/{id:guid}/members",
-                async (Guid id, [FromBody] AddMembersBody body, IMediator mediator, CancellationToken cancellationToken) =>
+                async (Guid id, [FromBody] AddMembersBody body, IMediator mediator, CancellationToken ct) =>
                 {
-                    await mediator.Send(new AddChannelMembersCommand(id, body.UserIds), cancellationToken);
+                    await mediator.Send(new AddChannelMembersCommand(id, body.UserIds), ct);
                     return Results.NoContent();
                 })
             .WithName("AddChannelMembers")

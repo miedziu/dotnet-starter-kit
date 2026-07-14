@@ -31,11 +31,11 @@ public sealed class BillingService : IBillingService
     public async Task<Invoice?> GenerateInvoiceForPeriodAsync(
         int periodYear,
         int periodMonth,
-        CancellationToken cancellationToken = default)
+        CancellationToken ct = default)
     {
         var existing = await _db.Invoices
             .FirstOrDefaultAsync(i => i.PeriodYear == periodYear && i.PeriodMonth == periodMonth
-                && i.Purpose == InvoicePurpose.Usage, cancellationToken)
+                && i.Purpose == InvoicePurpose.Usage, ct)
             .ConfigureAwait(false);
         if (existing is not null)
         {
@@ -48,7 +48,7 @@ public sealed class BillingService : IBillingService
         }
 
         var subscription = await _db.Subscriptions
-            .FirstOrDefaultAsync(s => s.Status == SubscriptionStatus.Active, cancellationToken)
+            .FirstOrDefaultAsync(s => s.Status == SubscriptionStatus.Active, ct)
             .ConfigureAwait(false);
         if (subscription is null)
         {
@@ -56,7 +56,7 @@ public sealed class BillingService : IBillingService
             return null;
         }
 
-        var plan = await _db.Plans.FirstOrDefaultAsync(p => p.Id == subscription.PlanId, cancellationToken).ConfigureAwait(false)
+        var plan = await _db.Plans.FirstOrDefaultAsync(p => p.Id == subscription.PlanId, ct).ConfigureAwait(false)
             ?? throw new NotFoundException($"Plan {subscription.PlanId} not found.");
 
 
@@ -66,7 +66,7 @@ public sealed class BillingService : IBillingService
 
 
         _db.Invoices.Add(invoice);
-        await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        await _db.SaveChangesAsync(ct).ConfigureAwait(false);
         if (_logger.IsEnabled(LogLevel.Information))
         {
             _logger.LogInformation("[Billing] generated draft invoice {InvoiceNumber} period {Year}-{Month:00} total={Total} {Currency}",
@@ -78,44 +78,44 @@ public sealed class BillingService : IBillingService
     public async Task<int> GenerateInvoicesAsync(
         int periodYear,
         int periodMonth,
-        CancellationToken cancellationToken = default)
+        CancellationToken ct = default)
     {
         var existing = await _db.Invoices
             .AnyAsync(i => i.PeriodYear == periodYear && i.PeriodMonth == periodMonth
-                && i.Purpose == InvoicePurpose.Usage, cancellationToken)
+                && i.Purpose == InvoicePurpose.Usage, ct)
             .ConfigureAwait(false);
         if (existing) return 0;
 
-        var inv = await GenerateInvoiceForPeriodAsync(periodYear, periodMonth, cancellationToken).ConfigureAwait(false);
+        var inv = await GenerateInvoiceForPeriodAsync(periodYear, periodMonth, ct).ConfigureAwait(false);
         return inv is not null ? 1 : 0;
     }
 
-    public async Task IssueInvoiceAsync(Guid invoiceId, DateTime? dueAtUtc, CancellationToken cancellationToken = default)
+    public async Task IssueInvoiceAsync(Guid invoiceId, DateTime? dueAtUtc, CancellationToken ct = default)
     {
-        var invoice = await LoadInvoiceAsync(invoiceId, cancellationToken).ConfigureAwait(false);
+        var invoice = await LoadInvoiceAsync(invoiceId, ct).ConfigureAwait(false);
         invoice.Issue(dueAtUtc);
-        await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        await _db.SaveChangesAsync(ct).ConfigureAwait(false);
     }
 
-    public async Task<Wallet> GetOrCreateWalletAsync(string currency, CancellationToken cancellationToken = default)
+    public async Task<Wallet> GetOrCreateWalletAsync(string currency, CancellationToken ct = default)
     {
         var wallet = await _db.Wallets
             .Include(w => w.Transactions)
-            .FirstOrDefaultAsync(cancellationToken)
+            .FirstOrDefaultAsync(ct)
             .ConfigureAwait(false);
         if (wallet is null)
         {
             wallet = Wallet.Create(currency);
             _db.Wallets.Add(wallet);
-            await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            await _db.SaveChangesAsync(ct).ConfigureAwait(false);
         }
         return wallet;
     }
 
-    public async Task<Invoice> CreateTopupInvoiceAsync(Guid topupRequestId, CancellationToken cancellationToken = default)
+    public async Task<Invoice> CreateTopupInvoiceAsync(Guid topupRequestId, CancellationToken ct = default)
     {
         var request = await _db.TopupRequests
-            .FirstOrDefaultAsync(r => r.Id == topupRequestId && r.Status == TopupRequestStatus.Pending, cancellationToken)
+            .FirstOrDefaultAsync(r => r.Id == topupRequestId && r.Status == TopupRequestStatus.Pending, ct)
             .ConfigureAwait(false)
             ?? throw new NotFoundException($"Top-up request {topupRequestId} not found or not pending.");
 
@@ -134,7 +134,7 @@ public sealed class BillingService : IBillingService
         _db.Invoices.Add(invoice);
         request.MarkInvoiced(invoice.Id, request.Note);
 
-        await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        await _db.SaveChangesAsync(ct).ConfigureAwait(false);
 
         if (_logger.IsEnabled(LogLevel.Information))
         {
@@ -153,26 +153,26 @@ public sealed class BillingService : IBillingService
             Currency: invoice.Currency,
             DueAtUtc: invoice.DueAtUtc,
             PeriodYear: invoice.PeriodYear,
-            PeriodMonth: invoice.PeriodMonth), cancellationToken).ConfigureAwait(false);
+            PeriodMonth: invoice.PeriodMonth), ct).ConfigureAwait(false);
 
         return invoice;
     }
 
-    public async Task MarkInvoicePaidAsync(Guid invoiceId, CancellationToken cancellationToken = default)
+    public async Task MarkInvoicePaidAsync(Guid invoiceId, CancellationToken ct = default)
     {
-        var invoice = await LoadInvoiceAsync(invoiceId, cancellationToken).ConfigureAwait(false);
+        var invoice = await LoadInvoiceAsync(invoiceId, ct).ConfigureAwait(false);
         invoice.MarkPaid();
 
         if (invoice.Purpose == InvoicePurpose.Topup)
         {
             var topupRequest = await _db.TopupRequests
-                .FirstOrDefaultAsync(r => r.InvoiceId == invoice.Id, cancellationToken)
+                .FirstOrDefaultAsync(r => r.InvoiceId == invoice.Id, ct)
                 .ConfigureAwait(false);
 
             if (topupRequest is { Status: TopupRequestStatus.Invoiced })
             {
                 var wallet = await _db.Wallets
-                    .FirstOrDefaultAsync(w => w.Id == topupRequest.InvoiceId, cancellationToken)
+                    .FirstOrDefaultAsync(w => w.Id == topupRequest.InvoiceId, ct)
                     .ConfigureAwait(false);
 
                 if (wallet is null)
@@ -186,20 +186,20 @@ public sealed class BillingService : IBillingService
             }
         }
 
-        await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        await _db.SaveChangesAsync(ct).ConfigureAwait(false);
     }
 
-    public async Task VoidInvoiceAsync(Guid invoiceId, string? reason, CancellationToken cancellationToken = default)
+    public async Task VoidInvoiceAsync(Guid invoiceId, string? reason, CancellationToken ct = default)
     {
-        var invoice = await LoadInvoiceAsync(invoiceId, cancellationToken).ConfigureAwait(false);
+        var invoice = await LoadInvoiceAsync(invoiceId, ct).ConfigureAwait(false);
         invoice.Void(reason);
-        await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        await _db.SaveChangesAsync(ct).ConfigureAwait(false);
     }
 
-    private async Task<Invoice> LoadInvoiceAsync(Guid invoiceId, CancellationToken cancellationToken)
+    private async Task<Invoice> LoadInvoiceAsync(Guid invoiceId, CancellationToken ct)
     {
         return await _db.Invoices
-            .FirstOrDefaultAsync(i => i.Id == invoiceId, cancellationToken)
+            .FirstOrDefaultAsync(i => i.Id == invoiceId, ct)
             .ConfigureAwait(false)
             ?? throw new NotFoundException($"Invoice {invoiceId} not found.");
     }
@@ -208,9 +208,9 @@ public sealed class BillingService : IBillingService
         Guid planId,
         DateTime periodStartUtc,
         DateTime periodEndUtc,
-        CancellationToken cancellationToken = default)
+        CancellationToken ct = default)
     {
-        var plan = await _db.Plans.FirstOrDefaultAsync(p => p.Id == planId, cancellationToken).ConfigureAwait(false)
+        var plan = await _db.Plans.FirstOrDefaultAsync(p => p.Id == planId, ct).ConfigureAwait(false)
             ?? throw new NotFoundException($"Plan {planId} not found.");
 
         var termPrice = plan.TermPrice;
@@ -228,7 +228,7 @@ public sealed class BillingService : IBillingService
         var invoiceNumber = BuildSubscriptionInvoiceNumber(periodStart);
 
         var existing = await _db.Invoices
-            .FirstOrDefaultAsync(i => i.InvoiceNumber == invoiceNumber, cancellationToken)
+            .FirstOrDefaultAsync(i => i.InvoiceNumber == invoiceNumber, ct)
             .ConfigureAwait(false);
         if (existing is not null) return existing;
 
@@ -242,7 +242,7 @@ public sealed class BillingService : IBillingService
         invoice.Issue();
 
         _db.Invoices.Add(invoice);
-        await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        await _db.SaveChangesAsync(ct).ConfigureAwait(false);
         if (_logger.IsEnabled(LogLevel.Information))
         {
             _logger.LogInformation("[Billing] issued subscription invoice {InvoiceNumber} total={Total} {Currency}",
@@ -260,7 +260,7 @@ public sealed class BillingService : IBillingService
             Currency: invoice.Currency,
             DueAtUtc: invoice.DueAtUtc,
             PeriodYear: invoice.PeriodYear,
-            PeriodMonth: invoice.PeriodMonth), cancellationToken).ConfigureAwait(false);
+            PeriodMonth: invoice.PeriodMonth), ct).ConfigureAwait(false);
 
         return invoice;
     }

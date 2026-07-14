@@ -12,8 +12,8 @@ public static class MarkAllNotificationsReadEndpoint
 {
     internal static RouteHandlerBuilder MapMarkAllNotificationsReadEndpoint(this IEndpointRouteBuilder endpoints)
         => endpoints.MapPost("/read-all",
-                async (IMediator mediator, CancellationToken cancellationToken) =>
-                    Results.Ok(new { updated = await mediator.Send(new MarkAllNotificationsReadCommand(), cancellationToken) }))
+                async (IMediator mediator, CancellationToken ct) =>
+                    Results.Ok(new { updated = await mediator.Send(new MarkAllNotificationsReadCommand(), ct) }))
             .WithName("MarkAllNotificationsRead")
             .WithSummary("Mark every unread notification for the caller as read; returns the count updated")
             .RequirePermission(NotificationPermissions.Inbox.MarkRead);

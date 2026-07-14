@@ -8,7 +8,7 @@ public sealed class WebhookDispatcher : IWebhookDispatcher
 
     public WebhookDispatcher(IBackgroundJobClient jobs) => _jobs = jobs;
 
-    public Task EnqueueAsync(Guid subscriptionId, string eventType, string payloadJson, CancellationToken cancellationToken = default)
+    public Task EnqueueAsync(Guid subscriptionId, string eventType, string payloadJson, CancellationToken ct = default)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(eventType);
         ArgumentException.ThrowIfNullOrWhiteSpace(payloadJson);

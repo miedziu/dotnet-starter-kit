@@ -28,25 +28,25 @@ internal sealed class UserPermissionService(
 
     private static readonly string[] Tags = [CacheKeys.Tags.Permissions];
 
-    public async Task<List<string>?> GetPermissionsAsync(string userId, CancellationToken cancellationToken)
+    public async Task<List<string>?> GetPermissionsAsync(string userId, CancellationToken ct)
     {
-        var set = await GetOrLoadAsync(userId, cancellationToken).ConfigureAwait(false);
+        var set = await GetOrLoadAsync(userId, ct).ConfigureAwait(false);
 
         // Copy to a new List<string> to preserve the public contract; ~50 ns is negligible vs the
         // JSON deserialization we'd otherwise pay per L1 hit without the [ImmutableObject] optimization.
         return [.. set.Values];
     }
 
-    public async Task<bool> HasPermissionAsync(string userId, string permission, CancellationToken cancellationToken = default)
+    public async Task<bool> HasPermissionAsync(string userId, string permission, CancellationToken ct = default)
     {
         // Fast path: use the cached PermissionSet directly to avoid materializing a List<string>
         // just to check a single permission. Shares the cache entry with GetPermissionsAsync.
-        var set = await GetOrLoadAsync(userId, cancellationToken).ConfigureAwait(false);
+        var set = await GetOrLoadAsync(userId, ct).ConfigureAwait(false);
         return set.Contains(permission);
     }
 
-    public Task InvalidatePermissionCacheAsync(string userId, CancellationToken cancellationToken)
-        => cache.RemoveAsync(CacheKeys.UserPermissions(userId), cancellationToken).AsTask();
+    public Task InvalidatePermissionCacheAsync(string userId, CancellationToken ct)
+        => cache.RemoveAsync(CacheKeys.UserPermissions(userId), ct).AsTask();
 
     private ValueTask<PermissionSet> GetOrLoadAsync(string userId, CancellationToken cancellationToken)
     {

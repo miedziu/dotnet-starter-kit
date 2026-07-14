@@ -12,9 +12,9 @@ public static class RemoveChannelMemberEndpoint
 {
     internal static RouteHandlerBuilder MapRemoveChannelMemberEndpoint(this IEndpointRouteBuilder endpoints)
         => endpoints.MapDelete("/channels/{id:guid}/members/{userId}",
-                async (Guid id, string userId, IMediator mediator, CancellationToken cancellationToken) =>
+                async (Guid id, string userId, IMediator mediator, CancellationToken ct) =>
                 {
-                    await mediator.Send(new RemoveChannelMemberCommand(id, userId), cancellationToken);
+                    await mediator.Send(new RemoveChannelMemberCommand(id, userId), ct);
                     return Results.NoContent();
                 })
             .WithName("RemoveChannelMember")

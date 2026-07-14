@@ -27,9 +27,9 @@ public static class RevokeSessionEndpoint
     private static async Task<Results<NoContent, NotFound>> Handler(
         Guid sessionId,
         IMediator mediator,
-        CancellationToken cancellationToken)
+        CancellationToken ct)
     {
-        var result = await mediator.Send(new RevokeSessionCommand(sessionId), cancellationToken);
+        var result = await mediator.Send(new RevokeSessionCommand(sessionId), ct);
         return result ? TypedResults.NoContent() : TypedResults.NotFound();
     }
 }

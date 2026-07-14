@@ -12,9 +12,9 @@ public static class RestoreChannelEndpoint
 {
     internal static RouteHandlerBuilder MapRestoreChannelEndpoint(this IEndpointRouteBuilder endpoints)
         => endpoints.MapPost("/channels/{id:guid}/restore",
-                async (Guid id, IMediator mediator, CancellationToken cancellationToken) =>
+                async (Guid id, IMediator mediator, CancellationToken ct) =>
                 {
-                    await mediator.Send(new RestoreChannelCommand(id), cancellationToken);
+                    await mediator.Send(new RestoreChannelCommand(id), ct);
                     return Results.NoContent();
                 })
             .WithName("RestoreChannel")

@@ -18,13 +18,13 @@ public sealed class PurgeDeletedFilesJob(
     ILogger<PurgeDeletedFilesJob> logger)
 {
     [AutomaticRetry(Attempts = 2, DelaysInSeconds = [300, 1800])]
-    public async Task RunAsync(CancellationToken cancellationToken)
+    public async Task RunAsync(CancellationToken ct)
     {
         var cutoff = DateTimeOffset.UtcNow.AddDays(-options.Value.SoftDeleteRetentionDays);
         var candidates = await db.FileAssets
             .IgnoreQueryFilters()
             .Where(f => f.DeletedAt != null && f.DeletedAt < cutoff)
-            .ToListAsync(cancellationToken)
+            .ToListAsync(ct)
             .ConfigureAwait(false);
 
         if (candidates.Count == 0)
@@ -38,7 +38,7 @@ public sealed class PurgeDeletedFilesJob(
         {
             try
             {
-                await storage.RemoveAsync(f.StorageKey, cancellationToken).ConfigureAwait(false);
+                await storage.RemoveAsync(f.StorageKey, ct).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -54,7 +54,7 @@ public sealed class PurgeDeletedFilesJob(
         await db.FileAssets
             .IgnoreQueryFilters()
             .Where(f => ids.Contains(f.Id))
-            .ExecuteDeleteAsync(cancellationToken)
+            .ExecuteDeleteAsync(ct)
             .ConfigureAwait(false);
 
         if (logger.IsEnabled(LogLevel.Information))

@@ -14,9 +14,9 @@ public static class ChangePasswordEndpoint
         return endpoints.MapPost("/change-password", async (
             [FromBody] ChangePasswordCommand command,
             IMediator mediator,
-            CancellationToken cancellationToken) =>
+            CancellationToken ct) =>
         {
-            var result = await mediator.Send(command, cancellationToken);
+            var result = await mediator.Send(command, ct);
             return TypedResults.Ok(result);
         })
         .WithName("ChangePassword")

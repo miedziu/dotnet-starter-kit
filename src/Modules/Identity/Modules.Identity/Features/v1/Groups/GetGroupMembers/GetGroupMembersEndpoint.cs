@@ -13,8 +13,8 @@ public static class GetGroupMembersEndpoint
 {
     public static RouteHandlerBuilder MapGetGroupMembersEndpoint(this IEndpointRouteBuilder endpoints)
     {
-        return endpoints.MapGet("/groups/{groupId:guid}/members", async (Guid groupId, IMediator mediator, CancellationToken cancellationToken) =>
-            TypedResults.Ok(await mediator.Send(new GetGroupMembersQuery(groupId), cancellationToken)))
+        return endpoints.MapGet("/groups/{groupId:guid}/members", async (Guid groupId, IMediator mediator, CancellationToken ct) =>
+            TypedResults.Ok(await mediator.Send(new GetGroupMembersQuery(groupId), ct)))
         .WithName("GetGroupMembers")
         .WithSummary("Get members of a group")
         .RequirePermission(IdentityPermissions.Groups.View)

@@ -13,8 +13,8 @@ public static class GetGroupsEndpoint
 {
     public static RouteHandlerBuilder MapGetGroupsEndpoint(this IEndpointRouteBuilder endpoints)
     {
-        return endpoints.MapGet("/groups", async (IMediator mediator, string? search, CancellationToken cancellationToken) =>
-            TypedResults.Ok(await mediator.Send(new GetGroupsQuery(search), cancellationToken)))
+        return endpoints.MapGet("/groups", async (IMediator mediator, string? search, CancellationToken ct) =>
+            TypedResults.Ok(await mediator.Send(new GetGroupsQuery(search), ct)))
         .WithName("ListGroups")
         .WithSummary("List all groups")
         .RequirePermission(IdentityPermissions.Groups.View)

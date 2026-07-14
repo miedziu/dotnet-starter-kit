@@ -56,32 +56,32 @@ internal sealed class DemoSeeder
         _moduleOptions = moduleOptions.Value;
     }
 
-    public async Task RunAsync(CancellationToken cancellationToken)
+    public async Task RunAsync(CancellationToken ct)
     {
         // Sourced from configuration so the demo credential isn't hard-coded.
         _sharedPassword = _config["Seed:DemoPassword"]
             ?? throw new InvalidOperationException(
                 "Seed:DemoPassword must be configured (see appsettings.Development.json).");
 
-        // await EnsureDemoTenantsExistAsync(cancellationToken).ConfigureAwait(false);
-        await SeedRootSuperAdminAsync(cancellationToken).ConfigureAwait(false);
+        // await EnsureDemoTenantsExistAsync(ct).ConfigureAwait(false);
+        await SeedRootSuperAdminAsync(ct).ConfigureAwait(false);
 
         // Only seed subscription if Billing module is enabled
         if (_moduleOptions.IsModuleEnabled("Billing"))
         {
-            await SeedTenantSubscriptionAsync(cancellationToken).ConfigureAwait(false);
+            await SeedTenantSubscriptionAsync(ct).ConfigureAwait(false);
         }
         else if (_logger.IsEnabled(LogLevel.Information))
         {
             _logger.LogInformation("[demo-seed] skipping subscription seeding — Billing module disabled");
         }
 
-        await SeedTenantUsersAsync(cancellationToken).ConfigureAwait(false);
+        await SeedTenantUsersAsync(ct).ConfigureAwait(false);
 
         // Only seed tickets if Tickets module is enabled
         if (_moduleOptions.IsModuleEnabled("Tickets"))
         {
-            await SeedTenantTicketsAsync(cancellationToken).ConfigureAwait(false);
+            await SeedTenantTicketsAsync(ct).ConfigureAwait(false);
         }
         else if (_logger.IsEnabled(LogLevel.Information))
         {
@@ -91,7 +91,7 @@ internal sealed class DemoSeeder
         // Only seed chat if Chat module is enabled
         if (_moduleOptions.IsModuleEnabled("Chat"))
         {
-            await SeedTenantChatAsync(cancellationToken).ConfigureAwait(false);
+            await SeedTenantChatAsync(ct).ConfigureAwait(false);
         }
         else if (_logger.IsEnabled(LogLevel.Information))
         {
@@ -107,7 +107,7 @@ internal sealed class DemoSeeder
     }
 
     // ─── provisioning ────────────────────────────────────────────
-    // private async Task EnsureDemoTenantsExistAsync(CancellationToken cancellationToken)
+    // private async Task EnsureDemoTenantsExistAsync(CancellationToken ct)
     // {
     //     using var scope = _services.CreateScope();
     //     var tenantStore = scope.ServiceProvider.GetRequiredService<IMultiTenantStore<AppTenantInfo>>();
@@ -116,15 +116,15 @@ internal sealed class DemoSeeder
 
     //     // Same per-tenant path the migrator's apply verb uses. The Identity initializer creates
     //     // the tenant admin, while Catalog/Tickets/Chat initializers are no-ops today.
-    //     await tenantService.MigrateTenantAsync(existing, cancellationToken).ConfigureAwait(false);
-    //     await tenantService.SeedTenantAsync(existing, cancellationToken).ConfigureAwait(false);
+    //     await tenantService.MigrateTenantAsync(existing, ct).ConfigureAwait(false);
+    //     await tenantService.SeedTenantAsync(existing, ct).ConfigureAwait(false);
 
-    //     await EnsureProvisioningRecordAsync(tenantDb, cancellationToken).ConfigureAwait(false);
+    //     await EnsureProvisioningRecordAsync(tenantDb, ct).ConfigureAwait(false);
     // }
-    // private static async Task EnsureProvisioningRecordAsync(TenantDbContext tenantDb, CancellationToken cancellationToken)
+    // private static async Task EnsureProvisioningRecordAsync(TenantDbContext tenantDb, CancellationToken ct)
     // {
     //     var alreadyTracked = await tenantDb.Set<TenantProvisioning>()
-    //         .AnyAsync(cancellationToken)
+    //         .AnyAsync(ct)
     //         .ConfigureAwait(false);
     //     if (alreadyTracked)
     //     {
@@ -142,7 +142,7 @@ internal sealed class DemoSeeder
     //     provisioning.MarkCompleted();
 
     //     tenantDb.Add(provisioning);
-    //     await tenantDb.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+    //     await tenantDb.SaveChangesAsync(ct).ConfigureAwait(false);
     // }
 
     // ─── Subscription ──────────────────────────────────────────────────
@@ -164,14 +164,14 @@ internal sealed class DemoSeeder
     ///
     /// Idempotent: skips when an active subscription already exists.
     /// </summary>
-    private async Task SeedTenantSubscriptionAsync(CancellationToken cancellationToken)
+    private async Task SeedTenantSubscriptionAsync(CancellationToken ct)
     {
         using var scope = _services.CreateScope();
 
         var billingDb = scope.ServiceProvider.GetRequiredService<BillingDbContext>();
 
         var plan = await billingDb.Plans
-            .FirstOrDefaultAsync(p => p.Key == "pro-annual" && p.IsActive, cancellationToken)
+            .FirstOrDefaultAsync(p => p.Key == "pro-annual" && p.IsActive, ct)
             .ConfigureAwait(false);
         if (plan is null)
         {
@@ -185,7 +185,7 @@ internal sealed class DemoSeeder
 
         // Billing is now global: check for an existing active subscription
         var existing = await billingDb.Subscriptions
-            .FirstOrDefaultAsync(s => s.Status == SubscriptionStatus.Active, cancellationToken)
+            .FirstOrDefaultAsync(s => s.Status == SubscriptionStatus.Active, ct)
             .ConfigureAwait(false);
 
         var startUtc = existing?.StartUtc ?? DateTime.UtcNow;
@@ -209,7 +209,7 @@ internal sealed class DemoSeeder
             var invoiceNumber = string.Create(
                 CultureInfo.InvariantCulture, $"SUB-{startUtc:yyyyMM}-GLBL");
             var invoiceExists = await billingDb.Invoices
-                .AnyAsync(i => i.InvoiceNumber == invoiceNumber, cancellationToken)
+                .AnyAsync(i => i.InvoiceNumber == invoiceNumber, ct)
                 .ConfigureAwait(false);
             if (!invoiceExists)
             {
@@ -234,29 +234,29 @@ internal sealed class DemoSeeder
             }
         }
 
-        await billingDb.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        await billingDb.SaveChangesAsync(ct).ConfigureAwait(false);
     }
 
     // ─── Users + roles ─────────────────────────────────────────────────
 
-    private async Task SeedRootSuperAdminAsync(CancellationToken cancellationToken)
+    private async Task SeedRootSuperAdminAsync(CancellationToken ct)
     {
-        await SeedUsersInTenantAsync(BuildRootUsers(), [], cancellationToken).ConfigureAwait(false);
+        await SeedUsersInTenantAsync(BuildRootUsers(), [], ct).ConfigureAwait(false);
     }
 
-    private async Task SeedTenantUsersAsync(CancellationToken cancellationToken)
+    private async Task SeedTenantUsersAsync(CancellationToken ct)
     {
         using var scope = _services.CreateScope();
 
         var users = BuildUsers();
         var customRoles = BuildAcmeCustomRoles();
-        await SeedUsersInTenantAsync(users, customRoles, cancellationToken).ConfigureAwait(false);
+        await SeedUsersInTenantAsync(users, customRoles, ct).ConfigureAwait(false);
     }
 
     private async Task SeedUsersInTenantAsync(
         IReadOnlyList<DemoUser> users,
         IReadOnlyList<DemoRole> customRoles,
-        CancellationToken cancellationToken)
+        CancellationToken ct)
     {
         using var scope = _services.CreateScope();
 
@@ -294,7 +294,7 @@ internal sealed class DemoSeeder
                     CreatedOn = DateTimeOffset.UtcNow,
                 });
             }
-            await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            await context.SaveChangesAsync(ct).ConfigureAwait(false);
         }
 
         foreach (var demoUser in users)
@@ -367,19 +367,19 @@ internal sealed class DemoSeeder
 
     // ─── Tickets ────────────────────────────────────────────────────────
 
-    private async Task SeedTenantTicketsAsync(CancellationToken cancellationToken)
+    private async Task SeedTenantTicketsAsync(CancellationToken ct)
     {
         using var scope = _services.CreateScope();
 
         var dbContext = scope.ServiceProvider.GetRequiredService<TicketsDbContext>();
-        if (await dbContext.Tickets.AnyAsync(cancellationToken).ConfigureAwait(false))
+        if (await dbContext.Tickets.AnyAsync(ct).ConfigureAwait(false))
         {
             return;
         }
 
         var userManager = scope.ServiceProvider.GetRequiredService<UserManager<FshUser>>();
         var usersByEmail = await userManager.Users
-            .ToDictionaryAsync(u => u.Email!, u => u.IntId, cancellationToken)
+            .ToDictionaryAsync(u => u.Email!, u => u.IntId, ct)
             .ConfigureAwait(false);
 
         int? UserId(string email) =>
@@ -416,7 +416,7 @@ internal sealed class DemoSeeder
             number++;
         }
 
-        await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        await dbContext.SaveChangesAsync(ct).ConfigureAwait(false);
         if (_logger.IsEnabled(LogLevel.Information))
         {
             _logger.LogInformation(
@@ -427,19 +427,19 @@ internal sealed class DemoSeeder
 
     // ─── Chat ───────────────────────────────────────────────────────────
 
-    private async Task SeedTenantChatAsync(CancellationToken cancellationToken)
+    private async Task SeedTenantChatAsync(CancellationToken ct)
     {
         using var scope = _services.CreateScope();
 
         var dbContext = scope.ServiceProvider.GetRequiredService<ChatDbContext>();
-        if (await dbContext.Channels.AnyAsync(cancellationToken).ConfigureAwait(false))
+        if (await dbContext.Channels.AnyAsync(ct).ConfigureAwait(false))
         {
             return;
         }
 
         var userManager = scope.ServiceProvider.GetRequiredService<UserManager<FshUser>>();
         var usersByEmail = await userManager.Users
-            .ToDictionaryAsync(u => u.Email!, u => u.Id, cancellationToken)
+            .ToDictionaryAsync(u => u.Email!, u => u.Id, ct)
             .ConfigureAwait(false);
 
         string? UserId(string email) =>
@@ -464,7 +464,7 @@ internal sealed class DemoSeeder
                 (UserId("alice@acme.com"), "👋"),
                 (UserId("bob@acme.com"), "Coffee chat in 10?"),
             ],
-            cancellationToken);
+            ct);
         if (general is not null) { channelCount++; messageCount += 4; }
 
         var engineering = await SeedChannelAsync(
@@ -480,7 +480,7 @@ internal sealed class DemoSeeder
                 (UserId("alice@acme.com"), "Login redesign — code review out tomorrow."),
                 (UserId("bob@acme.com"), "Mobile hydration fix, then a perf pass on /reports."),
             ],
-            cancellationToken);
+            ct);
         if (engineering is not null) { channelCount++; messageCount += 3; }
 
         var random = await SeedChannelAsync(
@@ -497,7 +497,7 @@ internal sealed class DemoSeeder
                 (UserId("gina@acme.com"), "Anyone tried the new ramen place on 5th?"),
                 (UserId("henry@acme.com"), "Two thumbs up. The tonkotsu is worth the wait."),
             ],
-            cancellationToken);
+            ct);
         if (random is not null) { channelCount++; messageCount += 2; }
 
         // DM between alice + bob
@@ -507,11 +507,11 @@ internal sealed class DemoSeeder
         {
             var dm = ChatChannel.CreateDirect(aliceId, bobId);
             dbContext.Channels.Add(dm);
-            await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            await dbContext.SaveChangesAsync(ct).ConfigureAwait(false);
 
             dbContext.Messages.Add(Message.Create(dm.Id, aliceId, "hey, got a sec for the hydration thing?"));
             dbContext.Messages.Add(Message.Create(dm.Id, bobId, "yeah, throw me a repro and i'll look in the morning"));
-            await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            await dbContext.SaveChangesAsync(ct).ConfigureAwait(false);
 
             channelCount++; messageCount += 2;
         }
@@ -527,7 +527,7 @@ internal sealed class DemoSeeder
             [
                 (UserId("admin@globex.com"), "Welcome to Globex. Ping me here if you need anything."),
             ],
-            cancellationToken);
+            ct);
         if (general is not null) { channelCount++; messageCount += 1; }
 
 
@@ -547,7 +547,7 @@ internal sealed class DemoSeeder
         bool isPrivate,
         IReadOnlyList<string?> additionalMembers,
         IReadOnlyList<(string? AuthorUserId, string Body)> messages,
-        CancellationToken cancellationToken)
+        CancellationToken ct)
     {
         if (creator is null) return null;
 
@@ -564,14 +564,14 @@ internal sealed class DemoSeeder
             }
         }
         dbContext.Channels.Add(channel);
-        await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        await dbContext.SaveChangesAsync(ct).ConfigureAwait(false);
 
         foreach (var (authorUserId, body) in messages)
         {
             if (authorUserId is null) continue;
             dbContext.Messages.Add(Message.Create(channel.Id, authorUserId, body));
         }
-        await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        await dbContext.SaveChangesAsync(ct).ConfigureAwait(false);
 
         return channel;
     }

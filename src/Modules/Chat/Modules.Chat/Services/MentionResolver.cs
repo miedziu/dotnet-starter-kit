@@ -14,7 +14,7 @@ public sealed class MentionResolver(IUserService users) : IMentionResolver
 {
     public async Task<IReadOnlyDictionary<string, string>> ResolveUserIdsAsync(
         IReadOnlyCollection<string> usernames,
-        CancellationToken cancellationToken = default)
+        CancellationToken ct = default)
     {
         ArgumentNullException.ThrowIfNull(usernames);
         if (usernames.Count == 0)
@@ -25,7 +25,7 @@ public sealed class MentionResolver(IUserService users) : IMentionResolver
         // Normalize to a set so repeated mentions in one message hit the lookup only once.
         var lookup = new HashSet<string>(usernames, StringComparer.OrdinalIgnoreCase);
 
-        var all = await users.GetListAsync(cancellationToken).ConfigureAwait(false);
+        var all = await users.GetListAsync(ct).ConfigureAwait(false);
 
         var result = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         foreach (var u in all)

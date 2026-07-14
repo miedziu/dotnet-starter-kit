@@ -22,7 +22,7 @@ public static class SseEndpoints
         endpoints.MapPost("/api/v1/sse/token", async (
             ICurrentUser currentUser,
             ISseTokenService tokens,
-            CancellationToken cancellationToken) =>
+            CancellationToken ct) =>
         {
             if (!currentUser.IsAuthenticated())
             {
@@ -30,7 +30,7 @@ public static class SseEndpoints
             }
 
             var userId = currentUser.GetUserId().ToString();
-            var token = await tokens.IssueAsync(userId, cancellationToken).ConfigureAwait(false);
+            var token = await tokens.IssueAsync(userId, ct).ConfigureAwait(false);
             return Results.Ok(new { token });
         })
         .WithName("SseToken")
@@ -43,9 +43,9 @@ public static class SseEndpoints
             [Microsoft.AspNetCore.Mvc.FromQuery] Guid token,
             ISseTokenService tokens,
             SseConnectionManager connectionManager,
-            CancellationToken cancellationToken) =>
+            CancellationToken ct) =>
         {
-            var principal = await tokens.ConsumeAsync(token, cancellationToken).ConfigureAwait(false);
+            var principal = await tokens.ConsumeAsync(token, ct).ConfigureAwait(false);
             if (principal is null)
             {
                 context.Response.StatusCode = StatusCodes.Status401Unauthorized;
@@ -67,25 +67,25 @@ public static class SseEndpoints
             // promise (which resolves on response headers) would sit pending and the UI would
             // show "connecting" for up to 15s on every connect/reconnect. Writing a no-op SSE
             // comment now sends the headers and lets the client flip to "connected" at once.
-            await context.Response.WriteAsync(":connected\n\n", cancellationToken).ConfigureAwait(false);
-            await context.Response.Body.FlushAsync(cancellationToken).ConfigureAwait(false);
+            await context.Response.WriteAsync(":connected\n\n", ct).ConfigureAwait(false);
+            await context.Response.Body.FlushAsync(ct).ConfigureAwait(false);
 
             using var heartbeat = new PeriodicTimer(HeartbeatInterval);
 
             try
             {
-                while (!cancellationToken.IsCancellationRequested)
+                while (!ct.IsCancellationRequested)
                 {
-                    var waitTask = reader.WaitToReadAsync(cancellationToken).AsTask();
-                    var tickTask = heartbeat.WaitForNextTickAsync(cancellationToken).AsTask();
+                    var waitTask = reader.WaitToReadAsync(ct).AsTask();
+                    var tickTask = heartbeat.WaitForNextTickAsync(ct).AsTask();
 
                     var completed = await Task.WhenAny(waitTask, tickTask).ConfigureAwait(false);
 
                     if (completed == tickTask)
                     {
                         _ = await tickTask.ConfigureAwait(false);
-                        await context.Response.WriteAsync(":heartbeat\n\n", cancellationToken).ConfigureAwait(false);
-                        await context.Response.Body.FlushAsync(cancellationToken).ConfigureAwait(false);
+                        await context.Response.WriteAsync(":heartbeat\n\n", ct).ConfigureAwait(false);
+                        await context.Response.Body.FlushAsync(ct).ConfigureAwait(false);
                         continue;
                     }
 
@@ -97,11 +97,11 @@ public static class SseEndpoints
 
                     while (reader.TryRead(out var sseEvent))
                     {
-                        await WriteEventAsync(context.Response, sseEvent, cancellationToken).ConfigureAwait(false);
+                        await WriteEventAsync(context.Response, sseEvent, ct).ConfigureAwait(false);
                     }
                 }
             }
-            catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+            catch (OperationCanceledException) when (ct.IsCancellationRequested)
             {
                 // Client disconnected — expected.
             }

@@ -12,9 +12,9 @@ public static class DeleteMessageEndpoint
 {
     internal static RouteHandlerBuilder MapDeleteMessageEndpoint(this IEndpointRouteBuilder endpoints)
         => endpoints.MapDelete("/messages/{id:guid}",
-                async (Guid id, IMediator mediator, CancellationToken cancellationToken) =>
+                async (Guid id, IMediator mediator, CancellationToken ct) =>
                 {
-                    await mediator.Send(new DeleteMessageCommand(id), cancellationToken);
+                    await mediator.Send(new DeleteMessageCommand(id), ct);
                     return Results.NoContent();
                 })
             .WithName("DeleteMessage")

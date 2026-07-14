@@ -28,11 +28,11 @@ public static class ResendConfirmationEmailEndpoint
         Guid id,
         HttpContext context,
         IMediator mediator,
-        CancellationToken cancellationToken)
+        CancellationToken ct)
     {
         // Build the confirmation-link base URL from the request, same as the registration endpoint.
         var origin = $"{context.Request.Scheme}://{context.Request.Host.Value}{context.Request.PathBase.Value}";
-        await mediator.Send(new ResendConfirmationEmailCommand(id.ToString(), origin), cancellationToken);
+        await mediator.Send(new ResendConfirmationEmailCommand(id.ToString(), origin), ct);
         return TypedResults.NoContent();
     }
 }

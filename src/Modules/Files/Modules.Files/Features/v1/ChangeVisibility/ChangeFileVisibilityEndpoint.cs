@@ -13,9 +13,9 @@ public static class ChangeFileVisibilityEndpoint
 {
     internal static RouteHandlerBuilder MapChangeFileVisibilityEndpoint(this IEndpointRouteBuilder endpoints)
         => endpoints.MapPatch("/{id:guid}/visibility",
-                async (Guid id, ChangeVisibilityRequest body, IMediator mediator, CancellationToken cancellationToken) =>
+                async (Guid id, ChangeVisibilityRequest body, IMediator mediator, CancellationToken ct) =>
                 {
-                    var dto = await mediator.Send(new ChangeFileVisibilityCommand(id, body.Visibility), cancellationToken);
+                    var dto = await mediator.Send(new ChangeFileVisibilityCommand(id, body.Visibility), ct);
                     return Results.Ok(dto);
                 })
             .WithName("ChangeFileVisibility")

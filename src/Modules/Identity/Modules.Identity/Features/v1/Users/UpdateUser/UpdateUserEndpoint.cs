@@ -14,7 +14,7 @@ public static class UpdateUserEndpoint
 {
     internal static RouteHandlerBuilder MapUpdateUserEndpoint(this IEndpointRouteBuilder endpoints)
     {
-        return endpoints.MapPut("/profile", async ([FromBody] UpdateUserCommand request, ClaimsPrincipal user, IMediator mediator, CancellationToken cancellationToken) =>
+        return endpoints.MapPut("/profile", async ([FromBody] UpdateUserCommand request, ClaimsPrincipal user, IMediator mediator, CancellationToken ct) =>
         {
             if (user.GetUserId() is not { } userId || string.IsNullOrEmpty(userId))
             {
@@ -25,7 +25,7 @@ public static class UpdateUserEndpoint
             // only, regardless of any id the caller supplied in the body.
             request.Id = userId;
 
-            await mediator.Send(request, cancellationToken);
+            await mediator.Send(request, ct);
             return TypedResults.Ok();
         })
         .WithName("UpdateUserProfile")

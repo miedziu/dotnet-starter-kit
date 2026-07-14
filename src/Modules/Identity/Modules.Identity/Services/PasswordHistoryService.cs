@@ -23,7 +23,7 @@ internal sealed class PasswordHistoryService : IPasswordHistoryService
         _passwordPolicyOptions = passwordPolicyOptions.Value;
     }
 
-    public async Task<bool> IsPasswordInHistoryAsync(string userId, string newPassword, CancellationToken cancellationToken = default)
+    public async Task<bool> IsPasswordInHistoryAsync(string userId, string newPassword, CancellationToken ct = default)
     {
         ArgumentNullException.ThrowIfNull(userId);
         ArgumentNullException.ThrowIfNull(newPassword);
@@ -46,7 +46,7 @@ internal sealed class PasswordHistoryService : IPasswordHistoryService
             .OrderByDescending(ph => ph.CreatedAt)
             .Take(passwordHistoryCount)
             .Select(ph => ph.PasswordHash)
-            .ToListAsync(cancellationToken);
+            .ToListAsync(ct);
 
         // Check if the new password matches any recent password
         foreach (var passwordHash in recentPasswordHashes)
@@ -63,7 +63,7 @@ internal sealed class PasswordHistoryService : IPasswordHistoryService
         return false; // Password is not in history
     }
 
-    public async Task SavePasswordHistoryAsync(string userId, CancellationToken cancellationToken = default)
+    public async Task SavePasswordHistoryAsync(string userId, CancellationToken ct = default)
     {
         ArgumentNullException.ThrowIfNull(userId);
 
@@ -76,13 +76,13 @@ internal sealed class PasswordHistoryService : IPasswordHistoryService
         var passwordHistoryEntry = PasswordHistory.Create(user.IntId, user.PasswordHash);
 
         _db.Set<PasswordHistory>().Add(passwordHistoryEntry);
-        await _db.SaveChangesAsync(cancellationToken);
+        await _db.SaveChangesAsync(ct);
 
         // Clean up old password history entries
-        await CleanupOldPasswordHistoryAsync(userId, cancellationToken);
+        await CleanupOldPasswordHistoryAsync(userId, ct);
     }
 
-    public async Task CleanupOldPasswordHistoryAsync(string userId, CancellationToken cancellationToken = default)
+    public async Task CleanupOldPasswordHistoryAsync(string userId, CancellationToken ct = default)
     {
         ArgumentNullException.ThrowIfNull(userId);
 
@@ -90,7 +90,7 @@ internal sealed class PasswordHistoryService : IPasswordHistoryService
         var intId = await _db.Users
             .Where(u => u.Id == userId)
             .Select(u => u.IntId)
-            .FirstOrDefaultAsync(cancellationToken);
+            .FirstOrDefaultAsync(ct);
 
         var passwordHistoryCount = _passwordPolicyOptions.PasswordHistoryCount;
         if (passwordHistoryCount <= 0)
@@ -102,7 +102,7 @@ internal sealed class PasswordHistoryService : IPasswordHistoryService
         var allPasswordHistories = await _db.Set<PasswordHistory>()
             .Where(ph => ph.UserId == intId)
             .OrderByDescending(ph => ph.CreatedAt)
-            .ToListAsync(cancellationToken);
+            .ToListAsync(ct);
 
         // Keep only the configured number of passwords
         if (allPasswordHistories.Count > passwordHistoryCount)
@@ -112,7 +112,7 @@ internal sealed class PasswordHistoryService : IPasswordHistoryService
                 .ToList();
 
             _db.Set<PasswordHistory>().RemoveRange(oldPasswordHistories);
-            await _db.SaveChangesAsync(cancellationToken);
+            await _db.SaveChangesAsync(ct);
         }
     }
 }

@@ -35,7 +35,7 @@ internal static partial class PostgresMigratorLock
     public static async Task WaitForDatabaseAsync(
         string connectionString,
         ILogger logger,
-        CancellationToken cancellationToken)
+        CancellationToken ct)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(connectionString);
 
@@ -49,7 +49,7 @@ internal static partial class PostgresMigratorLock
             try
             {
                 await using var conn = new NpgsqlConnection(connectionString);
-                await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+                await conn.OpenAsync(ct).ConfigureAwait(false);
                 LogPostgresReady(logger, attempt);
                 return;
             }
@@ -63,7 +63,7 @@ internal static partial class PostgresMigratorLock
             catch (Exception ex) when (ex is NpgsqlException or TimeoutException or SocketException)
             {
                 LogPostgresNotReady(logger, ex, attempt, delay.TotalSeconds);
-                await Task.Delay(delay, cancellationToken).ConfigureAwait(false);
+                await Task.Delay(delay, ct).ConfigureAwait(false);
                 delay = TimeSpan.FromSeconds(Math.Min(delay.TotalSeconds * 1.5, 10));
             }
         }
@@ -86,14 +86,14 @@ internal static partial class PostgresMigratorLock
     public static async Task<IAsyncDisposable> AcquireAsync(
         string connectionString,
         ILogger logger,
-        CancellationToken cancellationToken)
+        CancellationToken ct)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(connectionString);
 
         var conn = new NpgsqlConnection(connectionString);
         try
         {
-            await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+            await conn.OpenAsync(ct).ConfigureAwait(false);
         }
         catch (PostgresException ex) when (ex.SqlState == "3D000")
         {
@@ -107,7 +107,7 @@ internal static partial class PostgresMigratorLock
             cmd.CommandText = AcquireSql;
             cmd.Parameters.Add(new NpgsqlParameter("key", NpgsqlDbType.Bigint) { Value = MigratorAdvisoryLockKey });
             LogAcquiringLock(logger, MigratorAdvisoryLockKey);
-            await cmd.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
+            await cmd.ExecuteNonQueryAsync(ct).ConfigureAwait(false);
         }
         LogLockAcquired(logger);
 

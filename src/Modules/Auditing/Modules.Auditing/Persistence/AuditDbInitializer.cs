@@ -8,11 +8,11 @@ internal sealed class AuditDbInitializer(
     ILogger<AuditDbInitializer> logger,
     AuditDbContext context) : IDbInitializer
 {
-    public async Task MigrateAsync(CancellationToken cancellationToken)
+    public async Task MigrateAsync(CancellationToken ct)
     {
-        if ((await context.Database.GetPendingMigrationsAsync(cancellationToken).ConfigureAwait(false)).Any())
+        if ((await context.Database.GetPendingMigrationsAsync(ct).ConfigureAwait(false)).Any())
         {
-            await context.Database.MigrateAsync(cancellationToken).ConfigureAwait(false);
+            await context.Database.MigrateAsync(ct).ConfigureAwait(false);
             if (logger.IsEnabled(LogLevel.Information))
             {
                 logger.LogInformation("applied database migrations for audit module");
@@ -20,7 +20,7 @@ internal sealed class AuditDbInitializer(
         }
     }
 
-    public Task SeedAsync(CancellationToken cancellationToken)
+    public Task SeedAsync(CancellationToken ct)
     {
         return Task.CompletedTask;
     }

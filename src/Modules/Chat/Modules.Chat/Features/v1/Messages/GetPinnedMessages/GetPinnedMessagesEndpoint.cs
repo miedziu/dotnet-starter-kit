@@ -12,9 +12,9 @@ public static class GetPinnedMessagesEndpoint
 {
     internal static RouteHandlerBuilder MapGetPinnedMessagesEndpoint(this IEndpointRouteBuilder endpoints)
         => endpoints.MapGet("/channels/{id:guid}/pinned",
-                async (Guid id, IMediator mediator, CancellationToken cancellationToken) =>
+                async (Guid id, IMediator mediator, CancellationToken ct) =>
                 {
-                    var result = await mediator.Send(new GetPinnedMessagesQuery(id), cancellationToken);
+                    var result = await mediator.Send(new GetPinnedMessagesQuery(id), ct);
                     return Results.Ok(result);
                 })
             .WithName("ListPinnedMessages")

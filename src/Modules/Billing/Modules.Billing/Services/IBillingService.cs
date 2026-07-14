@@ -12,14 +12,14 @@ public interface IBillingService
     /// Returns the global wallet, creating one if none exists. Billing is not tenant-scoped: there
     /// is a single wallet ledger for prepaid credit (e.g. WhatsApp) shared across the system.
     /// </summary>
-    Task<Wallet> GetOrCreateWalletAsync(string currency, CancellationToken cancellationToken = default);
+    Task<Wallet> GetOrCreateWalletAsync(string currency, CancellationToken ct = default);
 
     /// <summary>
     /// Creates and issues a Topup-purpose invoice for the pending <see cref="TopupRequest"/>,
     /// fires <c>InvoiceIssuedIntegrationEvent</c>, calls <c>request.MarkInvoiced</c>, and saves —
     /// all in one unit of work.
     /// </summary>
-    Task<Invoice> CreateTopupInvoiceAsync(Guid topupRequestId, CancellationToken cancellationToken = default);
+    Task<Invoice> CreateTopupInvoiceAsync(Guid topupRequestId, CancellationToken ct = default);
 
     /// <summary>
     /// Generates a Draft invoice for the period by snapshotting usage and pricing it against the
@@ -29,7 +29,7 @@ public interface IBillingService
     Task<Invoice?> GenerateInvoiceForPeriodAsync(
         int periodYear,
         int periodMonth,
-        CancellationToken cancellationToken = default);
+        CancellationToken ct = default);
 
     /// <summary>
     /// Generates the draft invoice for the global active subscription for the given period.
@@ -38,7 +38,7 @@ public interface IBillingService
     Task<int> GenerateInvoicesAsync(
         int periodYear,
         int periodMonth,
-        CancellationToken cancellationToken = default);
+        CancellationToken ct = default);
 
     /// <summary>
     /// Creates and issues a Subscription-purpose invoice for one plan term (the term base fee). Called
@@ -49,11 +49,11 @@ public interface IBillingService
         Guid planId,
         DateTime periodStartUtc,
         DateTime periodEndUtc,
-        CancellationToken cancellationToken = default);
+        CancellationToken ct = default);
 
-    Task IssueInvoiceAsync(Guid invoiceId, DateTime? dueAtUtc, CancellationToken cancellationToken = default);
+    Task IssueInvoiceAsync(Guid invoiceId, DateTime? dueAtUtc, CancellationToken ct = default);
 
-    Task MarkInvoicePaidAsync(Guid invoiceId, CancellationToken cancellationToken = default);
+    Task MarkInvoicePaidAsync(Guid invoiceId, CancellationToken ct = default);
 
-    Task VoidInvoiceAsync(Guid invoiceId, string? reason, CancellationToken cancellationToken = default);
+    Task VoidInvoiceAsync(Guid invoiceId, string? reason, CancellationToken ct = default);
 }

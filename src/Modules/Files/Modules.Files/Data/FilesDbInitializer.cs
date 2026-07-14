@@ -8,14 +8,14 @@ public sealed class FilesDbInitializer(
     FilesDbContext dbContext,
     ILogger<FilesDbInitializer> logger) : IDbInitializer
 {
-    public async Task MigrateAsync(CancellationToken cancellationToken)
+    public async Task MigrateAsync(CancellationToken ct)
     {
-        if ((await dbContext.Database.GetPendingMigrationsAsync(cancellationToken).ConfigureAwait(false)).Any())
+        if ((await dbContext.Database.GetPendingMigrationsAsync(ct).ConfigureAwait(false)).Any())
         {
-            await dbContext.Database.MigrateAsync(cancellationToken).ConfigureAwait(false);
+            await dbContext.Database.MigrateAsync(ct).ConfigureAwait(false);
             logger.LogInformation("[Files] applied migrations");
         }
     }
 
-    public Task SeedAsync(CancellationToken cancellationToken) => Task.CompletedTask;
+    public Task SeedAsync(CancellationToken ct) => Task.CompletedTask;
 }
