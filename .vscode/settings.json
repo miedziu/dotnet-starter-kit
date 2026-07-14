@@ -27,6 +27,8 @@
         //"**/*.md": true, //
         "**/*.min.*": true,
         //"**/*Migrations*/*": true, //
+        "**/*.props": true,
+        //"**/*.md": true,
         //".agents": true
     },
     "diffEditor.renderGutterMenu": false,

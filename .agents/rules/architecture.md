@@ -8,14 +8,8 @@
 
 Cross-module comms: Contracts service interfaces or integration events only.
 
-## Feature layout (VSA)
-
-```
-Features/v1/{Area}/{Feature}/
-├── {Feature}Endpoint.cs
-├── {Feature}CommandHandler.cs
-└── {Feature}CommandValidator.cs
-```
+## Feature layout (Single File Slice)
+Features/v1/{Area}/{Feature}.cs
 
 ## IModule registration
 
