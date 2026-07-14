@@ -13,7 +13,7 @@ using FSH.Modules.Files.Contracts.v1.Commands;
 using FSH.Modules.Identity;
 using FSH.Modules.Identity.Contracts.v1.Tokens.TokenGeneration;
 using FSH.Modules.Identity.Data;
-using FSH.Modules.Identity.Features.v1.Tokens.TokenGeneration;
+using FSH.Modules.Identity.Features.v1.Tokens;
 using FSH.Modules.Notifications;
 using FSH.Modules.Notifications.Contracts.v1.Commands;
 using FSH.Modules.Tickets;

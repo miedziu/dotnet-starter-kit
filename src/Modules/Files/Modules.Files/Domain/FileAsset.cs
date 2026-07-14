@@ -115,7 +115,7 @@ public sealed class FileAsset : AggregateRoot<Guid>, ISoftDeletable
     /// files that haven't finished uploading or are quarantined — those are not in a state
     /// where the URL contract is well-defined.
     /// </summary>
-    public void ChangeVisibility(Visibility next)
+    public void ChangeFileVisibility(Visibility next)
     {
         if (Status != FileAssetStatus.Available)
         {

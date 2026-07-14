@@ -6,7 +6,7 @@ using FSH.Framework.Web.HttpResilience;
 using FSH.Framework.Web.Modules;
 using FSH.Modules.Webhooks.Contracts.Authorization;
 using FSH.Modules.Webhooks.Data;
-using FSH.Modules.Webhooks.Features.v1.Webhooks;
+using FSH.Modules.Webhooks.Features.v1;
 using FSH.Modules.Webhooks.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;

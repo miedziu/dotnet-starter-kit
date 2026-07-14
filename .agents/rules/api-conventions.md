@@ -60,5 +60,5 @@ Use `Specification<T>` for composable queries. `AsNoTracking = true` by default.
 ## Adding a feature
 
 1. Command/Query in `Modules.{Name}.Contracts/v1/{Area}/{Feature}.cs`
-2. Handler + Validator + Endpoint in `Modules.{Name}/Features/v1/{Area}/{Feature}.cs` (Single File Slice)
+2. In order: Endpoint + Validator + Handler in `Modules.{Name}/Features/v1/{Area}/{Feature}.cs` (Single File Slice)
 3. Wire endpoint in module's `MapEndpoints()`

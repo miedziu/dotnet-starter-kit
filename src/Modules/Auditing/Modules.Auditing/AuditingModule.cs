@@ -2,13 +2,7 @@ using Asp.Versioning;
 using FSH.Framework.Persistence;
 using FSH.Framework.Web.Modules;
 using FSH.Modules.Auditing.Contracts;
-using FSH.Modules.Auditing.Features.v1.GetAuditById;
-using FSH.Modules.Auditing.Features.v1.GetAudits;
-using FSH.Modules.Auditing.Features.v1.GetAuditsByCorrelation;
-using FSH.Modules.Auditing.Features.v1.GetAuditsByTrace;
-using FSH.Modules.Auditing.Features.v1.GetAuditSummary;
-using FSH.Modules.Auditing.Features.v1.GetExceptionAudits;
-using FSH.Modules.Auditing.Features.v1.GetSecurityAudits;
+using FSH.Modules.Auditing.Features.v1;
 using FSH.Modules.Auditing.Persistence;
 using Hangfire;
 using Hangfire.Common;
@@ -30,8 +24,7 @@ public class AuditingModule : IModule
     {
         ArgumentNullException.ThrowIfNull(builder);
 
-        FSH.Framework.Shared.Constants.PermissionConstants.Register(
-            FSH.Modules.Auditing.Contracts.Authorization.AuditingPermissions.All);
+        FSH.Framework.Shared.Constants.PermissionConstants.Register(Contracts.Authorization.AuditingPermissions.All);
 
         var httpOpts = builder.Configuration.GetSection("Auditing").Get<AuditHttpOptions>() ?? new AuditHttpOptions();
         builder.Services.AddSingleton(httpOpts);

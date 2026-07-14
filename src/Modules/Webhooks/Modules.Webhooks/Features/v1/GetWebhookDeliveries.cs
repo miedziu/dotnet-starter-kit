@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 
-namespace FSH.Modules.Webhooks.Features.v1.Webhooks;
+namespace FSH.Modules.Webhooks.Features.v1;
 
 public static class GetWebhookDeliveriesEndpoint
 {
