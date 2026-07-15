@@ -1,6 +1,6 @@
 using FSH.Framework.Core.Context;
 using FSH.Framework.Core.Exceptions;
-using FSH.Modules.Identity.Contracts.DTOs;
+using FSH.Modules.Identity.Contracts.v1.Dtos;
 using FSH.Modules.Identity.Contracts.v1.TwoFactor;
 using FSH.Modules.Identity.Domain;
 using Mediator;

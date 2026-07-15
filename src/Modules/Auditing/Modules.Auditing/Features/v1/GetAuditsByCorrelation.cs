@@ -1,8 +1,8 @@
 using FSH.Framework.Shared.Identity.Authorization;
 using FSH.Modules.Auditing.Contracts;
 using FSH.Modules.Auditing.Contracts.Authorization;
-using FSH.Modules.Auditing.Contracts.Dtos;
-using FSH.Modules.Auditing.Contracts.v1.GetAuditsByCorrelation;
+using FSH.Modules.Auditing.Contracts.v1;
+using FSH.Modules.Auditing.Contracts.v1.Dtos;
 using FSH.Modules.Auditing.Persistence;
 using Mediator;
 using Microsoft.AspNetCore.Builder;

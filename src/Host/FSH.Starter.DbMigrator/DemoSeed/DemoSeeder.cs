@@ -9,7 +9,7 @@ using FSH.Modules.Identity.Contracts.Authorization;
 using FSH.Modules.Identity.Data;
 using FSH.Modules.Identity.Domain;
 using FSH.Modules.Tickets.Contracts.Authorization;
-using FSH.Modules.Tickets.Contracts.Dtos;
+using FSH.Modules.Tickets.Contracts.v1.Dtos;
 using FSH.Modules.Tickets.Data;
 using FSH.Modules.Tickets.Domain;
 using Microsoft.AspNetCore.Identity;

@@ -1,7 +1,7 @@
 using FSH.Framework.Shared.Identity.Authorization;
 using FSH.Framework.Web.Idempotency;
 using FSH.Modules.Webhooks.Contracts.Authorization;
-using FSH.Modules.Webhooks.Contracts.v1.CreateWebhookSubscription;
+using FSH.Modules.Webhooks.Contracts.v1.Subscription;
 using FSH.Modules.Webhooks.Data;
 using FSH.Modules.Webhooks.Domain;
 using FSH.Modules.Webhooks.Services;

@@ -1,4 +1,4 @@
-using FSH.Modules.Billing.Contracts.Dtos;
+using FSH.Modules.Billing.Contracts.v1.Dtos;
 using FSH.Modules.Billing.Contracts.v1.Usage;
 using FSH.Modules.Billing.Data;
 using Mediator;

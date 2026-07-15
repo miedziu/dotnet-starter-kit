@@ -3,7 +3,7 @@ using FSH.Framework.Core.Context;
 using FSH.Framework.Shared.Identity.Authorization;
 using FSH.Modules.Identity.Contracts.Authorization;
 using FSH.Modules.Identity.Contracts.Services;
-using FSH.Modules.Identity.Contracts.v1.Sessions.AdminRevokeAllSessions;
+using FSH.Modules.Identity.Contracts.v1.Sessions;
 using Mediator;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;

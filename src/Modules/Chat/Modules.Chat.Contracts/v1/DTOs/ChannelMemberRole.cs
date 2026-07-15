@@ -1,4 +1,4 @@
-namespace FSH.Modules.Chat.Contracts.v1.DTOs;
+namespace FSH.Modules.Chat.Contracts.v1.Dtos;
 
 /// <summary>
 /// Member role within a channel. Serialized as its string name (global JsonStringEnumConverter),

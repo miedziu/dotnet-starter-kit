@@ -3,7 +3,7 @@ using FSH.Framework.Core.Exceptions;
 using FSH.Framework.Shared.Identity.Authorization;
 using FSH.Modules.Identity.Contracts.Authorization;
 using FSH.Modules.Identity.Contracts.Services;
-using FSH.Modules.Identity.Contracts.v1.Groups.RemoveUserFromGroup;
+using FSH.Modules.Identity.Contracts.v1.Groups;
 using FSH.Modules.Identity.Data;
 using Mediator;
 using Microsoft.AspNetCore.Builder;

@@ -1,7 +1,7 @@
 using FluentValidation;
 using FSH.Framework.Core.Context;
 using FSH.Modules.Identity.Contracts.Services;
-using FSH.Modules.Identity.Contracts.v1.Users.ChangePassword;
+using FSH.Modules.Identity.Contracts.v1.Users;
 using Mediator;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;

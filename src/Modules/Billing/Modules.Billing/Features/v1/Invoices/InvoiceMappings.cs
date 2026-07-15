@@ -1,4 +1,4 @@
-using FSH.Modules.Billing.Contracts.Dtos;
+using FSH.Modules.Billing.Contracts.v1.Dtos;
 using FSH.Modules.Billing.Domain;
 
 namespace FSH.Modules.Billing.Features.v1.Invoices;

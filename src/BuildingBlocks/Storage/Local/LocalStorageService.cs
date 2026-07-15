@@ -1,5 +1,5 @@
 using FSH.Framework.Shared.Storage;
-using FSH.Framework.Storage.DTOs;
+using FSH.Framework.Storage.Dtos;
 using FSH.Framework.Storage.Services;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.StaticFiles;

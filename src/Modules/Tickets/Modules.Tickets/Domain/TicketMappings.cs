@@ -1,5 +1,5 @@
 using FSH.Modules.Identity.Contracts.Services;
-using FSH.Modules.Tickets.Contracts.Dtos;
+using FSH.Modules.Tickets.Contracts.v1.Dtos;
 
 namespace FSH.Modules.Tickets.Domain;
 

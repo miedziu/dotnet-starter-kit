@@ -1,5 +1,5 @@
 using FSH.Modules.Identity.Contracts.Services;
-using FSH.Modules.Identity.Contracts.v1.Users.ConfirmEmail;
+using FSH.Modules.Identity.Contracts.v1.Users;
 using Mediator;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;

@@ -1,4 +1,4 @@
-namespace FSH.Modules.Chat.Contracts.v1.DTOs;
+namespace FSH.Modules.Chat.Contracts.v1.Dtos;
 
 public sealed record MessageAttachmentDto(
     Guid Id,

@@ -1,7 +1,7 @@
 using FSH.Framework.Core.Exceptions;
 using FSH.Framework.Shared.Identity.Authorization;
 using FSH.Modules.Webhooks.Contracts.Authorization;
-using FSH.Modules.Webhooks.Contracts.v1.TestWebhookSubscription;
+using FSH.Modules.Webhooks.Contracts.v1.Subscription;
 using FSH.Modules.Webhooks.Data;
 using FSH.Modules.Webhooks.Services;
 using Mediator;

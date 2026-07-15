@@ -1,5 +1,5 @@
 using FSH.Framework.Shared.Persistence;
-using FSH.Modules.Billing.Contracts.Dtos;
+using FSH.Modules.Billing.Contracts.v1.Dtos;
 using FSH.Modules.Billing.Contracts.v1.Wallets;
 using FSH.Modules.Billing.Data;
 using FSH.Modules.Billing.Mappings;

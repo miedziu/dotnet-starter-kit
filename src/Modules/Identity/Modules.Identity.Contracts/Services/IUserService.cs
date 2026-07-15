@@ -1,5 +1,5 @@
 using FSH.Framework.Shared.Storage;
-using FSH.Modules.Identity.Contracts.DTOs;
+using FSH.Modules.Identity.Contracts.v1.Dtos;
 using System.Security.Claims;
 
 namespace FSH.Modules.Identity.Contracts.Services;

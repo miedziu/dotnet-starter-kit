@@ -4,6 +4,7 @@ using FSH.Framework.Web.Modules;
 using FSH.Framework.Web.Observability.Logging.Serilog;
 using FSH.Modules.Auditing;
 using FSH.Modules.Auditing.Contracts;
+using FSH.Modules.Auditing.Persistence;
 using FSH.Modules.Billing;
 using FSH.Modules.Billing.Contracts;
 using FSH.Modules.Chat;
@@ -11,15 +12,15 @@ using FSH.Modules.Chat.Contracts.v1.Commands;
 using FSH.Modules.Files;
 using FSH.Modules.Files.Contracts.v1.Commands;
 using FSH.Modules.Identity;
-using FSH.Modules.Identity.Contracts.v1.Tokens.TokenGeneration;
+using FSH.Modules.Identity.Contracts.v1.Tokens;
 using FSH.Modules.Identity.Data;
 using FSH.Modules.Identity.Features.v1.Tokens;
 using FSH.Modules.Notifications;
-using FSH.Modules.Notifications.Contracts.v1.Commands;
+using FSH.Modules.Notifications.Contracts.v1;
 using FSH.Modules.Tickets;
 using FSH.Modules.Tickets.Contracts;
 using FSH.Modules.Webhooks;
-using FSH.Modules.Webhooks.Contracts.v1.CreateWebhookSubscription;
+using FSH.Modules.Webhooks.Contracts.v1.Subscription;
 using FSH.Starter.DbMigrator;
 using FSH.Starter.DbMigrator.DemoSeed;
 using Microsoft.EntityFrameworkCore;
@@ -104,20 +105,20 @@ builder.Services.AddMediator(o =>
     o.Assemblies = [
         typeof(GenerateTokenCommand),
         typeof(GenerateTokenCommandHandler),
-        typeof(FSH.Modules.Auditing.Contracts.AuditEnvelope),
-        typeof(FSH.Modules.Auditing.Persistence.AuditDbContext),
-        typeof(FSH.Modules.Webhooks.Contracts.v1.CreateWebhookSubscription.CreateWebhookSubscriptionCommand),
-        typeof(FSH.Modules.Webhooks.WebhooksModule),
-        typeof(FSH.Modules.Billing.Contracts.BillingContractsMarker),
-        typeof(FSH.Modules.Billing.BillingModule),
-        typeof(FSH.Modules.Tickets.Contracts.TicketsContractsMarker),
-        typeof(FSH.Modules.Tickets.TicketsModule),
-        typeof(FSH.Modules.Files.Contracts.v1.Commands.RequestUploadUrlCommand),
-        typeof(FSH.Modules.Files.FilesModule),
-        typeof(FSH.Modules.Chat.Contracts.v1.Commands.CreateChannelCommand),
-        typeof(FSH.Modules.Chat.ChatModule),
-        typeof(FSH.Modules.Notifications.Contracts.v1.Commands.MarkNotificationReadCommand),
-        typeof(FSH.Modules.Notifications.NotificationsModule),
+        typeof(AuditEnvelope),
+        typeof(AuditDbContext),
+        typeof(CreateWebhookSubscriptionCommand),
+        typeof(WebhooksModule),
+        typeof(BillingContractsMarker),
+        typeof(BillingModule),
+        typeof(TicketsContractsMarker),
+        typeof(TicketsModule),
+        typeof(RequestUploadUrlCommand),
+        typeof(FilesModule),
+        typeof(CreateChannelCommand),
+        typeof(ChatModule),
+        typeof(MarkNotificationReadCommand),
+        typeof(NotificationsModule),
     ];
 });
 

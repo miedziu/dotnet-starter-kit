@@ -1,5 +1,5 @@
 using FSH.Framework.Web.Idempotency;
-using FSH.Modules.Identity.Contracts.v1.Users.RegisterUser;
+using FSH.Modules.Identity.Contracts.v1.Users;
 using Mediator;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;

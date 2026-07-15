@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using FSH.Framework.Shared.Persistence;
-using FSH.Modules.Billing.Contracts.Dtos;
+using FSH.Modules.Billing.Contracts.v1.Dtos;
 using FSH.Modules.Billing.Data;
 using Microsoft.EntityFrameworkCore;
 

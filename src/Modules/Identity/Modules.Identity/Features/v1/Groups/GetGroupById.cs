@@ -1,8 +1,8 @@
 using FSH.Framework.Core.Exceptions;
 using FSH.Framework.Shared.Identity.Authorization;
 using FSH.Modules.Identity.Contracts.Authorization;
-using FSH.Modules.Identity.Contracts.DTOs;
-using FSH.Modules.Identity.Contracts.v1.Groups.GetGroupById;
+using FSH.Modules.Identity.Contracts.v1.Dtos;
+using FSH.Modules.Identity.Contracts.v1.Groups;
 using FSH.Modules.Identity.Data;
 using Mediator;
 using Microsoft.AspNetCore.Builder;

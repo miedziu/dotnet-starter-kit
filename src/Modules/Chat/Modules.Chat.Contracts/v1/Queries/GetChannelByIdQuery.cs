@@ -1,4 +1,4 @@
-using FSH.Modules.Chat.Contracts.v1.DTOs;
+using FSH.Modules.Chat.Contracts.v1.Dtos;
 using Mediator;
 
 namespace FSH.Modules.Chat.Contracts.v1.Queries;

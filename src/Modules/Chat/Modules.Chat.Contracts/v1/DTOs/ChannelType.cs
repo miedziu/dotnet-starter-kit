@@ -1,4 +1,4 @@
-namespace FSH.Modules.Chat.Contracts.v1.DTOs;
+namespace FSH.Modules.Chat.Contracts.v1.Dtos;
 
 /// <summary>
 /// Channel kind. Serialized as its string name (global JsonStringEnumConverter), so the SPA

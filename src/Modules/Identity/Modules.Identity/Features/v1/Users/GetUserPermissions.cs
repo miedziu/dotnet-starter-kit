@@ -1,7 +1,7 @@
 using FSH.Framework.Core.Exceptions;
 using FSH.Framework.Shared.Identity.Claims;
 using FSH.Modules.Identity.Contracts.Services;
-using FSH.Modules.Identity.Contracts.v1.Users.GetUserPermissions;
+using FSH.Modules.Identity.Contracts.v1.Users;
 using Mediator;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;

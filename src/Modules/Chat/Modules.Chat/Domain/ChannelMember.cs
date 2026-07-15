@@ -1,5 +1,5 @@
 using FSH.Framework.Core.Domain;
-using FSH.Modules.Chat.Contracts.v1.DTOs;
+using FSH.Modules.Chat.Contracts.v1.Dtos;
 
 namespace FSH.Modules.Chat.Domain;
 

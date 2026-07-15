@@ -1,4 +1,4 @@
-namespace FSH.Modules.Files.Contracts.v1.DTOs;
+namespace FSH.Modules.Files.Contracts.v1.Dtos;
 
 /// <summary>
 /// Upload lifecycle state of a file asset. Serialized as its string name (global

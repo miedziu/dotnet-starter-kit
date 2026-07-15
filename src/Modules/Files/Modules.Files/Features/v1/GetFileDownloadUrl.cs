@@ -7,7 +7,7 @@ using FSH.Framework.Core.Context;
 using FSH.Framework.Core.Exceptions;
 using FSH.Framework.Storage.Services;
 using FSH.Modules.Files.Contracts;
-using FSH.Modules.Files.Contracts.v1.DTOs;
+using FSH.Modules.Files.Contracts.v1.Dtos;
 using FSH.Modules.Files.Data;
 using FSH.Modules.Files.Services;
 using Microsoft.EntityFrameworkCore;

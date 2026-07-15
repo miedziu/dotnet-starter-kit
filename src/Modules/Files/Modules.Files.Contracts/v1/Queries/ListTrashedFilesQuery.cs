@@ -1,5 +1,5 @@
 using FSH.Framework.Shared.Persistence;
-using FSH.Modules.Files.Contracts.v1.DTOs;
+using FSH.Modules.Files.Contracts.v1.Dtos;
 using Mediator;
 
 namespace FSH.Modules.Files.Contracts.v1.Queries;

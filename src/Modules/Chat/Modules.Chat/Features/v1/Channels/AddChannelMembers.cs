@@ -5,7 +5,7 @@ using FSH.Framework.Shared.Identity.Authorization;
 using FSH.Framework.Web.Realtime;
 using FSH.Modules.Chat.Contracts.Authorization;
 using FSH.Modules.Chat.Contracts.v1.Commands;
-using FSH.Modules.Chat.Contracts.v1.DTOs;
+using FSH.Modules.Chat.Contracts.v1.Dtos;
 using FSH.Modules.Chat.Data;
 using FSH.Modules.Chat.Features.v1.Internal;
 using Mediator;

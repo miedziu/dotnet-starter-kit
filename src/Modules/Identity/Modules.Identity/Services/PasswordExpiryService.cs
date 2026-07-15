@@ -1,5 +1,5 @@
-using FSH.Modules.Identity.Contracts.DTOs;
 using FSH.Modules.Identity.Contracts.Services;
+using FSH.Modules.Identity.Contracts.v1.Dtos;
 using FSH.Modules.Identity.Data;
 using FSH.Modules.Identity.Domain;
 using Microsoft.AspNetCore.Identity;

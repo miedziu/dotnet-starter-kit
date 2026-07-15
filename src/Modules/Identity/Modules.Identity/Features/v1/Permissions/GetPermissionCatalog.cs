@@ -1,8 +1,8 @@
 using FSH.Framework.Shared.Constants;
 using FSH.Framework.Shared.Identity.Authorization;
 using FSH.Modules.Identity.Contracts.Authorization;
-using FSH.Modules.Identity.Contracts.DTOs;
-using FSH.Modules.Identity.Contracts.v1.Permissions.GetPermissionCatalog;
+using FSH.Modules.Identity.Contracts.v1.Dtos;
+using FSH.Modules.Identity.Contracts.v1.Permissions;
 using Mediator;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;

@@ -1,5 +1,5 @@
 using FSH.Framework.Shared.Storage;
-using FSH.Framework.Storage.DTOs;
+using FSH.Framework.Storage.Dtos;
 
 namespace FSH.Framework.Storage.Services;
 

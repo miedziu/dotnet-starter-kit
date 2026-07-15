@@ -1,15 +1,15 @@
+using FluentValidation;
+using FSH.Framework.Core.Exceptions;
 using FSH.Framework.Shared.Identity.Authorization;
 using FSH.Framework.Web.Idempotency;
 using FSH.Modules.Tickets.Contracts.Authorization;
-using FSH.Modules.Tickets.Contracts.Dtos;
+using FSH.Modules.Tickets.Contracts.v1.Dtos;
 using FSH.Modules.Tickets.Contracts.v1.Tickets;
+using FSH.Modules.Tickets.Data;
 using Mediator;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
-using FluentValidation;
-using FSH.Framework.Core.Exceptions;
-using FSH.Modules.Tickets.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace FSH.Modules.Tickets.Features.v1;

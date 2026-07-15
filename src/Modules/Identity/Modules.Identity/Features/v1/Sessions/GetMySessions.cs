@@ -1,9 +1,9 @@
 using FSH.Framework.Core.Context;
 using FSH.Framework.Shared.Identity.Authorization;
 using FSH.Modules.Identity.Contracts.Authorization;
-using FSH.Modules.Identity.Contracts.DTOs;
 using FSH.Modules.Identity.Contracts.Services;
-using FSH.Modules.Identity.Contracts.v1.Sessions.GetMySessions;
+using FSH.Modules.Identity.Contracts.v1.Dtos;
+using FSH.Modules.Identity.Contracts.v1.Sessions;
 using Mediator;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
