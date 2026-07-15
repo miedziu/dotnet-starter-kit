@@ -19,10 +19,10 @@ public static class FilesPermissions
 
     public static IReadOnlyList<FshPermission> All { get; } =
     [
-        new("Upload Files",      "Upload",    Resource, IsBasic: true),
-        new("Delete Own Files",  "DeleteOwn", Resource, IsBasic: true),
-        new("Delete Any File",   "DeleteAny", Resource),
-        new("View Files Trash",  "ViewTrash", Resource),
-        new("Restore Files",     "Restore",   Resource),
+        new("Upload Files",     ActionConstants.Upload,    Resource, IsBasic: true),
+        new("Delete Own Files", ActionConstants.DeleteOwn, Resource, IsBasic: true),
+        new("Delete Any File",  ActionConstants.DeleteAny, Resource),
+        new("View Files Trash", ActionConstants.ViewTrash, Resource),
+        new("Restore Files",    ActionConstants.Restore,   Resource),
     ];
 }

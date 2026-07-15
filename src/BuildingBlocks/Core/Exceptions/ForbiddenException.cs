@@ -4,7 +4,7 @@ namespace FSH.Framework.Core.Exceptions;
 /// <summary>
 /// Exception representing a 403 Forbidden error.
 /// </summary>
-public class ForbiddenException : CustomException
+public sealed class ForbiddenException : CustomException
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="ForbiddenException"/> class with default message.

@@ -1,17 +1,17 @@
+using FluentValidation;
+using FSH.Framework.Core.Context;
 using FSH.Framework.Shared.Identity.Authorization;
+using FSH.Modules.Auditing.Contracts;
 using FSH.Modules.Auditing.Contracts.Authorization;
+using FSH.Modules.Auditing.Contracts.v1;
 using FSH.Modules.Auditing.Contracts.v1.Dtos;
+using FSH.Modules.Auditing.Persistence;
+using FSH.Modules.Identity.Contracts.Services;
 using Mediator;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
-using FluentValidation;
-using FSH.Framework.Core.Context;
-using FSH.Modules.Auditing.Contracts;
-using FSH.Modules.Auditing.Persistence;
-using FSH.Modules.Identity.Contracts.Services;
 using Microsoft.EntityFrameworkCore;
-using FSH.Modules.Auditing.Contracts.v1;
 
 namespace FSH.Modules.Auditing.Features.v1;
 

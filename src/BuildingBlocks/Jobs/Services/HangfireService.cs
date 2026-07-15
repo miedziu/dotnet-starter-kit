@@ -3,7 +3,7 @@ using System.Linq.Expressions;
 
 namespace FSH.Framework.Jobs.Services;
 
-public class HangfireService : IJobService
+public sealed class HangfireService : IJobService
 {
     public bool Delete(string jobId) =>
         BackgroundJob.Delete(jobId);

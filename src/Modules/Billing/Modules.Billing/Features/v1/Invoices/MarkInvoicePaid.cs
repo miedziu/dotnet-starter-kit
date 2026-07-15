@@ -2,11 +2,11 @@ using FSH.Framework.Shared.Identity.Authorization;
 using FSH.Framework.Web.Idempotency;
 using FSH.Modules.Billing.Contracts.Authorization;
 using FSH.Modules.Billing.Contracts.v1.Invoices;
+using FSH.Modules.Billing.Services;
 using Mediator;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
-using FSH.Modules.Billing.Services;
 
 namespace FSH.Modules.Billing.Features.v1.Invoices;
 

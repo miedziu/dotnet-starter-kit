@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace FSH.Framework.Jobs;
 
-public class FshJobFilter : IClientFilter
+public sealed class FshJobFilter : IClientFilter
 {
     private static readonly ILog Logger = LogProvider.GetCurrentClassLogger();
 

@@ -1,3 +1,4 @@
+using FSH.Framework.Jobs.Services;
 using FSH.Framework.Persistence;
 using FSH.Framework.Web;
 using FSH.Framework.Web.Modules;
@@ -6,7 +7,7 @@ using FSH.Modules.Auditing;
 using FSH.Modules.Auditing.Contracts;
 using FSH.Modules.Auditing.Persistence;
 using FSH.Modules.Billing;
-using FSH.Modules.Billing.Contracts;
+using FSH.Modules.Billing.Contracts.v1.Invoices;
 using FSH.Modules.Chat;
 using FSH.Modules.Chat.Contracts.v1.Commands;
 using FSH.Modules.Files;
@@ -18,7 +19,7 @@ using FSH.Modules.Identity.Features.v1.Tokens;
 using FSH.Modules.Notifications;
 using FSH.Modules.Notifications.Contracts.v1;
 using FSH.Modules.Tickets;
-using FSH.Modules.Tickets.Contracts;
+using FSH.Modules.Tickets.Contracts.v1.Tickets;
 using FSH.Modules.Webhooks;
 using FSH.Modules.Webhooks.Contracts.v1.Subscription;
 using FSH.Starter.DbMigrator;
@@ -89,12 +90,12 @@ var allModules = new[]
 {
     ("Identity", typeof(GenerateTokenCommand), typeof(IdentityModule)),
     ("Auditing", typeof(AuditEnvelope), typeof(AuditingModule)),
-    ("Files", typeof(RequestUploadUrlCommand), typeof(FilesModule)),
-    ("Webhooks", typeof(CreateWebhookSubscriptionCommand), typeof(WebhooksModule)),
-    ("Billing", typeof(BillingContractsMarker), typeof(BillingModule)),
-    ("Tickets", typeof(TicketsContractsMarker), typeof(TicketsModule)),
+    ("Billing", typeof(GenerateInvoicesCommand), typeof(BillingModule)),
     ("Chat", typeof(CreateChannelCommand), typeof(ChatModule)),
-    ("Notifications", typeof(MarkNotificationReadCommand), typeof(NotificationsModule))
+    ("Files", typeof(RequestUploadUrlCommand), typeof(FilesModule)),
+    ("Notifications", typeof(MarkNotificationReadCommand), typeof(NotificationsModule)),
+    ("Tickets", typeof(CreateTicketCommand), typeof(TicketsModule)),
+    ("Webhooks", typeof(CreateWebhookSubscriptionCommand), typeof(WebhooksModule)),
 };
 
 // Register ALL module handlers with Mediator for source generator discovery
@@ -107,18 +108,18 @@ builder.Services.AddMediator(o =>
         typeof(GenerateTokenCommandHandler),
         typeof(AuditEnvelope),
         typeof(AuditDbContext),
-        typeof(CreateWebhookSubscriptionCommand),
-        typeof(WebhooksModule),
-        typeof(BillingContractsMarker),
+        typeof(GenerateInvoicesCommand),
         typeof(BillingModule),
-        typeof(TicketsContractsMarker),
-        typeof(TicketsModule),
         typeof(RequestUploadUrlCommand),
         typeof(FilesModule),
         typeof(CreateChannelCommand),
         typeof(ChatModule),
         typeof(MarkNotificationReadCommand),
         typeof(NotificationsModule),
+        typeof(CreateTicketCommand),
+        typeof(TicketsModule),
+        typeof(CreateWebhookSubscriptionCommand),
+        typeof(WebhooksModule),
     ];
 });
 
@@ -146,7 +147,7 @@ builder.AddModules(moduleAssemblies);
 
 // TenantProvisioningService needs IJobService, but Hangfire's is gated behind EnableJobs (off here).
 // Provide a throwing no-op so the DI graph resolves; the migration code paths don't enqueue jobs.
-builder.Services.AddSingleton<FSH.Framework.Jobs.Services.IJobService, NoOpJobService>();
+builder.Services.AddSingleton<IJobService, NoOpJobService>();
 
 // DemoSeeder is opt-in via the `seed-demo` verb. Register unconditionally so
 // the DI graph is satisfied; the verb dispatch below decides whether to call it.
@@ -296,7 +297,7 @@ static async Task LogConnectionIdentityAsync(string connectionString)
             var role = reader.GetString(0);
             var db = reader.GetString(1);
             await Console.Out.WriteLineAsync(string.Create(
-                System.Globalization.CultureInfo.InvariantCulture,
+                CultureInfo.InvariantCulture,
                 $"[migrator] connected as role={role} database={db}")).ConfigureAwait(false);
         }
     }

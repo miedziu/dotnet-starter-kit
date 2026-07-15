@@ -18,7 +18,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace FSH.Modules.Auditing;
 
-public class AuditingModule : IModule
+public sealed class AuditingModule : IModule
 {
     public void ConfigureServices(IHostApplicationBuilder builder)
     {

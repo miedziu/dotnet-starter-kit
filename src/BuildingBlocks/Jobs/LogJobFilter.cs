@@ -6,7 +6,7 @@ using Hangfire.Storage;
 
 namespace FSH.Framework.Jobs;
 
-public class LogJobFilter : IClientFilter, IServerFilter, IElectStateFilter, IApplyStateFilter
+public sealed class LogJobFilter : IClientFilter, IServerFilter, IElectStateFilter, IApplyStateFilter
 {
     private static readonly ILog Logger = LogProvider.GetCurrentClassLogger();
 

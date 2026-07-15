@@ -4,7 +4,7 @@ namespace FSH.Framework.Core.Exceptions;
 /// <summary>
 /// Exception representing a 401 Unauthorized error (authentication failure).
 /// </summary>
-public class UnauthorizedException : CustomException
+public sealed class UnauthorizedException : CustomException
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="UnauthorizedException"/> class with default message.

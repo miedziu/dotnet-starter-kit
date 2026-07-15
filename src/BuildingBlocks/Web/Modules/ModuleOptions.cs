@@ -4,7 +4,7 @@ namespace FSH.Framework.Web.Modules;
 /// Configuration for enabling/disabling backend modules at runtime.
 /// An empty or missing list means all modules are enabled.
 /// </summary>
-public class ModuleOptions
+public sealed class ModuleOptions
 {
     public IReadOnlyList<string> DisabledModules { get; init; } = Array.Empty<string>();
 

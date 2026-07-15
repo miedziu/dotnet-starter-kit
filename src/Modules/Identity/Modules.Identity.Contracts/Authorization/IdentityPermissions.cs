@@ -82,9 +82,9 @@ public static class IdentityPermissions
         new("Update Users",        ActionConstants.Update, Users.Resource),
         new("Delete Users",        ActionConstants.Delete, Users.Resource),
         new("Export Users",        ActionConstants.Export, Users.Resource),
-        new("Manage User Roles",   "ManageRoles",          Users.Resource),
-        new("Impersonate User",    "Impersonate",          Users.Resource),
-        new("Confirm User Email",  "ConfirmEmail",         Users.Resource),
+        new("Manage User Roles",   ActionConstants.ManageRoles,          Users.Resource),
+        new("Impersonate User",    ActionConstants.Impersonate,          Users.Resource),
+        new("Confirm User Email",  ActionConstants.ConfirmEmail,         Users.Resource),
 
         new("View User Roles",     ActionConstants.View,   UserRoles.Resource, IsBasic: true),
         new("Update User Roles",   ActionConstants.Update, UserRoles.Resource),
@@ -97,18 +97,18 @@ public static class IdentityPermissions
         new("View Role Claims",    ActionConstants.View,   RoleClaims.Resource, IsBasic: true),
         new("Update Role Claims",  ActionConstants.Update, RoleClaims.Resource),
 
-        new("View My Sessions",    ActionConstants.View,    Sessions.Resource, IsBasic: true),
-        new("Revoke My Sessions",  "Revoke",                Sessions.Resource, IsBasic: true),
-        new("View All Sessions",   "ViewAll",               Sessions.Resource),
-        new("Revoke Any Session",  "RevokeAll",             Sessions.Resource),
+        new("View My Sessions",    ActionConstants.View,   Sessions.Resource, IsBasic: true),
+        new("Revoke My Sessions",  ActionConstants.Revoke, Sessions.Resource, IsBasic: true),
+        new("View All Sessions",   ActionConstants.ViewAll, Sessions.Resource),
+        new("Revoke Any Session",  ActionConstants.RevokeAll, Sessions.Resource),
 
         new("View Groups",         ActionConstants.View,   Groups.Resource, IsBasic: true),
         new("Create Groups",       ActionConstants.Create, Groups.Resource),
         new("Update Groups",       ActionConstants.Update, Groups.Resource),
         new("Delete Groups",       ActionConstants.Delete, Groups.Resource),
-        new("Manage Group Members","ManageMembers",        Groups.Resource),
+        new("Manage Group Members",ActionConstants.ManageMembers, Groups.Resource),
 
         new("View Impersonation Grants",   ActionConstants.View, Impersonation.Resource),
-        new("Revoke Impersonation Grants", "Revoke",             Impersonation.Resource),
+        new("Revoke Impersonation Grants", ActionConstants.Revoke,             Impersonation.Resource),
     ];
 }

@@ -32,9 +32,9 @@ public static class SystemPermissions
     [
         new("View Hangfire",  ActionConstants.View, Hangfire.Resource,  IsBasic: true),
         new("View Dashboard", ActionConstants.View, Dashboard.Resource, IsBasic: true),
-        new("Manage Plans",              "Manage",               Platform.Plans,         IsRoot: true),
-        new("Manage Subscriptions",      "Manage",               Platform.Subscriptions, IsRoot: true),
-        new("Admin All Invoices",        "Admin",                Platform.Invoices,      IsRoot: true),
-        new("Admin All Webhooks",        "Admin",                Platform.Webhooks,      IsRoot: true),
+        new("Manage Plans", ActionConstants.Manage, Platform.Plans, IsRoot: true),
+        new("Manage Subscriptions", ActionConstants.Manage, Platform.Subscriptions, IsRoot: true),
+        new("Admin All Invoices", ActionConstants.Admin, Platform.Invoices, IsRoot: true),
+        new("Admin All Webhooks", ActionConstants.Admin, Platform.Webhooks, IsRoot: true),
     ];
 }

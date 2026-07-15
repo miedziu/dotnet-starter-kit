@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace FSH.Framework.Jobs;
 
-public class FshJobActivator : JobActivator
+public sealed class FshJobActivator : JobActivator
 {
     private readonly IServiceScopeFactory _scopeFactory;
 

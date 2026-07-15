@@ -32,7 +32,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace FSH.Modules.Identity;
 
-public class IdentityModule : IModule
+public sealed class IdentityModule : IModule
 {
     public void ConfigureServices(IHostApplicationBuilder builder)
     {

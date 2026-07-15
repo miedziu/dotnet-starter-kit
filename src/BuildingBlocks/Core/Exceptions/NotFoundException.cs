@@ -5,7 +5,7 @@ namespace FSH.Framework.Core.Exceptions;
 /// <summary>
 /// Exception representing a 404 Not Found error.
 /// </summary>
-public class NotFoundException : CustomException
+public sealed class NotFoundException : CustomException
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="NotFoundException"/> class with default message.
