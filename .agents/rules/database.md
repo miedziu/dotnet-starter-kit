@@ -28,9 +28,8 @@ dotnet ef migrations add {Name} --context {Module}DbContext
 ```
 
 - DB not migrated at startup; use `DbMigrator`: `apply` (default), `seed`, `seed-demo`, `list-pending`
-- Migrates catalog first, then per-module schema (Postgres advisory lock)
 - Run `dotnet tool restore` first
 
 ## Migrations workflow
 
-Always update existing migrations OR recreate with same filename. Build before `migrations add` to keep snapshot current.
+Always recreate existing migrations with same filename. Build before `migrations add` to keep snapshot current.

@@ -51,7 +51,7 @@ dotnet run --project src/Host/FSH.Starter.AppHost   # 🎉 whole stack up: API +
 - Runtime config (`/config.json`, no rebuild per environment), hand-written typed API client.
 
 ### Modules (bounded contexts)
-**Identity · Billing · Catalog · Tickets · Chat · Files · Webhooks · Auditing · Notifications** — each a runtime project plus a `.Contracts` project (its only public surface).
+**Identity · Billing · Tickets · Chat · Files · Webhooks · Auditing · Notifications** — each a runtime project plus a `.Contracts` project (its only public surface).
 
 ### Cloud-native & DevOps
 - **.NET Aspire** orchestrates the entire stack locally with one command (Redis + RedisInsight, MinIO, migrator, demo-seeder, API, and React app).
@@ -134,7 +134,7 @@ Full guides, module references, and architecture decisions live at **[fullstackh
 
 - [Getting started](https://fullstackhero.net/docs/getting-started/introduction/) — scaffold, run, and the default credentials
 - [Architecture](https://fullstackhero.net/docs/architecture/) — modular monolith + vertical slices
-- [Modules](https://fullstackhero.net/docs/modules/) — Identity, Catalog, Tickets, Chat, and more
+- [Modules](https://fullstackhero.net/docs/modules/) — Identity, Tickets, Chat, and more
 - [Local orchestration with Aspire](https://fullstackhero.net/docs/deployment/aspire/)
 - [CLI reference](https://fullstackhero.net/docs/cli/) · [Changelog](https://fullstackhero.net/docs/changelog/)
 

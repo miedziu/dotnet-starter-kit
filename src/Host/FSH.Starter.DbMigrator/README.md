@@ -37,7 +37,7 @@ dotnet run --project src/Host/FSH.Starter.DbMigrator -- apply --seed
 dotnet run --project src/Host/FSH.Starter.DbMigrator -- seed
 
 # Dev only — provision the users,
-# custom roles, sample catalog, tickets, and chat. Hard-refuses outside
+# custom roles, tickets, and chat. Hard-refuses outside
 # Development. Idempotent: safe to re-run.
 DOTNET_ENVIRONMENT=Development \
   dotnet run --project src/Host/FSH.Starter.DbMigrator -- seed-demo
@@ -137,7 +137,7 @@ schema OR data. The two convenient ways to run it locally are:
   dotnet run --project src/Host/FSH.Starter.Api
   ```
 
-`seed-demo` is the **only** way to get the demo users / catalog / tickets / chat.
+`seed-demo` is the **only** way to get the demo users / tickets / chat.
 
 ## API behavior when schema is behind
 

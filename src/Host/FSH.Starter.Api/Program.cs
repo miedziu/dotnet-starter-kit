@@ -56,7 +56,6 @@ var allModules = new[]
     //("Files", typeof(RequestUploadUrlCommand), typeof(FilesModule)),
     //("Webhooks", typeof(CreateWebhookSubscriptionCommand), typeof(WebhooksModule)),
     //("Billing", typeof(BillingContractsMarker), typeof(BillingModule)),
-    //("Catalog", typeof(CatalogContractsMarker), typeof(CatalogModule)),
     //("Tickets", typeof(TicketsContractsMarker), typeof(TicketsModule)),
     //("Chat", typeof(CreateChannelCommand), typeof(ChatModule)),
     //("Notifications", typeof(MarkNotificationReadCommand), typeof(NotificationsModule))

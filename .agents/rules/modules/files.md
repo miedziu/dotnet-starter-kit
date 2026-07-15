@@ -1,6 +1,6 @@
 # Module: Files
 
-Presigned-URL file lifecycle (upload → finalize → serve → delete) shared by Catalog images, Chat attachments, avatars. Module `Order = 350` (loads before consumer modules).
+Presigned-URL file lifecycle (upload → finalize → serve → delete) shared by Chat attachments, avatars. Module `Order = 350` (loads before consumer modules).
 
 **Entities:** `FileAsset` (soft-deletable): status `PendingUpload → Available | Quarantined`, `Visibility` (Public/Private), `ScanStatus`. `FilesDbContext`. Publishes `FileFinalizedIntegrationEvent`.
 

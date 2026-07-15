@@ -5,7 +5,7 @@ namespace FSH.Starter.DbMigrator;
 /// a handful of flags — keep this honest and minimal.
 ///
 /// Verbs:   apply | seed | seed-demo | list-pending  (default: apply)
-/// Flags:   
+/// Flags:
 ///          --catalog-only   skip per-tenant migrations
 ///          --seed           after apply, also run SeedAsync per tenant
 ///          --help / -h      print help text
@@ -44,7 +44,7 @@ internal sealed record MigratorCommand(
         Verbs:
           apply           Apply pending migrations (default). Use --seed to also run SeedAsync.
           seed            Run only the SeedAsync step.
-          seed-demo       Provision the demo with users, catalog, tickets, and chat. Dev-only — refuses to run unless
+          seed-demo       Provision the demo with users, tickets, and chat. Dev-only — refuses to run unless
                           DOTNET_ENVIRONMENT=Development.
           list-pending    Print pending migrations without applying anything.
 

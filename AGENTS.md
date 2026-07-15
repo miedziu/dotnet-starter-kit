@@ -7,10 +7,7 @@ Canonical guide for AI coding tools. Detailed rules in `.agents/rules/` — read
 ## What this is
 
 **Backend:** .NET 10, EF Core 10, PostgreSQL, Redis, JWT + ASP.NET Identity, Hangfire, OpenAPI/Scalar, Serilog + OpenTelemetry, .NET Aspire.
-
-- **Backend** — .NET 10, EF Core 10, PostgreSQL, Redis, JWT + ASP.NET Identity
-  Hangfire, OpenAPI/Scalar, Serilog + OpenTelemetry, .NET Aspire.
-- **Frontend** — `clients/dashboard`: React 19, Vite 7, TypeScript, TanStack Query v5, React Router 7, Radix + Tailwind v4 (shadcn-style), SignalR/SSE.
+**Frontend** — `clients/dashboard`: React 19, Vite 7, TypeScript, TanStack Query v5, React Router 7, Radix + Tailwind v4 (shadcn-style), SignalR/SSE.
 
 **Modules:** Identity, Billing, Tickets, Chat, Files, Webhooks, Auditing, Notifications — each runtime + `.Contracts` project.
 

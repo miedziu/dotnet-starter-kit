@@ -7,7 +7,7 @@ argument-hint: [ModuleName] [MigrationName]
 # Create Migration
 
 All migrations live in **one** project — `src/Host/FSH.Starter.Migrations.PostgreSQL` — but are foldered
-**per module/context** (`Catalog/`, `Identity/`, …), each with its own `{X}DbContextModelSnapshot`. The DB
+**per module/context** (`Chat/`, `Identity/`, …), each with its own `{X}DbContextModelSnapshot`. The DB
 is **not** migrated at API startup; the `DbMigrator` host applies it.
 
 ## Step 0 — restore the pinned tool (first time)
@@ -26,11 +26,12 @@ the build after editing entities/config, you can generate against a stale snapsh
 dotnet build src/FSH.Starter.slnx
 ```
 
-## Step 2 — add the migration
+## Step 2 — replace the migration
 
+Remove old migrations, we always want to recreate them from scratch and rename back to old names.
 Specify **all three** of `--project` (the Migrations project), `--startup-project` (the API host), and
-`--context {X}DbContext`. Use `--output-dir {X}` so it lands in that module's folder (match the existing
-folder for the context).
+`--context {X}DbContext`. Use `--output-dir {X}` so it lands in that module's folder (match the existing folder for the context).
+Save old names in memory.
 
 ```bash
 dotnet ef migrations add {MigrationName} \
@@ -39,6 +40,8 @@ dotnet ef migrations add {MigrationName} \
   --context {X}DbContext \
   --output-dir {X}
 ```
+
+Rename new files using saved old nams.
 
 ## Step 3 — review the generated SQL before applying
 

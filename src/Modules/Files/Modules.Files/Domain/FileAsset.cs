@@ -8,7 +8,7 @@ namespace FSH.Modules.Files.Domain;
 
 /// <summary>
 /// A file asset tracked by the Files module. Owns a presigned upload lifecycle (PendingUpload →
-/// Available | Quarantined) plus soft-delete semantics consistent with Catalog/Tickets entities.
+/// Available | Quarantined) plus soft-delete semantics consistent with Tickets entities.
 /// </summary>
 public sealed class FileAsset : AggregateRoot<Guid>, ISoftDeletable
 {

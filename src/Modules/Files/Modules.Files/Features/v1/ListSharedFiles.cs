@@ -39,7 +39,7 @@ public sealed class ListSharedFilesQueryHandler(FilesDbContext db, IStorageServi
     : IQueryHandler<ListSharedFilesQuery, ReadOnlyCollection<FileAssetDto>>
 {
     // Owner types that represent "free-standing" files (not bound to a domain entity).
-    // Catalog/Tickets/Chat attachments are intentionally excluded — their visibility is a
+    // Tickets/Chat attachments are intentionally excluded — their visibility is a
     // function of their owning entity's access policy, not a free-standing share decision.
     private static readonly string[] SharedOwnerTypes = ["MyFiles", "User"];
 

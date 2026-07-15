@@ -50,7 +50,7 @@ The React app reads its API URL at runtime from `public/config.json` — no rebu
 src/
   BuildingBlocks/      Shared framework libraries — yours to modify
   Modules/             Bounded contexts: Identity, Auditing, Billing,
-                       Catalog, Chat, Files, Notifications, Tickets, Webhooks
+                       Chat, Files, Notifications, Tickets, Webhooks
   Host/
     FSH.Starter.Api/                    API composition root
     FSH.Starter.AppHost/                .NET Aspire orchestrator

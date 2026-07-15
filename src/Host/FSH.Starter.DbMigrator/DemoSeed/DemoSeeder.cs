@@ -25,7 +25,7 @@ namespace FSH.Starter.DbMigrator.DemoSeed;
 /// <summary>
 /// Owns the "rich demo content" that the dev environment needs to feel lived-in:
 /// demo users, custom roles,
-/// catalog content, tickets, and chat. Invoked by the migrator's
+/// tickets, and chat. Invoked by the migrator's
 /// <c>seed-demo</c> verb — never by the API runtime.
 ///
 /// Idempotent: every step checks before writing, so re-running the verb
@@ -115,7 +115,7 @@ internal sealed class DemoSeeder
     //     var tenantDb = scope.ServiceProvider.GetRequiredService<TenantDbContext>();
 
     //     // Same per-tenant path the migrator's apply verb uses. The Identity initializer creates
-    //     // the tenant admin, while Catalog/Tickets/Chat initializers are no-ops today.
+    //     // the tenant admin, while Tickets/Chat initializers are no-ops today.
     //     await tenantService.MigrateTenantAsync(existing, ct).ConfigureAwait(false);
     //     await tenantService.SeedTenantAsync(existing, ct).ConfigureAwait(false);
 
@@ -616,13 +616,13 @@ internal sealed class DemoSeeder
 
     // Permission claims reference the module contracts constants — never raw strings.
     // A hand-typed name that doesn't match a registry entry (e.g. the old
-    // "Permissions.Brands.View" vs the real "Permissions.Catalog.Brands.View")
+    // "Permissions.Brands.View")
     // is a claim that grants nothing, silently.
     private static IReadOnlyList<DemoRole> BuildAcmeCustomRoles() =>
     [
         new(
             "Manager",
-            "Operations manager — full catalog + tickets + read-only users.",
+            "Operations manager — tickets + read-only users.",
             [
                 IdentityPermissions.Users.View,
                 IdentityPermissions.Users.Update,

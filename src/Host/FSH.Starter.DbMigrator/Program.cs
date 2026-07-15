@@ -193,7 +193,7 @@ try
         {
             await Console.Out.WriteLineAsync(string.Create(
                 CultureInfo.InvariantCulture,
-                $"[atalog] {pending.Count} pending migration(s)"))
+                $"[catalog] {pending.Count} pending migration(s)"))
                 .ConfigureAwait(false);
             foreach (var name in pending)
             {

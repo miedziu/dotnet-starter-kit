@@ -49,7 +49,7 @@ public sealed class {Name}Module : IModule
 }
 ```
 
-**Order:** Auditing 300, Files 350, Webhooks 400, Billing 500, Catalog 600, Tickets 700, Notifications 750, Chat 800
+**Order:** Auditing 300, Files 350, Webhooks 400, Billing 500, Tickets 700, Notifications 750, Chat 800
 
 ## Step 2 — Permissions
 

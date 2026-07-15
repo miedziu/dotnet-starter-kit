@@ -1,22 +1,19 @@
 ---
 name: add-feature
-description: Add a vertical-slice feature (command/query + handler + validator + endpoint) to an existing FSH module. Use when adding an API endpoint or business operation to a module that already exists.
+description: Add a vertical-slice feature (command/query + endpoint + validator + handler) to an existing FSH module. Use when adding an API endpoint or business operation to a module that already exists.
 argument-hint: [ModuleName] [Area] [FeatureName]
 ---
 
 # Add Feature
 
-Vertical slice split across two projects: request/response types in `.Contracts`, handler/validator/endpoint in runtime. See `api-conventions.md`.
+Vertical slice split across two projects: request/response types in `.Contracts`, endpoint/validator/handler in runtime. See `api-conventions.md`.
 
 ## Layout
 
 ```
 src/Modules/{X}/Modules.{X}.Contracts/v1/{Area}/{Feature}Command.cs
-src/Modules/{X}/Modules.{X}.Contracts/Dtos/{Entity}Dto.cs
-src/Modules/{X}/Modules.{X}/Features/v1/{Area}/{Feature}/
-├── {Feature}CommandHandler.cs
-├── {Feature}CommandValidator.cs
-└── {Feature}Endpoint.cs
+src/Modules/{X}/Modules.{X}.Contracts/v1/Dtos/{Entity}Dto.cs
+src/Modules/{X}/Modules.{X}/Features/v1/{Area}/{Feature}.cs
 ```
 
 ## Step 1 — Command/Query (Contracts)
@@ -28,14 +25,14 @@ public sealed record Create{Entity}Command(string Name, decimal PriceAmount, str
     : ICommand<Guid>;
 ```
 
-DTOs in `Contracts/Dtos/`. Paginated queries return `PagedResponse<T>`.
+DTOs in `Contracts/v1/Dtos/`. Paginated queries return `PagedResponse<T>`.
 
 ## Step 2 — Handler (runtime `Features/`)
 
 Inject `{X}DbContext` directly — **no repository**. `public sealed`, primary ctor, `ValueTask<T>`, `.ConfigureAwait(false)`.
 
 ```csharp
-public sealed class Create{Entity}CommandHandler(CatalogDbContext dbContext)
+public sealed class Create{Entity}CommandHandler({X}DbContext dbContext)
     : ICommandHandler<Create{Entity}Command, Guid>
 {
     public async ValueTask<Guid> Handle(Create{Entity}Command command, CancellationToken ct)
