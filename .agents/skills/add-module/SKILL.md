@@ -13,7 +13,7 @@ argument-hint: [ModuleName]
 ```
 src/Modules/{Name}/
 ├── Modules.{Name}/            ← runtime: Domain/, Data/, Features/v1/, {Name}Module.cs
-└── Modules.{Name}.Contracts/  ← public: v1/, Dtos/, Authorization/, Events/
+└── Modules.{Name}.Contracts/  ← public: v1/, v1/Dtos/, Events/
 ```
 
 **Copy existing `.csproj` files** — don't hand-write. Runtime refs Contracts + BuildingBlocks; Contracts refs Mediator + shared contracts.
@@ -112,7 +112,7 @@ dotnet build src/FSH.Starter.slnx   # 0 warnings
 - [ ] `[assembly: FshModule(typeof({Name}Module), order)]`
 - [ ] `IModule`: `AddHeroDbContext<T>()`, `PermissionConstants.Register`, version-set group
 - [ ] `{Name}DbContext : BaseDbContext`, `base.OnModelCreating` last
-- [ ] `{Name}Permissions` in Contracts/Authorization
+- [ ] `{Name}Permissions` in Spec
 - [ ] Migrations folder + initial migration
 - [ ] **Registered in all four places**
 - [ ] Build green
