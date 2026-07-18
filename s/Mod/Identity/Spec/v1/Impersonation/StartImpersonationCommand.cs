@@ -1,6 +1,6 @@
 using Mediator;
 
-namespace FSH.Modules.Identity.Contracts.v1.Impersonation;
+namespace FSH.Mod.Identity.Spec.v1.Impersonation;
 
 // DurationMinutes: requested token lifetime, capped server-side at
 // StartImpersonationCommandValidator.MaxImpersonationMinutes (60); null → JwtOptions.AccessTokenMinutes.

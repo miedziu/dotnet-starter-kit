@@ -31,27 +31,27 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\BuildingBlocks\Web\Web.csproj" />
-    <ProjectReference Include="..\..\Modules\Auditing\Modules.Auditing\Modules.Auditing.csproj" />
-    <ProjectReference Include="..\..\Modules\Auditing\Modules.Auditing.Contracts\Modules.Auditing.Contracts.csproj" />
-    <ProjectReference Include="..\..\Modules\Billing\Modules.Billing\Modules.Billing.csproj" />
-    <ProjectReference Include="..\..\Modules\Billing\Modules.Billing.Contracts\Modules.Billing.Contracts.csproj" />
-    <ProjectReference Include="..\..\Modules\Chat\Modules.Chat\Modules.Chat.csproj" />
-    <ProjectReference Include="..\..\Modules\Chat\Modules.Chat.Contracts\Modules.Chat.Contracts.csproj" />
-    <ProjectReference Include="..\..\Modules\Files\Modules.Files\Modules.Files.csproj" />
-    <ProjectReference Include="..\..\Modules\Files\Modules.Files.Contracts\Modules.Files.Contracts.csproj" />
-    <ProjectReference Include="..\..\Modules\Identity\Modules.Identity\Modules.Identity.csproj" />
-    <ProjectReference Include="..\..\Modules\Tickets\Modules.Tickets\Modules.Tickets.csproj" />
-    <ProjectReference Include="..\..\Modules\Tickets\Modules.Tickets.Contracts\Modules.Tickets.Contracts.csproj" />
-    <ProjectReference Include="..\..\Modules\Webhooks\Modules.Webhooks\Modules.Webhooks.csproj" />
-    <ProjectReference Include="..\FSH.Starter.Migrations.PostgreSQL\FSH.Starter.Migrations.PostgreSQL.csproj" />
+    <ProjectReference Include="..\..\Lib\Web\Web.csproj" />
+    <ProjectReference Include="..\..\Mod\Audit\Src\Audit.Src.csproj" />
+    <ProjectReference Include="..\..\Mod\Audit\Spec\Audit.Spec.csproj" />
+    <ProjectReference Include="..\..\Mod\Billing\Src\Billing.Src.csproj" />
+    <ProjectReference Include="..\..\Mod\Billing\Spec\Billing.Spec.csproj" />
+    <ProjectReference Include="..\..\Mod\Chat\Src\Chat.Src.csproj" />
+    <ProjectReference Include="..\..\Mod\Chat\Spec\Chat.Spec.csproj" />
+    <ProjectReference Include="..\..\Mod\File\Src\File.Src.csproj" />
+    <ProjectReference Include="..\..\Mod\File\Spec\File.Spec.csproj" />
+    <ProjectReference Include="..\..\Mod\Identity\Src\Identity.Src.csproj" />
+    <ProjectReference Include="..\..\Mod\Ticket\Src\Ticket.Src.csproj" />
+    <ProjectReference Include="..\..\Mod\Ticket\Spec\Ticket.Spec.csproj" />
+    <ProjectReference Include="..\..\Mod\Webhook\Src\Webhook.Src.csproj" />
+    <ProjectReference Include="..\Migrations\Migrations.csproj" />
   </ItemGroup>
 
   <!-- Share configuration with the API so connection strings + tenant options
        stay in lock-step. Production deployments override via env vars. -->
   <ItemGroup>
-    <None Include="..\FSH.Starter.Api\appsettings.json" Link="appsettings.json" CopyToOutputDirectory="PreserveNewest" />
-    <None Include="..\FSH.Starter.Api\appsettings.Development.json" Link="appsettings.Development.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\Api\appsettings.json" Link="appsettings.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\Api\appsettings.Development.json" Link="appsettings.Development.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>

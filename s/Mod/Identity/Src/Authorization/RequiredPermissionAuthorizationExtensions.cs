@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
-namespace FSH.Modules.Identity.Authorization;
+namespace FSH.Mod.Identity.Authorization;
 
 public static class RequiredPermissionDefaults
 {

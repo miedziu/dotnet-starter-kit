@@ -1,16 +1,13 @@
 using FSH.Framework.Core.Context;
 using FSH.Framework.Core.Exceptions;
 using FSH.Framework.Shared.Identity.Authorization;
-using FSH.Modules.Notifications.Contracts.Authorization;
-using FSH.Modules.Notifications.Contracts.v1;
-using FSH.Modules.Notifications.Data;
 using Mediator;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 
-namespace FSH.Modules.Notifications.Features.v1;
+namespace FSH.Mod.Notification.Features.v1;
 
 public static class MarkAllNotificationsReadEndpoint
 {

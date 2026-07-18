@@ -1,7 +1,6 @@
-﻿using FSH.Modules.Identity.Contracts.v1.Dtos;
 using System.Security.Claims;
 
-namespace FSH.Modules.Identity.Contracts.Services;
+namespace FSH.Mod.Identity.Spec.Services;
 
 public interface ITokenService
 {

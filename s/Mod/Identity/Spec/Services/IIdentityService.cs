@@ -1,6 +1,6 @@
 using System.Security.Claims;
 
-namespace FSH.Modules.Identity.Contracts.Services;
+namespace FSH.Mod.Identity.Spec.Services;
 
 /// <summary>
 /// Basic user info returned by OAuth flows when creating/linking accounts.
@@ -40,7 +40,7 @@ public interface IIdentityService
 
     /// <summary>
     /// Finds a user by their email address. Used for OAuth login to link external providers.
-    /// Returns basic user info without exposing domain entities to the Contracts layer.
+    /// Returns basic user info without exposing domain entities to the Spec layer.
     /// </summary>
     Task<UserInfo?> FindByEmailAsync(string email, CancellationToken ct = default);
 

@@ -4,12 +4,9 @@ using FSH.Framework.Core.Exceptions;
 using FSH.Framework.Shared.Identity.Authorization;
 using FSH.Framework.Storage.Services;
 using FSH.Framework.Web.Idempotency;
-using FSH.Modules.Files.Contracts.Authorization;
-using FSH.Modules.Files.Contracts.v1.Commands;
-using FSH.Modules.Files.Contracts.v1.Dtos;
-using FSH.Modules.Files.Data;
-using FSH.Modules.Files.Domain;
-using FSH.Modules.Files.Services;
+using FSH.Mod.File.Data;
+using FSH.Mod.File.Domain;
+using FSH.Mod.File.Services;
 using Mediator;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -17,7 +14,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Options;
 using System.Net;
 
-namespace FSH.Modules.Files.Features.v1;
+namespace FSH.Mod.File.Features.v1;
 
 public static class RequestUploadUrlEndpoint
 {
@@ -27,7 +24,7 @@ public static class RequestUploadUrlEndpoint
                     Results.Ok(await mediator.Send(command, ct)))
             .WithName("RequestFileUploadUrl")
             .WithSummary("Mint a presigned PUT URL for a file upload")
-            .RequirePermission(FilesPermissions.Upload)
+            .RequirePermission(FilePermissions.Upload)
             .WithIdempotency();
 }
 
@@ -45,11 +42,11 @@ public sealed class RequestUploadUrlCommandValidator : AbstractValidator<Request
 }
 
 public sealed class RequestUploadUrlCommandHandler(
-    FilesDbContext db,
+    FileDbContext db,
     IStorageService storage,
     FileAccessPolicyRegistry policies,
     ICurrentUser currentUser,
-    IOptions<FilesOptions> options)
+    IOptions<FileOptions> options)
     : ICommandHandler<RequestUploadUrlCommand, PresignedUploadResponse>
 {
     public async ValueTask<PresignedUploadResponse> Handle(RequestUploadUrlCommand cmd, CancellationToken cancellationToken)

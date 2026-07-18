@@ -9,7 +9,7 @@ using FSH.Framework.Web.Exceptions;
 using FSH.Framework.Web.Health;
 using FSH.Framework.Web.Idempotency;
 using FSH.Framework.Web.Mediator.Behaviors;
-using FSH.Framework.Web.Modules;
+using FSH.Framework.Web.Mod;
 using FSH.Framework.Web.Observability.Logging.Serilog;
 using FSH.Framework.Web.Observability.OpenTelemetry;
 using FSH.Framework.Web.OpenApi;
@@ -172,7 +172,7 @@ public static class Extensions
 
         app.UseAuthentication();
 
-        // Let each module register its own middleware (e.g. Auditing registers AuditHttpMiddleware)
+        // Let each module register its own middleware (e.g. Audit registers AuditHttpMiddleware)
         app.UseModuleMiddlewares();
 
         app.UseHeroRateLimiting();

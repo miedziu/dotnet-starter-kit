@@ -1,4 +1,4 @@
-namespace FSH.Modules.Identity.Contracts.v1.Dtos;
+namespace FSH.Mod.Identity.Spec.v1;
 
 /// <summary>
 /// One entry in the host-wide permission catalog returned to the SPA so the role editor can

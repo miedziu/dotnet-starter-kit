@@ -2,15 +2,14 @@ using Asp.Versioning;
 using FluentValidation;
 using FSH.Framework.Persistence;
 using FSH.Framework.Shared.Constants;
-using FSH.Framework.Web.Modules;
+using FSH.Framework.Web.Mod;
 using FSH.Framework.Web.Realtime;
-using FSH.Modules.Chat.Contracts.Authorization;
-using FSH.Modules.Chat.Data;
-using FSH.Modules.Chat.Features.v1.Channels;
-using FSH.Modules.Chat.Features.v1.Messages;
-using FSH.Modules.Chat.Features.v1.Reactions;
-using FSH.Modules.Chat.Features.v1.Search;
-using FSH.Modules.Chat.Services;
+using FSH.Mod.Chat.Data;
+using FSH.Mod.Chat.Features.v1.Channels;
+using FSH.Mod.Chat.Features.v1.Messages;
+using FSH.Mod.Chat.Features.v1.Reactions;
+using FSH.Mod.Chat.Features.v1.Search;
+using FSH.Mod.Chat.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
@@ -18,11 +17,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 
-namespace FSH.Modules.Chat;
+namespace FSH.Mod.Chat;
 
 /// <summary>
 /// Chat module: Slack-style messaging (DMs + group DMs + named channels). Module Order 800 places
-/// it after Notifications (750) so the Notifications module can register integration-event handlers
+/// it after Notification (750) so the Notification module can register integration-event handlers
 /// before Chat starts publishing.
 /// </summary>
 public sealed class ChatModule : IModule
@@ -37,7 +36,7 @@ public sealed class ChatModule : IModule
         builder.Services.AddScoped<IDbInitializer, ChatDbInitializer>();
         builder.Services.AddValidatorsFromAssembly(typeof(ChatModule).Assembly);
 
-        // Realtime adapters consumed by AppHub (BuildingBlocks/Web). These let the shared hub
+        // Realtime adapters consumed by AppHub (Lib/Web). These let the shared hub
         // verify channel membership and pre-join channel groups without depending on Chat.
         builder.Services.AddScoped<IChannelMembershipChecker, ChannelMembershipChecker>();
         builder.Services.AddScoped<IUserChannelLookup, UserChannelLookup>();
@@ -48,7 +47,7 @@ public sealed class ChatModule : IModule
 
         // File attachments: members attach+read, only the uploader deletes. Registered as
         // IFileAccessPolicy so Files endpoints route through it for OwnerType=ChatChannel.
-        builder.Services.AddScoped<FSH.Modules.Files.Contracts.IFileAccessPolicy, Authorization.ChatChannelFileAccessPolicy>();
+        builder.Services.AddScoped<FSH.Mod.File.Spec.IFileAccessPolicy, Authorization.ChatChannelFileAccessPolicy>();
 
         builder.Services.AddHealthChecks().AddDbContextCheck<ChatDbContext>(
             name: "db:chat",

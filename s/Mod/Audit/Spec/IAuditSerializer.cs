@@ -1,4 +1,4 @@
-﻿namespace FSH.Modules.Auditing.Contracts;
+namespace FSH.Mod.Audit.Spec;
 
 /// <summary>
 /// Deterministic JSON serialization for payloads (camelCase, enum-as-string, stable output).

@@ -1,6 +1,6 @@
 using Mediator;
 
-namespace FSH.Modules.Billing.Contracts.v1.Plans;
+namespace FSH.Mod.Billing.Spec.v1.Plan;
 
 public sealed record UpdatePlanCommand(
     Guid PlanId,

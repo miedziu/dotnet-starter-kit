@@ -1,10 +1,10 @@
 using FSH.Framework.Eventing.Abstractions;
-using FSH.Modules.Identity.Contracts.Events;
-using FSH.Modules.Identity.Domain.Events;
+using FSH.Mod.Identity.Domain.Events;
+using FSH.Mod.Identity.Spec.Events;
 using Mediator;
 using Microsoft.Extensions.Logging;
 
-namespace FSH.Modules.Identity.Events;
+namespace FSH.Mod.Identity.Events;
 
 /// <summary>
 /// Handles the UserRegisteredEvent domain event by publishing an integration event

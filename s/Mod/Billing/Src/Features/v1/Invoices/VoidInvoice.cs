@@ -1,13 +1,11 @@
 using FSH.Framework.Shared.Identity.Authorization;
-using FSH.Modules.Billing.Contracts.Authorization;
-using FSH.Modules.Billing.Contracts.v1.Invoices;
-using FSH.Modules.Billing.Services;
+using FSH.Mod.Billing.Services;
 using Mediator;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 
-namespace FSH.Modules.Billing.Features.v1.Invoices;
+namespace FSH.Mod.Billing.Features.v1.Invoices;
 
 public static class VoidInvoiceEndpoint
 {

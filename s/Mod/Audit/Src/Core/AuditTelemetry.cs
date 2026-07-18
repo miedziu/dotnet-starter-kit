@@ -1,16 +1,16 @@
 using System.Diagnostics.Metrics;
 
-namespace FSH.Modules.Auditing;
+namespace FSH.Mod.Audit.Core;
 
 /// <summary>
-/// OpenTelemetry instruments for the auditing pipeline. Exposed as static
+/// OpenTelemetry instruments for the audit pipeline. Exposed as static
 /// fields so they're cheap to reference from anywhere on the hot path —
 /// no DI lookup, no allocation. Wire into the OTel exporter via
-/// <c>metrics.AddMeter(AuditingTelemetry.MeterName)</c>.
+/// <c>metrics.AddMeter(AuditTelemetry.MeterName)</c>.
 /// </summary>
-public static class AuditingTelemetry
+public static class AuditTelemetry
 {
-    public const string MeterName = "FSH.Modules.Auditing";
+    public const string MeterName = "FSH.Mod.Audit";
 
     internal static readonly Meter Meter = new(MeterName);
 

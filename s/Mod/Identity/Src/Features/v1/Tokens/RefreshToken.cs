@@ -1,9 +1,8 @@
 using FluentValidation;
 using FSH.Framework.Core.Context;
 using FSH.Framework.Core.Exceptions;
-using FSH.Modules.Auditing.Contracts;
-using FSH.Modules.Identity.Contracts.Services;
-using FSH.Modules.Identity.Contracts.v1.Tokens;
+using FSH.Mod.Audit.Spec;
+using FSH.Mod.Identity.Spec.Services;
 using Mediator;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -15,7 +14,7 @@ using Microsoft.Extensions.Logging;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
-namespace FSH.Modules.Identity.Features.v1.Tokens;
+namespace FSH.Mod.Identity.Features.v1.Tokens;
 
 public static class RefreshTokenEndpoint
 {

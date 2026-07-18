@@ -1,6 +1,4 @@
-using FSH.Modules.Identity.Contracts.v1.Dtos;
-
-namespace FSH.Modules.Identity.Contracts.Services;
+namespace FSH.Mod.Identity.Spec.Services;
 
 /// <summary>
 /// Service for user role management.

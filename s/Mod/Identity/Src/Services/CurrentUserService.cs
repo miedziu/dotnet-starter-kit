@@ -1,9 +1,9 @@
 using FSH.Framework.Core.Exceptions;
 using FSH.Framework.Shared.Identity.Claims;
-using FSH.Modules.Identity.Contracts.Services;
+using FSH.Mod.Identity.Spec.Services;
 using System.Security.Claims;
 
-namespace FSH.Modules.Identity.Services;
+namespace FSH.Mod.Identity.Services;
 
 internal sealed class CurrentUserService : ICurrentUserService
 {

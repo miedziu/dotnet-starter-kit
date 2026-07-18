@@ -1,8 +1,7 @@
 using FSH.Framework.Shared.Persistence;
-using FSH.Modules.Billing.Contracts.v1.Dtos;
 using Mediator;
 
-namespace FSH.Modules.Billing.Contracts.v1.Invoices;
+namespace FSH.Mod.Billing.Spec.v1.Invoice;
 
 /// <summary>
 /// Lists invoices with optional filters.

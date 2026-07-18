@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<RootNamespace>FSH.Modules.Billing.Contracts</RootNamespace>
-		<AssemblyName>FSH.Modules.Billing.Contracts</AssemblyName>
+		<RootNamespace>FSH.Mod.Billing.Spec</RootNamespace>
+		<AssemblyName>FSH.Mod.Billing.Spec</AssemblyName>
 		<NoWarn>$(NoWarn);S2094</NoWarn>
 	</PropertyGroup>
 
@@ -11,8 +11,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\..\..\BuildingBlocks\Shared\Shared.csproj" />
-		<ProjectReference Include="..\..\..\BuildingBlocks\Eventing.Abstractions\Eventing.Abstractions.csproj" />
+		<ProjectReference Include="..\..\..\Lib\Shared\Shared.csproj" />
+		<ProjectReference Include="..\..\..\Lib\Eventing.Abstractions\Eventing.Abstractions.csproj" />
 	</ItemGroup>
 
 </Project>

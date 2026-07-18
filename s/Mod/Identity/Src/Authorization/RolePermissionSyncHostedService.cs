@@ -2,7 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace FSH.Modules.Identity.Authorization;
+namespace FSH.Mod.Identity.Authorization;
 
 /// <summary>
 /// Runs once on host startup:adds any permission claims that

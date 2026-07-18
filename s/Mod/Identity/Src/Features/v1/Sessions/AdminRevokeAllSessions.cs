@@ -1,15 +1,13 @@
 using FluentValidation;
 using FSH.Framework.Core.Context;
 using FSH.Framework.Shared.Identity.Authorization;
-using FSH.Modules.Identity.Contracts.Authorization;
-using FSH.Modules.Identity.Contracts.Services;
-using FSH.Modules.Identity.Contracts.v1.Sessions;
+using FSH.Mod.Identity.Spec.Services;
 using Mediator;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 
-namespace FSH.Modules.Identity.Features.v1.Sessions;
+namespace FSH.Mod.Identity.Features.v1.Sessions;
 
 public static class AdminRevokeAllSessionsEndpoint
 {

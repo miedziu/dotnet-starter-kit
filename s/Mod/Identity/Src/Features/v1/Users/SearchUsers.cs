@@ -2,11 +2,8 @@ using FSH.Framework.Core.Context;
 using FSH.Framework.Persistence;
 using FSH.Framework.Shared.Identity.Authorization;
 using FSH.Framework.Shared.Persistence;
-using FSH.Modules.Identity.Contracts.Authorization;
-using FSH.Modules.Identity.Contracts.v1.Dtos;
-using FSH.Modules.Identity.Contracts.v1.Users;
-using FSH.Modules.Identity.Data;
-using FSH.Modules.Identity.Domain;
+using FSH.Mod.Identity.Data;
+using FSH.Mod.Identity.Domain;
 using Mediator;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -15,7 +12,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
-namespace FSH.Modules.Identity.Features.v1.Users;
+namespace FSH.Mod.Identity.Features.v1.Users;
 
 public static class SearchUsersEndpoint
 {

@@ -1,13 +1,12 @@
 using FluentValidation;
 using FSH.Framework.Web.Idempotency;
-using FSH.Modules.Identity.Contracts.Services;
-using FSH.Modules.Identity.Contracts.v1.Users;
+using FSH.Mod.Identity.Spec.Services;
 using Mediator;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 
-namespace FSH.Modules.Identity.Features.v1.Users;
+namespace FSH.Mod.Identity.Features.v1.Users;
 
 public static class RegisterUserEndpoint
 {

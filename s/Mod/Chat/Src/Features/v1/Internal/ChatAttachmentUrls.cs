@@ -1,11 +1,9 @@
-using FSH.Modules.Chat.Contracts.v1.Dtos;
-using FSH.Modules.Files.Contracts.v1.Queries;
 using Mediator;
 
-namespace FSH.Modules.Chat.Features.v1.Internal;
+namespace FSH.Mod.Chat.Features.v1.Internal;
 
 /// <summary>
-/// Resolves message attachment URLs at <b>read</b> time. Chat files are uploaded Private, so the URL
+/// Resolves message attachment URLs at <b>read</b> time. Chat file are uploaded Private, so the URL
 /// persisted on a <see cref="MessageAttachmentDto"/> is a short-lived presigned URL captured at send
 /// time — it expires, breaking historical images. For every attachment that carries a
 /// <c>FileAssetId</c> we mint a fresh presigned URL via <see cref="GetFileDownloadUrlQuery"/> (which
@@ -35,7 +33,7 @@ internal static class ChatAttachmentUrls
             return [.. messages];
         }
 
-        // Sequential by design: each Send resolves through the Files module's scoped DbContext, so
+        // Sequential by design: each Send resolves through the File module's scoped DbContext, so
         // firing them concurrently would race that single context. The set is small (images per page).
         var resolved = new Dictionary<Guid, string>(ids.Count);
         foreach (var id in ids)

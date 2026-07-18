@@ -1,4 +1,4 @@
-﻿namespace FSH.Modules.Auditing.Contracts;
+namespace FSH.Mod.Audit.Spec;
 
 public sealed record ExceptionEventPayload(
     ExceptionArea Area,

@@ -1,8 +1,8 @@
 using FSH.Framework.Eventing.Abstractions;
-using FSH.Modules.Identity.Contracts.Events;
+using FSH.Mod.Identity.Spec.Events;
 using Microsoft.Extensions.Logging;
 
-namespace FSH.Modules.Identity.Events;
+namespace FSH.Mod.Identity.Events;
 
 /// <summary>
 /// Example handler that logs when a token is generated.

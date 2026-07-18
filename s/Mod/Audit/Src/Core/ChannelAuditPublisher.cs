@@ -1,9 +1,9 @@
-using FSH.Modules.Auditing.Contracts;
+using FSH.Mod.Audit.Spec;
 using Microsoft.AspNetCore.Http;
 using System.Diagnostics;
 using System.Threading.Channels;
 
-namespace FSH.Modules.Auditing;
+namespace FSH.Mod.Audit.Core;
 
 /// <summary>
 /// Non-blocking publisher with two lanes: a high-throughput default lane

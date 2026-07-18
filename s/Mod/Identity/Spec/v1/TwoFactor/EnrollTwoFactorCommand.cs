@@ -1,7 +1,6 @@
-using FSH.Modules.Identity.Contracts.v1.Dtos;
 using Mediator;
 
-namespace FSH.Modules.Identity.Contracts.v1.TwoFactor;
+namespace FSH.Mod.Identity.Spec.v1.TwoFactor;
 
 /// <summary>
 /// Begin TOTP enrollment for the current user. Generates (or replaces) the user's

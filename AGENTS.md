@@ -9,18 +9,18 @@ Canonical guide for AI coding tools. Detailed rules in `.agents/rules/` — read
 **Backend:** .NET 10, EF Core 10, PostgreSQL, Redis, JWT + ASP.NET Identity, Hangfire, OpenAPI/Scalar, Serilog + OpenTelemetry, .NET Aspire.
 **Frontend** — `clients/dashboard`: React 19, Vite 7, TypeScript, TanStack Query v5, React Router 7, Radix + Tailwind v4 (shadcn-style), SignalR/SSE.
 
-**Modules:** Identity, Billing, Tickets, Chat, Files, Webhooks, Auditing, Notifications — each runtime + `.Contracts` project.
+**Mod:** Identity, Billing, Ticket, Chat, File, Webhooks, Audit, Notifications — each runtime + `.Contracts` project.
 
 ## Repo map
 
 | Path | What |
 |---|---|
-| `src/BuildingBlocks/` | Shared: Core, Persistence, Web, Caching, Eventing, Jobs, Mailing, Storage |
-| `src/Modules/{Name}/` | Bounded contexts: runtime + `.Contracts` (public API) |
-| `src/Host/FSH.Starter.Api` | Composition-root Web API host |
-| `src/Host/FSH.Starter.AppHost` | .NET Aspire orchestrator |
-| `src/Host/FSH.Starter.DbMigrator` | One-shot migrate/seed runner |
-| `src/Host/FSH.Starter.Migrations.PostgreSQL` | EF migrations (per-module folders) |
+| `s/Lib/` | Shared: Core, Persistence, Web, Caching, Eventing, Jobs, Mailing, Storage |
+| `s/Mod/{Name}/` | Bounded contexts: runtime + `.Contracts` (public API) |
+| `s/Host/FSH.Starter.Api` | Composition-root Web API host |
+| `s/Host/FSH.Starter.AppHost` | .NET Aspire orchestrator |
+| `s/Host/FSH.Starter.DbMigrator` | One-shot migrate/seed runner |
+| `s/Host/FSH.Starter.Migrations.PostgreSQL` | EF migrations (per-module folders) |
 
 ## Tech stack
 
@@ -38,9 +38,9 @@ Canonical guide for AI coding tools. Detailed rules in `.agents/rules/` — read
 ## Build & run
 
 ```bash
-dotnet run --project src/Host/FSH.Starter.AppHost   # whole stack
-dotnet build src/FSH.Starter.slnx                   # build backend
-dotnet run --project src/Host/FSH.Starter.Api       # API only → https://localhost:7030
+dotnet run --project s/Host/FSH.Starter.AppHost   # whole stack
+dotnet build s/FSH.Starter.slnx                   # build backend
+dotnet run --project s/Host/FSH.Starter.Api       # API only → https://localhost:7030
 ```
 
 Migrations: `dotnet run --project DbMigrator -- apply [--seed]`
@@ -51,7 +51,7 @@ Migrations: `dotnet run --project DbMigrator -- apply [--seed]`
 
 1. **Module boundaries** — reference only `.Contracts`, never runtime project
 2. **Registration touches FOUR places** — Program.cs + DbMigrator/Program.cs (Mediator assemblies + moduleAssemblies). Miss one → silent failure.
-3. **BuildingBlocks** — shared by all modules, wide blast radius
+3. **Lib** — shared by all modules, wide blast radius
 4. **Handlers:** `public sealed`, `ValueTask<T>`, `.ConfigureAwait(false)`
 5. **Structured logging only** — no string interpolation; use message templates
 6. **Propagate `CancellationToken`** — add as `= default` on public methods
@@ -73,15 +73,15 @@ Migrations: `dotnet run --project DbMigrator -- apply [--seed]`
 | CORS, security headers, rate limiting, idempotency | `security.md` |
 | SignalR / SSE backend | `realtime.md` |
 | Logging, correlation, OpenTelemetry | `logging.md` |
-| **Modifying `src/BuildingBlocks`** (read first) | `buildingblocks-protection.md` |
-| A specific module's quirks | `modules/{module}.md` (identity, chat, files, webhooks, auditing, billing, catalog, tickets, notifications) |
+| Lib changes | `lib-protection.md` |
+| A specific module's quirks | `mod/{module}.md` (identity, chat, files, webhooks, auditing, billing, tickets, notifications) |
 
 **Frontend** (`.agents/rules/frontend/`)
 
 | Working on… | Read |
 |---|---|
 | Any React work (shared stack, API client, Query, Tailwind, design language) | `frontend/shared.md` |
-| The client app (`clients/dashboard`) | `frontend/dashboard.md` |
+| The client app (`c`) | `frontend/dashboard.md` |
 
 ## Skills
 

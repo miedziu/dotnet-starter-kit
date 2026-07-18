@@ -1,11 +1,9 @@
 using FSH.Framework.Core.Context;
 using FSH.Framework.Core.Exceptions;
 using FSH.Framework.Storage.Services;
-using FSH.Modules.Files.Contracts;
-using FSH.Modules.Files.Contracts.v1.Dtos;
-using FSH.Modules.Files.Contracts.v1.Queries;
-using FSH.Modules.Files.Data;
-using FSH.Modules.Files.Services;
+using FSH.Mod.File.Data;
+using FSH.Mod.File.Services;
+using FSH.Mod.File.Spec;
 using Mediator;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -13,7 +11,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
-namespace FSH.Modules.Files.Features.v1;
+namespace FSH.Mod.File.Features.v1;
 
 public static class GetFileDownloadUrlEndpoint
 {
@@ -28,11 +26,11 @@ public static class GetFileDownloadUrlEndpoint
 }
 
 public sealed class GetFileDownloadUrlQueryHandler(
-    FilesDbContext db,
+    FileDbContext db,
     IStorageService storage,
     FileAccessPolicyRegistry policies,
     ICurrentUser currentUser,
-    IOptions<FilesOptions> options)
+    IOptions<FileOptions> options)
     : IQueryHandler<GetFileDownloadUrlQuery, PresignedDownloadResponse>
 {
     public async ValueTask<PresignedDownloadResponse> Handle(GetFileDownloadUrlQuery q, CancellationToken cancellationToken)

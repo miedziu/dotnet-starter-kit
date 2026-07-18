@@ -1,6 +1,6 @@
-using FSH.Modules.Files.Contracts;
+using FSH.Mod.File.Spec;
 
-namespace FSH.Modules.Files.Services;
+namespace FSH.Mod.File.Services;
 
 /// <summary>
 /// Resolves an <see cref="IFileAccessPolicy"/> for a given OwnerType. Owning modules register their

@@ -1,8 +1,8 @@
-# Module: Tickets
+# Module: Ticket
 
 Support ticket lifecycle with comments. Module `Order = 700`.
 
-**Entities:** `Ticket` (soft-deletable, state machine) + `TicketComment`. `TicketsDbContext`. `TicketStatus`/`TicketPriority` enums in Contracts; domain events internal.
+**Entities:** `Ticket` (soft-deletable, state machine) + `TicketComment`. `TicketDbContext`. `TicketStatus`/`TicketPriority` enums in Contracts; domain events internal.
 
 **Areas:** Create, Assign, Resolve, Reopen, Restore, AddComment, ListComments, GetById, Search, ListTrashed.
 

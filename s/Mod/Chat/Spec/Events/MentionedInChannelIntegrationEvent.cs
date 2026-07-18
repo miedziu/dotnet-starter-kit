@@ -1,10 +1,10 @@
 using FSH.Framework.Eventing.Abstractions;
 
-namespace FSH.Modules.Chat.Contracts.Events;
+namespace FSH.Mod.Chat.Spec.Events;
 
 /// <summary>
 /// One event per resolved <c>@user</c> mention inside a sent <see cref="MessageId"/>. Consumed by
-/// the Notifications module to materialize a bell-icon row + push a SignalR event to the
+/// the Notification module to materialize a bell-icon row + push a SignalR event to the
 /// mentioned user's connections. Owns no PII beyond the body preview (truncated upstream).
 /// </summary>
 public sealed record MentionedInChannelIntegrationEvent(

@@ -11,19 +11,19 @@ argument-hint: [ModuleName]
 ## Projects
 
 ```
-src/Modules/{Name}/
-├── Modules.{Name}/            ← runtime: Domain/, Data/, Features/v1/, {Name}Module.cs
-└── Modules.{Name}.Contracts/  ← public: v1/, v1/Dtos/, Events/
+s/Mod/{Name}/
+├── Mod.{Name}/            ← runtime: Domain/, Data/, Features/v1/, {Name}Module.cs
+└── Mod.{Name}.Contracts/  ← public: v1/, v1/Dtos/, Events/
 ```
 
-**Copy existing `.csproj` files** — don't hand-write. Runtime refs Contracts + BuildingBlocks; Contracts refs Mediator + shared contracts.
+**Copy existing `.csproj` files** — don't hand-write. Runtime refs Contracts + Lib; Contracts refs Mediator + shared contracts.
 
 ## Step 1 — `[FshModule]` assembly attribute
 
 ```csharp
-[assembly: FshModule(typeof(FSH.Modules.{Name}.{Name}Module), 900)]
+[assembly: FshModule(typeof(FSH.Mod.{Name}.{Name}Module), 900)]
 
-namespace FSH.Modules.{Name};
+namespace FSH.Mod.{Name};
 
 public sealed class {Name}Module : IModule
 {
@@ -49,7 +49,7 @@ public sealed class {Name}Module : IModule
 }
 ```
 
-**Order:** Auditing 300, Files 350, Webhooks 400, Billing 500, Tickets 700, Notifications 750, Chat 800
+**Order:** Audit 300, File 350, Webhooks 400, Billing 500, Ticket 700, Notifications 750, Chat 800
 
 ## Step 2 — Permissions
 
@@ -75,15 +75,15 @@ public sealed class {Name}DbContext : BaseDbContext
 ## Step 4 — Solution + project refs
 
 ```bash
-dotnet sln add src/Modules/{Name}/Modules.{Name}/Modules.{Name}.csproj
-dotnet sln add src/Modules/{Name}/Modules.{Name}.Contracts/Modules.{Name}.Contracts.csproj
+dotnet sln add s/Mod/{Name}/Mod.{Name}/Mod.{Name}.csproj
+dotnet sln add s/Mod/{Name}/Mod.{Name}.Contracts/Mod.{Name}.Contracts.csproj
 ```
 
 Add `<ProjectReference>` to runtime from **both** `FSH.Starter.Api` and `DbMigrator`, and from `FSH.Starter.Migrations.PostgreSQL`.
 
 ## Step 5 — Migrations folder
 
-Add `{Name}/` folder in `src/Host/FSH.Starter.Migrations.PostgreSQL`, then:
+Add `{Name}/` folder in `s/Host/FSH.Starter.Migrations.PostgreSQL`, then:
 
 ```bash
 dotnet ef migrations add Initial --context {Name}DbContext
@@ -103,7 +103,7 @@ Miss any → handlers undiscovered, module not loaded, or migrate/seed skips it.
 ## Step 7 — Verify
 
 ```bash
-dotnet build src/FSH.Starter.slnx   # 0 warnings
+dotnet build s/FSH.Starter.slnx   # 0 warnings
 ```
 
 ## Checklist

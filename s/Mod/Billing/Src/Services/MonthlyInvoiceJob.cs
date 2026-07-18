@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Logging;
 
-namespace FSH.Modules.Billing.Services;
+namespace FSH.Mod.Billing.Services;
 
 /// <summary>
 /// Hangfire recurring job that generates draft invoices for the previous billing period. Scheduled

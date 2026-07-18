@@ -1,7 +1,6 @@
-using FSH.Modules.Files.Contracts.v1.Dtos;
 using Mediator;
 
-namespace FSH.Modules.Files.Contracts.v1.Commands;
+namespace FSH.Mod.File.Spec.v1.File;
 
 /// <summary>
 /// Flip a file's visibility (Public ↔ Private) after upload. Caller must satisfy

@@ -2,18 +2,18 @@ using FSH.Framework.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace FSH.Modules.Files.Data;
+namespace FSH.Mod.File.Data;
 
-public sealed class FilesDbInitializer(
-    FilesDbContext dbContext,
-    ILogger<FilesDbInitializer> logger) : IDbInitializer
+public sealed class FileDbInitializer(
+    FileDbContext dbContext,
+    ILogger<FileDbInitializer> logger) : IDbInitializer
 {
     public async Task MigrateAsync(CancellationToken ct)
     {
         if ((await dbContext.Database.GetPendingMigrationsAsync(ct).ConfigureAwait(false)).Any())
         {
             await dbContext.Database.MigrateAsync(ct).ConfigureAwait(false);
-            logger.LogInformation("[Files] applied migrations");
+            logger.LogInformation("[File] applied migrations");
         }
     }
 

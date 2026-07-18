@@ -1,10 +1,10 @@
-using FSH.Modules.Auditing.Contracts;
+using FSH.Mod.Audit.Spec;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 using System.Threading.Channels;
 
-namespace FSH.Modules.Auditing;
+namespace FSH.Mod.Audit.Core;
 
 /// <summary>
 /// Drains the channel and writes to the configured sink in batches.
@@ -151,7 +151,7 @@ public sealed class AuditBackgroundWorker : BackgroundService
                 try
                 {
                     await _sink.WriteAsync(snapshot, ct).ConfigureAwait(false);
-                    AuditingTelemetry.Flushed.Add(snapshot.Length);
+                    AuditTelemetry.Flushed.Add(snapshot.Length);
                     return;
                 }
                 catch (OperationCanceledException) when (ct.IsCancellationRequested)
@@ -162,7 +162,7 @@ public sealed class AuditBackgroundWorker : BackgroundService
                 }
                 catch (Exception ex)
                 {
-                    AuditingTelemetry.FlushFailed.Add(1,
+                    AuditTelemetry.FlushFailed.Add(1,
                         new KeyValuePair<string, object?>("attempt", attempt));
 
                     if (attempt == MaxRetries)
@@ -186,7 +186,7 @@ public sealed class AuditBackgroundWorker : BackgroundService
         finally
         {
             batch.Clear();
-            AuditingTelemetry.FlushDurationMs.Record(sw.Elapsed.TotalMilliseconds);
+            AuditTelemetry.FlushDurationMs.Record(sw.Elapsed.TotalMilliseconds);
         }
     }
 

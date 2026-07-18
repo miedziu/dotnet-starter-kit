@@ -1,8 +1,7 @@
 using FSH.Framework.Shared.Persistence;
-using FSH.Modules.Files.Contracts.v1.Dtos;
 using Mediator;
 
-namespace FSH.Modules.Files.Contracts.v1.Queries;
+namespace FSH.Mod.File.Spec.v1.File;
 
 public sealed record ListTrashedFilesQuery(int PageNumber = 1, int PageSize = 20)
     : IQuery<PagedResponse<FileAssetDto>>;

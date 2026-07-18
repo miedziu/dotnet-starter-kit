@@ -23,7 +23,7 @@ public static class SystemPermissions
         public const string Plans = $"{nameof(Platform)}.Plans";
         public const string Subscriptions = $"{nameof(Platform)}.Subscriptions";
         public const string Invoices = $"{nameof(Platform)}.Invoices";
-        public const string Webhooks = $"{nameof(Platform)}.Webhooks";
+        public const string Webhook = $"{nameof(Platform)}.Webhook";
         public const string Audits = $"{nameof(Platform)}.Audits";
         public const string Users = $"{nameof(Platform)}.Users";
     }
@@ -35,6 +35,6 @@ public static class SystemPermissions
         new("Manage Plans", ActionConstants.Manage, Platform.Plans, IsRoot: true),
         new("Manage Subscriptions", ActionConstants.Manage, Platform.Subscriptions, IsRoot: true),
         new("Admin All Invoices", ActionConstants.Admin, Platform.Invoices, IsRoot: true),
-        new("Admin All Webhooks", ActionConstants.Admin, Platform.Webhooks, IsRoot: true),
+        new("Admin All Webhook", ActionConstants.Admin, Platform.Webhook, IsRoot: true),
     ];
 }

@@ -1,6 +1,6 @@
 # Storage & file uploads
 
-`src/BuildingBlocks/Storage/`. Use `IStorageService` for files/blobs.
+`s/Lib/Storage/`. Use `IStorageService` for files/blobs.
 
 ## `IStorageService`
 

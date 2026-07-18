@@ -1,11 +1,8 @@
 using FluentValidation;
 using FSH.Framework.Shared.Identity.Authorization;
 using FSH.Framework.Storage.Services;
-using FSH.Modules.Files.Contracts.Authorization;
-using FSH.Modules.Files.Contracts.v1.Dtos;
-using FSH.Modules.Files.Contracts.v1.Queries;
-using FSH.Modules.Files.Data;
-using FSH.Modules.Files.Features.v1.Internal;
+using FSH.Mod.File.Data;
+using FSH.Mod.File.Features.v1.Internal;
 using Mediator;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -13,7 +10,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.ObjectModel;
 
-namespace FSH.Modules.Files.Features.v1;
+namespace FSH.Mod.File.Features.v1;
 
 public static class ListSharedFilesEndpoint
 {
@@ -23,7 +20,7 @@ public static class ListSharedFilesEndpoint
                     Results.Ok(await mediator.Send(new ListSharedFilesQuery(page ?? 1, pageSize ?? 20), ct)))
             .WithName("ListSharedFiles")
             .WithSummary("List Public files in this tenant (the 'Shared' view)")
-            .RequirePermission(FilesPermissions.Upload);
+            .RequirePermission(FilePermissions.Upload);
 }
 
 public sealed class ListSharedFilesQueryValidator : AbstractValidator<ListSharedFilesQuery>
@@ -35,11 +32,11 @@ public sealed class ListSharedFilesQueryValidator : AbstractValidator<ListShared
     }
 }
 
-public sealed class ListSharedFilesQueryHandler(FilesDbContext db, IStorageService storage)
+public sealed class ListSharedFilesQueryHandler(FileDbContext db, IStorageService storage)
     : IQueryHandler<ListSharedFilesQuery, ReadOnlyCollection<FileAssetDto>>
 {
     // Owner types that represent "free-standing" files (not bound to a domain entity).
-    // Tickets/Chat attachments are intentionally excluded — their visibility is a
+    // Ticket/Chat attachments are intentionally excluded — their visibility is a
     // function of their owning entity's access policy, not a free-standing share decision.
     private static readonly string[] SharedOwnerTypes = ["MyFiles", "User"];
 

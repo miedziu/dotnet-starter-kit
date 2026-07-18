@@ -11,15 +11,15 @@ Vertical slice split across two projects: request/response types in `.Contracts`
 ## Layout
 
 ```
-src/Modules/{X}/Modules.{X}.Contracts/v1/{Area}/{Feature}Command.cs
-src/Modules/{X}/Modules.{X}.Contracts/v1/Dtos/{Entity}Dto.cs
-src/Modules/{X}/Modules.{X}/Features/v1/{Area}/{Feature}.cs
+s/Mod/{X}/Mod.{X}.Contracts/v1/{Area}/{Feature}Command.cs
+s/Mod/{X}/Mod.{X}.Contracts/v1/Dtos/{Entity}Dto.cs
+s/Mod/{X}/Mod.{X}/Features/v1/{Area}/{Feature}.cs
 ```
 
 ## Step 1 — Command/Query (Contracts)
 
 ```csharp
-namespace FSH.Modules.{X}.Contracts.v1.{Area};
+namespace FSH.Mod.{X}.Contracts.v1.{Area};
 
 public sealed record Create{Entity}Command(string Name, decimal PriceAmount, string PriceCurrency)
     : ICommand<Guid>;
@@ -86,7 +86,7 @@ group.MapCreate{Entity}Endpoint();
 ## Step 6 — Verify
 
 ```bash
-dotnet build src/FSH.Starter.slnx   # 0 warnings
+dotnet build s/FSH.Starter.slnx   # 0 warnings
 ```
 
 ## Checklist

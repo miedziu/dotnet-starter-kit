@@ -5,7 +5,7 @@ Your application, generated from the **FSH .NET Starter Kit** — a production-r
 cloud-native deploy.
 
 You **own all of this source**. There are no framework NuGet packages to track or upgrade —
-the shared code lives in `src/BuildingBlocks` and is yours to change.
+the shared code lives in `s/Lib` and is yours to change.
 
 ## Prerequisites
 
@@ -18,7 +18,7 @@ the shared code lives in `src/BuildingBlocks` and is yours to change.
 ### Everything at once (recommended) — .NET Aspire
 
 ```bash
-dotnet run --project src/Host/FSH.Starter.AppHost
+dotnet run --project s/Host/FSH.Starter.AppHost
 ```
 
 Aspire starts Postgres, Redis, and MinIO, runs database migrations, then launches the API
@@ -33,7 +33,7 @@ and the React app.
 ### Backend only
 
 ```bash
-dotnet run --project src/Host/FSH.Starter.Api      # needs external Postgres + Redis
+dotnet run --project s/Host/FSH.Starter.Api      # needs external Postgres + Redis
 ```
 
 ### Frontend only (against a running API)
@@ -47,10 +47,10 @@ The React app reads its API URL at runtime from `public/config.json` — no rebu
 ## Project structure
 
 ```
-src/
-  BuildingBlocks/      Shared framework libraries — yours to modify
-  Modules/             Bounded contexts: Identity, Auditing, Billing,
-                       Chat, Files, Notifications, Tickets, Webhooks
+s/
+  Lib/      Shared framework libraries — yours to modify
+  Mod/             Bounded contexts: Identity, Audit, Billing,
+                       Chat, File, Notifications, Ticket, Webhooks
   Host/
     FSH.Starter.Api/                    API composition root
     FSH.Starter.AppHost/                .NET Aspire orchestrator
@@ -65,7 +65,7 @@ clients/
 Migrations run automatically under Aspire. To apply them yourself:
 
 ```bash
-dotnet run --project src/Host/FSH.Starter.DbMigrator -- apply --seed
+dotnet run --project s/Host/FSH.Starter.DbMigrator -- apply --seed
 ```
 
 ## Make it yours — first-run checklist
@@ -74,7 +74,7 @@ This project shipped with sensible defaults. Before production:
 
 - [ ] **Logo** — replace `clients/dashboard/public/logo-fullstackhero.png` with your own.
 - [ ] **Mail** — configure SMTP / SendGrid under `MailOptions` in
-      `src/Host/FSH.Starter.Api/appsettings.json`.
+      `s/Host/FSH.Starter.Api/appsettings.json`.
 - [ ] **OpenAPI contact** — update `OpenApiOptions.Contact` in `appsettings.json`.
 
 Sign in to the admin console as `admin@root.com` using the `SEED_ADMIN_PASSWORD` from your
@@ -82,8 +82,8 @@ Sign in to the admin console as `admin@root.com` using the `SEED_ADMIN_PASSWORD`
 
 ## Adding a feature
 
-1. Contracts command/query in `src/Modules/{Module}.Contracts/v1/{Area}/{Feature}/`
-2. Handler + FluentValidation validator in `src/Modules/{Module}/Features/...`
+1. Contracts command/query in `s/Mod/{Module}.Contracts/v1/{Area}/{Feature}/`
+2. Handler + FluentValidation validator in `s/Mod/{Module}/Features/...`
 3. Endpoint, wired into the module's `MapEndpoints()`
 
 ## Learn more

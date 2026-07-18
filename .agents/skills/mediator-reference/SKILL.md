@@ -46,8 +46,8 @@ builder.Services.AddMediator(o =>
 {
     o.ServiceLifetime = ServiceLifetime.Scoped;
     o.Assemblies = [
-        typeof(FSH.Modules.{X}.Contracts.{X}ContractsMarker),
-        typeof(FSH.Modules.{X}.{X}Module)];
+        typeof(FSH.Mod.{X}.Contracts.{X}ContractsMarker),
+        typeof(FSH.Mod.{X}.{X}Module)];
 });
 ```
 

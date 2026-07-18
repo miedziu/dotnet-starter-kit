@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<RootNamespace>FSH.Modules.Billing</RootNamespace>
-		<AssemblyName>FSH.Modules.Billing</AssemblyName>
+		<RootNamespace>FSH.Mod.Billing</RootNamespace>
+		<AssemblyName>FSH.Mod.Billing</AssemblyName>
 		<NoWarn>$(NoWarn);CA1031;CA1711;CA1812;CA1859;S3267</NoWarn>
 	</PropertyGroup>
 
@@ -11,11 +11,11 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\..\..\BuildingBlocks\Eventing\Eventing.csproj" />
-	  <ProjectReference Include="..\..\..\BuildingBlocks\Jobs\Jobs.csproj" />
-	  <ProjectReference Include="..\..\..\BuildingBlocks\Persistence\Persistence.csproj" />
-	  <ProjectReference Include="..\..\..\BuildingBlocks\Web\Web.csproj" />
-	  <ProjectReference Include="..\Modules.Billing.Contracts\Modules.Billing.Contracts.csproj" />
+	  <ProjectReference Include="..\..\..\Lib\Eventing\Eventing.csproj" />
+	  <ProjectReference Include="..\..\..\Lib\Jobs\Jobs.csproj" />
+	  <ProjectReference Include="..\..\..\Lib\Persistence\Persistence.csproj" />
+	  <ProjectReference Include="..\..\..\Lib\Web\Web.csproj" />
+	  <ProjectReference Include="..\Spec\Billing.Spec.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

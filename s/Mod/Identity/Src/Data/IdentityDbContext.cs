@@ -1,11 +1,11 @@
 using FSH.Framework.Eventing.Inbox;
 using FSH.Framework.Eventing.Outbox;
 using FSH.Framework.Persistence.Context;
-using FSH.Modules.Identity.Domain;
+using FSH.Mod.Identity.Domain;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-namespace FSH.Modules.Identity.Data;
+namespace FSH.Mod.Identity.Data;
 
 public sealed class IdentityDbContext(DbContextOptions<IdentityDbContext> options)
     : BaseDbContext(options)

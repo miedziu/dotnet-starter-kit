@@ -9,7 +9,7 @@ argument-hint: [ModuleName] [Resource] [Action]
 A permission spans server + the admin app. The dashboard app does **not** mirror permissions — it reads
 them from the JWT and relies on the server's 403.
 
-## Step 1 — Server constant (`Modules.{X}.Contracts/{X}Permissions.cs`)
+## Step 1 — Server constant (`Mod.{X}.Contracts/{X}Permissions.cs`)
 
 Add the constant to the resource group and ensure it's in the module's `All` collection. Convention:
 `Permissions.{Resource}.{Action}`.

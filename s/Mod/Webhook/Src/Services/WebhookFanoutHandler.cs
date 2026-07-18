@@ -1,16 +1,16 @@
 using FSH.Framework.Eventing.Abstractions;
-using FSH.Modules.Webhooks.Data;
+using FSH.Mod.Webhook.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace FSH.Modules.Webhooks.Services;
+namespace FSH.Mod.Webhook.Services;
 
 /// <summary>
 /// Open-generic bridge that fans every published integration event out to the
 /// tenant's active webhook subscriptions, then enqueues a delivery job per
 /// subscription via <see cref="IWebhookDispatcher"/>.
 ///
-/// Registered as an open generic in <c>WebhooksModule</c> so DI materializes
+/// Registered as an open generic in <c>WebhookModule</c> so DI materializes
 /// a closed handler for any <typeparamref name="TEvent"/> the event bus
 /// publishes — no per-event wiring required.
 ///

@@ -4,21 +4,21 @@ using FSH.Framework.Eventing;
 using FSH.Framework.Eventing.Outbox;
 using FSH.Framework.Persistence;
 using FSH.Framework.Storage;
-using FSH.Framework.Web.Modules;
-using FSH.Modules.Identity.Authorization;
-using FSH.Modules.Identity.Authorization.Jwt;
-using FSH.Modules.Identity.Contracts.Services;
-using FSH.Modules.Identity.Data;
-using FSH.Modules.Identity.Domain;
-using FSH.Modules.Identity.Features.v1.Groups;
-using FSH.Modules.Identity.Features.v1.Impersonation;
-using FSH.Modules.Identity.Features.v1.Permissions;
-using FSH.Modules.Identity.Features.v1.Roles;
-using FSH.Modules.Identity.Features.v1.Sessions;
-using FSH.Modules.Identity.Features.v1.Tokens;
-using FSH.Modules.Identity.Features.v1.TwoFactor;
-using FSH.Modules.Identity.Features.v1.Users;
-using FSH.Modules.Identity.Services;
+using FSH.Framework.Web.Mod;
+using FSH.Mod.Identity.Authorization;
+using FSH.Mod.Identity.Authorization.Jwt;
+using FSH.Mod.Identity.Data;
+using FSH.Mod.Identity.Domain;
+using FSH.Mod.Identity.Features.v1.Groups;
+using FSH.Mod.Identity.Features.v1.Impersonation;
+using FSH.Mod.Identity.Features.v1.Permissions;
+using FSH.Mod.Identity.Features.v1.Roles;
+using FSH.Mod.Identity.Features.v1.Sessions;
+using FSH.Mod.Identity.Features.v1.Tokens;
+using FSH.Mod.Identity.Features.v1.TwoFactor;
+using FSH.Mod.Identity.Features.v1.Users;
+using FSH.Mod.Identity.Services;
+using FSH.Mod.Identity.Spec.Services;
 using Hangfire;
 using Hangfire.Common;
 using Microsoft.AspNetCore.Authorization;
@@ -30,7 +30,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 
-namespace FSH.Modules.Identity;
+namespace FSH.Mod.Identity;
 
 public sealed class IdentityModule : IModule
 {
@@ -39,7 +39,7 @@ public sealed class IdentityModule : IModule
         ArgumentNullException.ThrowIfNull(builder);
 
         Framework.Shared.Constants.PermissionConstants.Register(
-            Contracts.Authorization.IdentityPermissions.All);
+            Spec.Authorization.IdentityPermissions.All);
 
         var services = builder.Services;
         services.AddScoped<RolePermissionSyncer>();

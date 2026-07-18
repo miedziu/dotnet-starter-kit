@@ -2,17 +2,15 @@ using FluentValidation;
 using FSH.Framework.Core.Exceptions;
 using FSH.Framework.Shared.Identity.Authorization;
 using FSH.Framework.Web.Idempotency;
-using FSH.Modules.Tickets.Contracts.Authorization;
-using FSH.Modules.Tickets.Contracts.v1.Dtos;
-using FSH.Modules.Tickets.Contracts.v1.Tickets;
-using FSH.Modules.Tickets.Data;
+using FSH.Mod.Ticket.Data;
+using FSH.Mod.Ticket.Spec.v1.Ticket;
 using Mediator;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 
-namespace FSH.Modules.Tickets.Features.v1;
+namespace FSH.Mod.Ticket.Features.v1;
 
 public static class UpdateTicketEndpoint
 {
@@ -26,7 +24,7 @@ public static class UpdateTicketEndpoint
                         new UpdateTicketCommand(ticketId, body.Title, body.Description, body.Priority), ct)))
             .WithName("UpdateTicket")
             .WithSummary("Edit a ticket's title, description, and priority")
-            .RequirePermission(TicketsPermissions.Tickets.Update)
+            .RequirePermission(TicketPermissions.Ticket.Update)
             .WithIdempotency();
     }
 }
@@ -42,7 +40,7 @@ public sealed class UpdateTicketCommandValidator : AbstractValidator<UpdateTicke
     }
 }
 
-public sealed class UpdateTicketCommandHandler(TicketsDbContext dbContext)
+public sealed class UpdateTicketCommandHandler(TicketDbContext dbContext)
     : ICommandHandler<UpdateTicketCommand, Guid>
 {
     public async ValueTask<Guid> Handle(UpdateTicketCommand command, CancellationToken cancellationToken)

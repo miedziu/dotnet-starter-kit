@@ -1,7 +1,7 @@
-using FSH.Modules.Billing.Domain;
+using FSH.Mod.Billing.Domain;
 using Microsoft.EntityFrameworkCore;
 
-namespace FSH.Modules.Billing.Data;
+namespace FSH.Mod.Billing.Data;
 
 /// <summary>
 /// Billing data lives in the main application database

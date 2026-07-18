@@ -1,15 +1,15 @@
 using FSH.Framework.Shared.Constants;
 
-namespace FSH.Modules.Files.Contracts.Authorization;
+namespace FSH.Mod.File.Spec;
 
 /// <summary>
-/// Permission constants + the registry entry consumed by <c>FilesModule.ConfigureServices</c>.
+/// Permission constants + the registry entry consumed by <c>FileModule.ConfigureServices</c>.
 /// Permission names follow the <c>Permissions.{Resource}.{Action}</c> shape per the framework
 /// convention (see <see cref="FshPermission.NameFor"/>).
 /// </summary>
-public static class FilesPermissions
+public static class FilePermissions
 {
-    public const string Resource = "Files";
+    public const string Resource = "File";
 
     public const string Upload = $"Permissions.{Resource}.Upload";
     public const string DeleteOwn = $"Permissions.{Resource}.DeleteOwn";
@@ -19,10 +19,10 @@ public static class FilesPermissions
 
     public static IReadOnlyList<FshPermission> All { get; } =
     [
-        new("Upload Files",     ActionConstants.Upload,    Resource, IsBasic: true),
-        new("Delete Own Files", ActionConstants.DeleteOwn, Resource, IsBasic: true),
+        new("Upload File",     ActionConstants.Upload,    Resource, IsBasic: true),
+        new("Delete Own File", ActionConstants.DeleteOwn, Resource, IsBasic: true),
         new("Delete Any File",  ActionConstants.DeleteAny, Resource),
-        new("View Files Trash", ActionConstants.ViewTrash, Resource),
-        new("Restore Files",    ActionConstants.Restore,   Resource),
+        new("View File Trash", ActionConstants.ViewTrash, Resource),
+        new("Restore File",    ActionConstants.Restore,   Resource),
     ];
 }

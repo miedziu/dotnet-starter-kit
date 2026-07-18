@@ -1,4 +1,4 @@
-namespace FSH.Modules.Identity.Domain;
+namespace FSH.Mod.Identity.Domain;
 
 /// <summary>
 /// Represents a referral conversion - when a user registers via another user's referral link.

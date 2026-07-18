@@ -1,16 +1,14 @@
 using FluentValidation;
 using FSH.Framework.Core.Exceptions;
 using FSH.Framework.Shared.Identity.Authorization;
-using FSH.Modules.Files.Contracts.Authorization;
-using FSH.Modules.Files.Contracts.v1.Commands;
-using FSH.Modules.Files.Data;
+using FSH.Mod.File.Data;
 using Mediator;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 
-namespace FSH.Modules.Files.Features.v1;
+namespace FSH.Mod.File.Features.v1;
 
 public static class RestoreFileEndpoint
 {
@@ -23,7 +21,7 @@ public static class RestoreFileEndpoint
                 })
             .WithName("RestoreFile")
             .WithSummary("Restore a soft-deleted file from trash (admin)")
-            .RequirePermission(FilesPermissions.Restore);
+            .RequirePermission(FilePermissions.Restore);
 }
 
 public sealed class RestoreFileCommandValidator : AbstractValidator<RestoreFileCommand>
@@ -34,7 +32,7 @@ public sealed class RestoreFileCommandValidator : AbstractValidator<RestoreFileC
     }
 }
 
-public sealed class RestoreFileCommandHandler(FilesDbContext db)
+public sealed class RestoreFileCommandHandler(FileDbContext db)
     : ICommandHandler<RestoreFileCommand, Unit>
 {
     public async ValueTask<Unit> Handle(RestoreFileCommand cmd, CancellationToken cancellationToken)

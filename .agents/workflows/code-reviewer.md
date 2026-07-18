@@ -7,7 +7,7 @@ conventions are defined in `.agents/rules/` and `AGENTS.md` — treat those as t
 playbook is the review procedure, not a second copy of the rules.
 
 ## Procedure
-1. `git diff HEAD` (and `git status`) to see what changed; group by area (backend module / BuildingBlocks / frontend).
+1. `git diff HEAD` (and `git status`) to see what changed; group by area (backend module / Lib / frontend).
 2. For each changed file, check it against the relevant rule file (`api-conventions.md`, `database.md`, `eventing.md`, `frontend/*`, …) and the checklist below.
 3. If the Roslyn navigator MCP is available, run `detect_antipatterns` and `get_diagnostics` (solution scope) for machine-found issues (broad `catch`, missing `CancellationToken`, EF `AsNoTracking`, logging interpolation) and fold them in — noting false positives (mutate-then-save queries don't want `AsNoTracking`; hosted-service `catch(Exception)` that logs + filters OCE is fine).
 4. Report with `file:line` refs and a concrete fix per finding.
@@ -15,7 +15,7 @@ playbook is the review procedure, not a second copy of the rules.
 ## Checklist (high-signal)
 **Boundaries / structure**
 - Cross-module references go only through `.Contracts` (never another module's runtime).
-- `src/BuildingBlocks/**` not modified without explicit approval (flag if it is).
+- `s/Lib/**` not modified without explicit approval (flag if it is).
 - New module → registered in **all four** places (Mediator + `moduleAssemblies` in Api **and** DbMigrator).
 
 **CQRS / Mediator (not MediatR)**
@@ -41,8 +41,8 @@ playbook is the review procedure, not a second copy of the rules.
 ## Commands
 ```bash
 git diff HEAD
-grep -rn "MediatR\|IRequest<\|IRequestHandler<" src/Modules/ --include="*.cs"   # must be empty
-dotnet build src/FSH.Starter.slnx 2>&1 | grep -E "warning|error"               # 0 expected
+grep -rn "MediatR\|IRequest<\|IRequestHandler<" s/Mod/ --include="*.cs"   # must be empty
+dotnet build s/FSH.Starter.slnx 2>&1 | grep -E "warning|error"               # 0 expected
 ```
 
 ## Output
@@ -61,5 +61,5 @@ dotnet build src/FSH.Starter.slnx 2>&1 | grep -E "warning|error"               #
 - …
 
 ### Verification
-dotnet build src/FSH.Starter.slnx   → expect 0 warnings
+dotnet build s/FSH.Starter.slnx   → expect 0 warnings
 ```

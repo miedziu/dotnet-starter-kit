@@ -1,3 +1,3 @@
-using FSH.Framework.Web.Modules;
+using FSH.Framework.Web.Mod;
 
-[assembly: FshModule(typeof(FSH.Modules.Ticket.TicketModule), 600)]
+[assembly: FshModule(typeof(FSH.Mod.Ticket.TicketModule), 600)]

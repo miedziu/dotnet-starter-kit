@@ -1,9 +1,9 @@
-using FSH.Modules.Billing.Data;
-using FSH.Modules.Billing.Domain;
+using FSH.Mod.Billing.Data;
+using FSH.Mod.Billing.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace FSH.Modules.Billing.Services;
+namespace FSH.Mod.Billing.Services;
 
 public sealed class UsageReporter : IUsageReporter
 {

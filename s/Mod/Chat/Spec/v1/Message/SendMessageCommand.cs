@@ -1,7 +1,6 @@
-using FSH.Modules.Chat.Contracts.v1.Dtos;
 using Mediator;
 
-namespace FSH.Modules.Chat.Contracts.v1.Commands;
+namespace FSH.Mod.Chat.Spec.v1.Message;
 
 public sealed record SendMessageAttachmentInput(
     Guid? FileAssetId,

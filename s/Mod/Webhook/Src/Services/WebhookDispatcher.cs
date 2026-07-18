@@ -1,6 +1,6 @@
 using Hangfire;
 
-namespace FSH.Modules.Webhooks.Services;
+namespace FSH.Mod.Webhook.Services;
 
 public sealed class WebhookDispatcher : IWebhookDispatcher
 {

@@ -1,6 +1,6 @@
 using FSH.Framework.Shared.Constants;
 
-namespace FSH.Modules.Auditing.Contracts.Authorization;
+namespace FSH.Mod.Audit.Spec;
 
 public static class AuditPermissions
 {

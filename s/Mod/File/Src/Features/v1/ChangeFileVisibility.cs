@@ -3,20 +3,17 @@ using FSH.Framework.Core.Context;
 using FSH.Framework.Core.Exceptions;
 using FSH.Framework.Shared.Identity.Authorization;
 using FSH.Framework.Storage.Services;
-using FSH.Modules.Files.Contracts;
-using FSH.Modules.Files.Contracts.Authorization;
-using FSH.Modules.Files.Contracts.v1.Commands;
-using FSH.Modules.Files.Contracts.v1.Dtos;
-using FSH.Modules.Files.Data;
-using FSH.Modules.Files.Features.v1.Internal;
-using FSH.Modules.Files.Services;
+using FSH.Mod.File.Data;
+using FSH.Mod.File.Features.v1.Internal;
+using FSH.Mod.File.Services;
+using FSH.Mod.File.Spec;
 using Mediator;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 
-namespace FSH.Modules.Files.Features.v1;
+namespace FSH.Mod.File.Features.v1;
 
 public sealed record ChangeFileVisibilityRequest(Visibility Visibility);
 
@@ -34,7 +31,7 @@ public static class ChangeFileVisibilityEndpoint
             .WithDescription("Authenticated upload permission gates the HTTP surface; per-file authorization is delegated to the OwnerType's IFileAccessPolicy (uploader-only by default).")
             // Upload is a basic permission so every authenticated user has it; the per-file
             // policy check inside the handler refines who can actually flip the bit.
-            .RequirePermission(FilesPermissions.Upload)
+            .RequirePermission(FilePermissions.Upload)
             .Produces<FileAssetDto>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status401Unauthorized)
             .Produces(StatusCodes.Status403Forbidden)
@@ -54,7 +51,7 @@ public sealed class ChangeFileVisibilityCommandValidator : AbstractValidator<Cha
 }
 
 public sealed class ChangeFileVisibilityCommandHandler(
-    FilesDbContext db,
+    FileDbContext db,
     FileAccessPolicyRegistry policies,
     ICurrentUser currentUser,
     IStorageService storage)

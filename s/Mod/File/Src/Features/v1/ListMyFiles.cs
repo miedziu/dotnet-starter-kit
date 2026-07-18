@@ -3,11 +3,8 @@ using FSH.Framework.Core.Context;
 using FSH.Framework.Core.Exceptions;
 using FSH.Framework.Shared.Identity.Authorization;
 using FSH.Framework.Storage.Services;
-using FSH.Modules.Files.Contracts.Authorization;
-using FSH.Modules.Files.Contracts.v1.Dtos;
-using FSH.Modules.Files.Contracts.v1.Queries;
-using FSH.Modules.Files.Data;
-using FSH.Modules.Files.Features.v1.Internal;
+using FSH.Mod.File.Data;
+using FSH.Mod.File.Features.v1.Internal;
 using Mediator;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -15,7 +12,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.ObjectModel;
 
-namespace FSH.Modules.Files.Features.v1;
+namespace FSH.Mod.File.Features.v1;
 
 public static class ListMyFilesEndpoint
 {
@@ -25,7 +22,7 @@ public static class ListMyFilesEndpoint
                     Results.Ok(await mediator.Send(new ListMyFilesQuery(page ?? 1, pageSize ?? 20), ct)))
             .WithName("ListMyFiles")
             .WithSummary("List files uploaded by the current user")
-            .RequirePermission(FilesPermissions.Upload);
+            .RequirePermission(FilePermissions.Upload);
 }
 
 public sealed class ListMyFilesQueryValidator : AbstractValidator<ListMyFilesQuery>
@@ -38,7 +35,7 @@ public sealed class ListMyFilesQueryValidator : AbstractValidator<ListMyFilesQue
 }
 
 public sealed class ListMyFilesQueryHandler(
-    FilesDbContext db,
+    FileDbContext db,
     ICurrentUser currentUser,
     IStorageService storage)
     : IQueryHandler<ListMyFilesQuery, ReadOnlyCollection<FileAssetDto>>

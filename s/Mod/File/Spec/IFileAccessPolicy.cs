@@ -1,8 +1,8 @@
-namespace FSH.Modules.Files.Contracts;
+namespace FSH.Mod.File.Spec;
 
 /// <summary>
-/// Per-OwnerType authorization for FileAssets. Each owning module (Catalog, Tickets, ...) registers
-/// its own implementation via <c>services.AddFileAccessPolicy{TPolicy}()</c>. The Files module
+/// Per-OwnerType authorization for FileAssets. Each owning module (Catalog, Ticket, ...) registers
+/// its own implementation via <c>services.AddFileAccessPolicy{TPolicy}()</c>. The File module
 /// ships a uploader-only default for the built-in <c>MyFiles</c> and <c>User</c> owner types.
 /// Policies receive a primitive <c>currentUserId</c> rather than a
 /// <c>ClaimsPrincipal</c> so the contract stays free of ASP.NET Core types — owning modules that
@@ -22,7 +22,7 @@ public interface IFileAccessPolicy
     /// <summary>
     /// Whether the caller may change a file's <see cref="FileAccessContext.Visibility"/> after
     /// upload. Defaults to the same rule as <see cref="CanDeleteAsync"/> — only the uploader.
-    /// Modules whose files are tied to a domain entity (Catalog product images, Chat attachments)
+    /// Mod whose files are tied to a domain entity (Catalog product images, Chat attachments)
     /// can override to disallow visibility flips entirely.
     /// </summary>
     Task<bool> CanChangeVisibilityAsync(FileAccessContext context, string currentUserId, CancellationToken ct)
@@ -31,7 +31,7 @@ public interface IFileAccessPolicy
 
 /// <summary>
 /// Minimal projection of a FileAsset passed to <see cref="IFileAccessPolicy"/> methods so owning
-/// modules can make access decisions without depending on the Files module runtime.
+/// modules can make access decisions without depending on the File module runtime.
 /// </summary>
 /// <param name="FileAssetId">FileAsset identity.</param>
 /// <param name="OwnerType">OwnerType value.</param>

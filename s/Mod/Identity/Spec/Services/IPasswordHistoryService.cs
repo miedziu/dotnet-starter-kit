@@ -1,4 +1,4 @@
-namespace FSH.Modules.Identity.Contracts.Services;
+namespace FSH.Mod.Identity.Spec.Services;
 
 public interface IPasswordHistoryService
 {

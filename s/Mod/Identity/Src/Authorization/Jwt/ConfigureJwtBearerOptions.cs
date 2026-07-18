@@ -1,6 +1,6 @@
-﻿using FSH.Framework.Core.Exceptions;
+using FSH.Framework.Core.Exceptions;
 using FSH.Framework.Shared.Constants;
-using FSH.Modules.Identity.Contracts.Services;
+using FSH.Mod.Identity.Spec.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -14,7 +14,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace FSH.Modules.Identity.Authorization.Jwt;
+namespace FSH.Mod.Identity.Authorization.Jwt;
 
 public class ConfigureJwtBearerOptions : IConfigureNamedOptions<JwtBearerOptions>
 {

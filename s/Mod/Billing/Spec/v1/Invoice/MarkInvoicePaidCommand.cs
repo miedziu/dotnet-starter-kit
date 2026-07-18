@@ -1,5 +1,5 @@
 using Mediator;
 
-namespace FSH.Modules.Billing.Contracts.v1.Invoices;
+namespace FSH.Mod.Billing.Spec.v1.Invoice;
 
 public sealed record MarkInvoicePaidCommand(Guid InvoiceId) : ICommand<Guid>;

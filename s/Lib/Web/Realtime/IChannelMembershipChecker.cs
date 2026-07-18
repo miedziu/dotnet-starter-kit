@@ -2,7 +2,7 @@ namespace FSH.Framework.Web.Realtime;
 
 /// <summary>
 /// Realtime hub asks this whether a user may broadcast or receive on a given channel. Implemented
-/// by the Chat module's runtime (queries the channel membership table). Lives in BuildingBlocks/Web
+/// by the Chat module's runtime (queries the channel membership table). Lives in Lib/Web
 /// so the hub stays decoupled from any concrete module.
 /// </summary>
 public interface IChannelMembershipChecker

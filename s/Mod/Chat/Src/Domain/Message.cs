@@ -1,7 +1,7 @@
 using FSH.Framework.Core.Domain;
-using FSH.Modules.Chat.Domain.Events;
+using FSH.Mod.Chat.Domain.Events;
 
-namespace FSH.Modules.Chat.Domain;
+namespace FSH.Mod.Chat.Domain;
 
 /// <summary>
 /// A single chat message. NOT <c>ISoftDeletable</c> — soft delete is just a <see cref="DeletedAtUtc"/>

@@ -1,7 +1,7 @@
-using FSH.Modules.Files.Contracts;
+using FSH.Mod.File.Spec;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace FSH.Modules.Files.Services;
+namespace FSH.Mod.File.Services;
 
 /// <summary>
 /// DI sugar for owning modules to register their <see cref="IFileAccessPolicy"/> implementations.

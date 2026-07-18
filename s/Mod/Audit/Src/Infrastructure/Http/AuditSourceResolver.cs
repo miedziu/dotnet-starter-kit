@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 
-namespace FSH.Modules.Auditing;
+namespace FSH.Mod.Audit.Infrastructure.Http;
 
 /// <summary>
 /// Builds a stable, dashboard-friendly source key for HTTP audits.

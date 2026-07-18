@@ -1,6 +1,4 @@
-using FSH.Modules.Billing.Contracts.v1.Dtos;
-
-namespace FSH.Modules.Billing.Services;
+namespace FSH.Mod.Billing.Services;
 
 /// <summary>Renders an invoice to a self-contained PDF document (on-demand, no stored artifact).</summary>
 public interface IInvoicePdfRenderer

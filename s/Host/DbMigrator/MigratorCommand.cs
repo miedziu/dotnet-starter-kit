@@ -39,7 +39,7 @@ internal sealed record MigratorCommand(
         FSH DbMigrator — apply EF Core migrations across all module databases.
 
         Usage:
-          dotnet run --project src/Host/FSH.Starter.DbMigrator -- [verb] [options]
+          dotnet run --project s/Host/DbMigrator -- [verb] [options]
 
         Verbs:
           apply           Apply pending migrations (default). Use --seed to also run SeedAsync.

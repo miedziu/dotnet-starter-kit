@@ -1,6 +1,6 @@
 using Mediator;
 
-namespace FSH.Modules.Chat.Contracts.v1.Commands;
+namespace FSH.Mod.Chat.Spec.v1.Message;
 
 public sealed record PinMessageCommand(Guid MessageId) : ICommand<Unit>;
 

@@ -1,7 +1,7 @@
 using FSH.Framework.Core.Domain;
-using FSH.Modules.Billing.Contracts;
+using FSH.Mod.Billing.Spec;
 
-namespace FSH.Modules.Billing.Domain;
+namespace FSH.Mod.Billing.Domain;
 
 /// <summary>
 /// An invoice for a single monthly period. Starts as Draft, transitions to

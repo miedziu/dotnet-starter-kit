@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Hosting;
 
-namespace FSH.Framework.Web.Modules;
+namespace FSH.Framework.Web.Mod;
 
 public interface IModule
 {

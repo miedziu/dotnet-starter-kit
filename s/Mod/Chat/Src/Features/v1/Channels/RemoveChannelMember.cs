@@ -3,10 +3,8 @@ using FSH.Framework.Core.Context;
 using FSH.Framework.Core.Exceptions;
 using FSH.Framework.Shared.Identity.Authorization;
 using FSH.Framework.Web.Realtime;
-using FSH.Modules.Chat.Contracts.Authorization;
-using FSH.Modules.Chat.Contracts.v1.Commands;
-using FSH.Modules.Chat.Data;
-using FSH.Modules.Chat.Features.v1.Internal;
+using FSH.Mod.Chat.Data;
+using FSH.Mod.Chat.Features.v1.Internal;
 using Mediator;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -14,7 +12,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 
-namespace FSH.Modules.Chat.Features.v1.Channels;
+namespace FSH.Mod.Chat.Features.v1.Channels;
 
 public static class RemoveChannelMemberEndpoint
 {

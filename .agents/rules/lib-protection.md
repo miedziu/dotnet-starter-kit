@@ -1,11 +1,11 @@
 ---
 paths:
-  - "src/BuildingBlocks/**/*"
+  - "s/Lib/**/*"
 ---
 
-# ⚠️ BuildingBlocks Protection
+# ⚠️ Lib Protection
 
-**STOP. You are modifying BuildingBlocks.** Changes affect ALL modules.
+**STOP. You are modifying Lib.** Changes affect ALL modules.
 
 ## Before Proceeding
 

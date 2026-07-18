@@ -1,6 +1,5 @@
-using FSH.Modules.Chat.Contracts.v1.Dtos;
 using Mediator;
 
-namespace FSH.Modules.Chat.Contracts.v1.Queries;
+namespace FSH.Mod.Chat.Spec.v1.Channel;
 
 public sealed record GetChannelByIdQuery(Guid ChannelId) : IQuery<ChannelDto>;

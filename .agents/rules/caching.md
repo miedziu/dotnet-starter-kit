@@ -1,6 +1,6 @@
 # Caching
 
-`src/BuildingBlocks/Caching/`. Use `HybridCache` (L1 in-memory + optional L2 Redis), not `IDistributedCache`.
+`s/Lib/Caching/`. Use `HybridCache` (L1 in-memory + optional L2 Redis), not `IDistributedCache`.
 
 ## What's registered
 

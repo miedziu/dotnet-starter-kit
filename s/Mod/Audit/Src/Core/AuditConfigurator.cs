@@ -1,16 +1,16 @@
-// Add this hosted service class once in your auditing module
-using FSH.Modules.Auditing.Contracts;
+// Add this hosted service class once in your audit module
+using FSH.Mod.Audit.Spec;
 using Microsoft.Extensions.Hosting;
 
-namespace FSH.Modules.Auditing;
+namespace FSH.Mod.Audit.Core;
 
-public sealed class AuditingConfigurator : IHostedService
+public sealed class AuditConfigurator : IHostedService
 {
     private readonly IAuditPublisher _publisher;
     private readonly IAuditSerializer _serializer;
     private readonly IEnumerable<IAuditEnricher> _enrichers;
 
-    public AuditingConfigurator(
+    public AuditConfigurator(
         IAuditPublisher publisher,
         IAuditSerializer serializer,
         IEnumerable<IAuditEnricher> enrichers)

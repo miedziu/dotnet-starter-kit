@@ -2,15 +2,14 @@ using FSH.Framework.Core.Context;
 using FSH.Framework.Core.Exceptions;
 using FSH.Framework.Shared.Constants;
 using FSH.Framework.Shared.Persistence;
-using FSH.Modules.Identity.Contracts.Services;
-using FSH.Modules.Identity.Contracts.v1.Dtos;
-using FSH.Modules.Identity.Data;
-using FSH.Modules.Identity.Domain;
+using FSH.Mod.Identity.Data;
+using FSH.Mod.Identity.Domain;
+using FSH.Mod.Identity.Spec.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
 
-namespace FSH.Modules.Identity.Features.v1.Roles;
+namespace FSH.Mod.Identity.Features.v1.Roles;
 
 public sealed class RoleService(RoleManager<FshRole> roleManager,
     IdentityDbContext context,

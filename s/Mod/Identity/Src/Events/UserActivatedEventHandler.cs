@@ -1,8 +1,8 @@
-using FSH.Modules.Identity.Domain.Events;
+using FSH.Mod.Identity.Domain.Events;
 using Mediator;
 using Microsoft.Extensions.Logging;
 
-namespace FSH.Modules.Identity.Events;
+namespace FSH.Mod.Identity.Events;
 
 /// <summary>
 /// Handles the UserActivatedEvent domain event.

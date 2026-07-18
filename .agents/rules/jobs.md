@@ -1,6 +1,6 @@
 # Background jobs (Hangfire)
 
-`src/BuildingBlocks/Jobs/`. Use `IJobService` for fire-and-forget/scheduled; `IRecurringJobManager` for recurring.
+`s/Lib/Jobs/`. Use `IJobService` for fire-and-forget/scheduled; `IRecurringJobManager` for recurring.
 
 ## Fire-and-forget / scheduled
 
@@ -23,7 +23,7 @@ recurringJobs.AddOrUpdate<PurgeOrphanedFilesJob>("files:purge-orphaned",
     j => j.RunAsync(CancellationToken.None), Cron.Hourly(), new() { TimeZone = TimeZoneInfo.Utc });
 ```
 
-Examples: `PurgeOrphanedFiles`/`PurgeDeletedFiles` (Files), `MonthlyInvoiceJob` (Billing), `AuditRetentionJob` (Auditing), `WebhookDispatchJob` (Webhooks).
+Examples: `PurgeOrphanedFiles`/`PurgeDeletedFiles` (Files), `MonthlyInvoiceJob` (Billing), `AuditRetentionJob` (Audit), `WebhookDispatchJob` (Webhooks).
 
 ## Dashboard & config
 

@@ -3,15 +3,14 @@ using FSH.Framework.Shared.Storage;
 using FSH.Framework.Storage;
 using FSH.Framework.Storage.Services;
 using FSH.Framework.Web.Origin;
-using FSH.Modules.Identity.Contracts.Services;
-using FSH.Modules.Identity.Contracts.v1.Dtos;
-using FSH.Modules.Identity.Domain;
+using FSH.Mod.Identity.Domain;
+using FSH.Mod.Identity.Spec.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
-namespace FSH.Modules.Identity.Services;
+namespace FSH.Mod.Identity.Services;
 
 internal sealed class UserProfileService(
     UserManager<FshUser> userManager,

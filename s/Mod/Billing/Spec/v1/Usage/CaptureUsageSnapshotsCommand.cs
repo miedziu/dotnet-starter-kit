@@ -1,7 +1,6 @@
-using FSH.Modules.Billing.Contracts.v1.Dtos;
 using Mediator;
 
-namespace FSH.Modules.Billing.Contracts.v1.Usage;
+namespace FSH.Mod.Billing.Spec.v1.Usage;
 
 /// <summary>
 /// Ops command that captures one usage snapshot for a period.

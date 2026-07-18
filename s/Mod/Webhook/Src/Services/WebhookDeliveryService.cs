@@ -1,10 +1,10 @@
-using FSH.Modules.Webhooks.Data;
-using FSH.Modules.Webhooks.Domain;
+using FSH.Mod.Webhook.Data;
+using FSH.Mod.Webhook.Domain;
 using Microsoft.Extensions.Logging;
 using System.Net.Http.Headers;
 using System.Text;
 
-namespace FSH.Modules.Webhooks.Services;
+namespace FSH.Mod.Webhook.Services;
 
 public sealed class WebhookDeliveryService(
     IHttpClientFactory httpClientFactory,
@@ -20,7 +20,7 @@ public sealed class WebhookDeliveryService(
         CancellationToken ct = default)
     {
         var delivery = WebhookDelivery.Create(subscriptionId, eventType, payloadJson);
-        var client = httpClientFactory.CreateClient("Webhooks");
+        var client = httpClientFactory.CreateClient("Webhook");
 
         try
         {

@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace FSH.Modules.Auditing.Persistence;
+namespace FSH.Mod.Audit.Data.Configurations;
 
 public class AuditRecordConfiguration : IEntityTypeConfiguration<AuditRecord>
 {

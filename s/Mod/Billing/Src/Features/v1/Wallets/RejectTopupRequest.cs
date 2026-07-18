@@ -2,10 +2,8 @@ using FluentValidation;
 using FSH.Framework.Core.Exceptions;
 using FSH.Framework.Shared.Identity.Authorization;
 using FSH.Framework.Web.Idempotency;
-using FSH.Modules.Billing.Contracts;
-using FSH.Modules.Billing.Contracts.Authorization;
-using FSH.Modules.Billing.Contracts.v1.Wallets;
-using FSH.Modules.Billing.Data;
+using FSH.Mod.Billing.Data;
+using FSH.Mod.Billing.Spec;
 using Mediator;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -13,7 +11,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
 
-namespace FSH.Modules.Billing.Features.v1.Wallets;
+namespace FSH.Mod.Billing.Features.v1.Wallets;
 
 public static class RejectTopupRequestEndpoint
 {

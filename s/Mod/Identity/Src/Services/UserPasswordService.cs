@@ -2,15 +2,15 @@ using FSH.Framework.Core.Exceptions;
 using FSH.Framework.Jobs.Services;
 using FSH.Framework.Mailing;
 using FSH.Framework.Mailing.Services;
-using FSH.Modules.Identity.Contracts.Services;
-using FSH.Modules.Identity.Data;
-using FSH.Modules.Identity.Domain;
+using FSH.Mod.Identity.Data;
+using FSH.Mod.Identity.Domain;
+using FSH.Mod.Identity.Spec.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
 using System.Collections.ObjectModel;
 using System.Text;
 
-namespace FSH.Modules.Identity.Services;
+namespace FSH.Mod.Identity.Services;
 
 internal sealed class UserPasswordService(
     UserManager<FshUser> userManager,

@@ -1,8 +1,8 @@
-using FSH.Modules.Auditing.Contracts;
+using FSH.Mod.Audit.Spec;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace FSH.Modules.Auditing.Persistence;
+namespace FSH.Mod.Audit.Data;
 
 /// <summary>
 /// Daily Hangfire job that prunes the audit table per
@@ -34,7 +34,7 @@ public sealed class AuditRetentionJob
     {
         if (!_opts.Enabled)
         {
-            _logger.LogInformation("[Auditing] retention job skipped (Enabled=false).");
+            _logger.LogInformation("[Audit] retention job skipped (Enabled=false).");
             return;
         }
 
@@ -47,7 +47,7 @@ public sealed class AuditRetentionJob
 
         if (_logger.IsEnabled(LogLevel.Information))
         {
-            _logger.LogInformation("[Auditing] retention job purged {Total} rows.", total);
+            _logger.LogInformation("[Audit] retention job purged {Total} rows.", total);
         }
     }
 
@@ -79,7 +79,7 @@ public sealed class AuditRetentionJob
 
         if (swept > 0 && _logger.IsEnabled(LogLevel.Information))
         {
-            _logger.LogInformation("[Auditing] purged {Count} {EventType} events older than {Cutoff:o}.",
+            _logger.LogInformation("[Audit] purged {Count} {EventType} events older than {Cutoff:o}.",
                 swept, eventType, cutoffUtc);
         }
         return swept;

@@ -1,10 +1,9 @@
-using FSH.Modules.Billing.Contracts.v1.Dtos;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using System.Globalization;
 
-namespace FSH.Modules.Billing.Services;
+namespace FSH.Mod.Billing.Services;
 
 /// <summary>
 /// QuestPDF-based invoice renderer. QuestPDF's Community license is free for organisations under

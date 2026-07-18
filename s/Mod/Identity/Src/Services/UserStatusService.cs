@@ -1,14 +1,14 @@
 using FSH.Framework.Core.Context;
 using FSH.Framework.Core.Exceptions;
 using FSH.Framework.Shared.Constants;
-using FSH.Modules.Auditing.Contracts;
-using FSH.Modules.Identity.Contracts.Services;
-using FSH.Modules.Identity.Domain;
+using FSH.Mod.Audit.Spec;
+using FSH.Mod.Identity.Domain;
+using FSH.Mod.Identity.Spec.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
 
-namespace FSH.Modules.Identity.Services;
+namespace FSH.Mod.Identity.Services;
 
 internal sealed class UserStatusService(
     UserManager<FshUser> userManager,

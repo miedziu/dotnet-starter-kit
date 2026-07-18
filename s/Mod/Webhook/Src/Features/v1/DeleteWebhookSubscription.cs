@@ -1,15 +1,14 @@
 using FSH.Framework.Core.Exceptions;
 using FSH.Framework.Shared.Identity.Authorization;
-using FSH.Modules.Webhooks.Contracts.Authorization;
-using FSH.Modules.Webhooks.Contracts.v1.Subscription;
-using FSH.Modules.Webhooks.Data;
+using FSH.Mod.Webhook.Data;
+using FSH.Mod.Webhook.Spec.v1.Subscription;
 using Mediator;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 
-namespace FSH.Modules.Webhooks.Features.v1;
+namespace FSH.Mod.Webhook.Features.v1;
 
 public static class DeleteWebhookSubscriptionEndpoint
 {
@@ -25,7 +24,7 @@ public static class DeleteWebhookSubscriptionEndpoint
         })
         .WithName("DeleteWebhookSubscription")
         .WithSummary("Delete a webhook subscription")
-        .RequirePermission(WebhooksPermissions.Subscriptions.Delete)
+        .RequirePermission(WebhookPermissions.Subscriptions.Delete)
         .Produces(StatusCodes.Status204NoContent);
     }
 }

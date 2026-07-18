@@ -1,11 +1,11 @@
 
 using FSH.Framework.Persistence.Context;
-using FSH.Modules.Files.Domain;
+using FSH.Mod.File.Domain;
 using Microsoft.EntityFrameworkCore;
 
-namespace FSH.Modules.Files.Data;
+namespace FSH.Mod.File.Data;
 
-public sealed class FilesDbContext(DbContextOptions<FilesDbContext> options)
+public sealed class FileDbContext(DbContextOptions<FileDbContext> options)
     : BaseDbContext(options)
 {
     public const string Schema = "files";
@@ -16,7 +16,7 @@ public sealed class FilesDbContext(DbContextOptions<FilesDbContext> options)
     {
         ArgumentNullException.ThrowIfNull(modelBuilder);
         modelBuilder.HasDefaultSchema(Schema);
-        modelBuilder.ApplyConfigurationsFromAssembly(typeof(FilesDbContext).Assembly);
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(FileDbContext).Assembly);
         // base.OnModelCreating runs LAST so BaseDbContext's auto-apply sees
         // fully-configured entities (including HasMany child types).
         base.OnModelCreating(modelBuilder);

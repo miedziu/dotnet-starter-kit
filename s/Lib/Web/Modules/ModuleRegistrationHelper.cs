@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Configuration;
 using System.Reflection;
 
-namespace FSH.Framework.Web.Modules;
+namespace FSH.Framework.Web.Mod;
 
 /// <summary>
 /// Helper for filtering and registering modules based on runtime configuration.

@@ -3,9 +3,7 @@ using FSH.Framework.Core.Context;
 using FSH.Framework.Core.Exceptions;
 using FSH.Framework.Shared.Identity.Authorization;
 using FSH.Framework.Web.Idempotency;
-using FSH.Modules.Tickets.Contracts.Authorization;
-using FSH.Modules.Tickets.Contracts.v1.TicketComments;
-using FSH.Modules.Tickets.Data;
+using FSH.Mod.Ticket.Data;
 using Mediator;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -13,7 +11,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
 
-namespace FSH.Modules.Tickets.Features.v1;
+namespace FSH.Mod.Ticket.Features.v1;
 
 public static class AddTicketCommentEndpoint
 {
@@ -26,7 +24,7 @@ public static class AddTicketCommentEndpoint
                     Results.Ok(await mediator.Send(new AddTicketCommentCommand(ticketId, body.Body), ct)))
             .WithName("AddTicketComment")
             .WithSummary("Add a comment to a ticket")
-            .RequirePermission(TicketsPermissions.Tickets.Comment)
+            .RequirePermission(TicketPermissions.Ticket.Comment)
             .WithIdempotency();
     }
 }
@@ -40,7 +38,7 @@ public sealed class AddTicketCommentCommandValidator : AbstractValidator<AddTick
 }
 
 public sealed class AddTicketCommentCommandHandler(
-    TicketsDbContext dbContext,
+    TicketDbContext dbContext,
     ICurrentUser currentUser)
     : ICommandHandler<AddTicketCommentCommand, Guid>
 {

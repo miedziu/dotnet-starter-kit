@@ -1,18 +1,15 @@
 using FluentValidation;
 using FSH.Framework.Shared.Identity.Authorization;
 using FSH.Framework.Shared.Persistence;
-using FSH.Modules.Files.Contracts.Authorization;
-using FSH.Modules.Files.Contracts.v1.Dtos;
-using FSH.Modules.Files.Contracts.v1.Queries;
-using FSH.Modules.Files.Data;
-using FSH.Modules.Files.Features.v1.Internal;
+using FSH.Mod.File.Data;
+using FSH.Mod.File.Features.v1.Internal;
 using Mediator;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 
-namespace FSH.Modules.Files.Features.v1;
+namespace FSH.Mod.File.Features.v1;
 
 public static class ListTrashedFilesEndpoint
 {
@@ -22,7 +19,7 @@ public static class ListTrashedFilesEndpoint
                     Results.Ok(await mediator.Send(new ListTrashedFilesQuery(pageNumber ?? 1, pageSize ?? 20), ct)))
             .WithName("ListTrashedFiles")
             .WithSummary("List soft-deleted files (admin/trash view)")
-            .RequirePermission(FilesPermissions.ViewTrash);
+            .RequirePermission(FilePermissions.ViewTrash);
 }
 
 public sealed class ListTrashedFilesQueryValidator : AbstractValidator<ListTrashedFilesQuery>
@@ -34,7 +31,7 @@ public sealed class ListTrashedFilesQueryValidator : AbstractValidator<ListTrash
     }
 }
 
-public sealed class ListTrashedFilesQueryHandler(FilesDbContext db)
+public sealed class ListTrashedFilesQueryHandler(FileDbContext db)
     : IQueryHandler<ListTrashedFilesQuery, PagedResponse<FileAssetDto>>
 {
     public async ValueTask<PagedResponse<FileAssetDto>> Handle(ListTrashedFilesQuery q, CancellationToken cancellationToken)

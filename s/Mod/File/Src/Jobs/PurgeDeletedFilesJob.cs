@@ -1,20 +1,20 @@
 using FSH.Framework.Storage.Services;
-using FSH.Modules.Files.Data;
+using FSH.Mod.File.Data;
 using Hangfire;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace FSH.Modules.Files.Jobs;
+namespace FSH.Mod.File.Jobs;
 
 /// <summary>
 /// Daily purge of soft-deleted FileAsset rows past the retention window. Hard-deletes the row,
 /// removes the bytes from storage, and refunds the quota (the bytes were debited at finalize time).
 /// </summary>
 public sealed class PurgeDeletedFilesJob(
-    FilesDbContext db,
+    FileDbContext db,
     IStorageService storage,
-    IOptions<FilesOptions> options,
+    IOptions<FileOptions> options,
     ILogger<PurgeDeletedFilesJob> logger)
 {
     [AutomaticRetry(Attempts = 2, DelaysInSeconds = [300, 1800])]

@@ -2,10 +2,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace FSH.Starter.Migrations.PostgreSQL.Webhooks
+namespace FSH.Starter.Migrations.PostgreSQL.Webhook
 {
     /// <inheritdoc />
-    public partial class InitialWebhooks : Migration
+    public partial class InitialWebhook : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

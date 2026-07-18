@@ -1,6 +1,6 @@
 using System.Text.Json;
 
-namespace FSH.Modules.Auditing.Contracts.v1.Dtos;
+namespace FSH.Mod.Audit.Spec.v1;
 
 public sealed class AuditDetailDto
 {

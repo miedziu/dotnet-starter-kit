@@ -1,6 +1,6 @@
 # Architecture
 
-**Layers:** Host → Modules.{Name} → Modules.{Name}.Contracts → BuildingBlocks
+**Layers:** Host → Mod.{Name} → Mod.{Name}.Contracts → Lib
 
 **Module = runtime + Contracts**
 - Runtime: handlers, services, domain, data
@@ -16,9 +16,9 @@ Features/v1/{Area}/{Feature}.cs
 **Assembly-level:** `[assembly: FshModule(typeof(XModule), order)]` (not class-level)
 
 ```csharp
-[assembly: FshModule(typeof(FSH.Modules.Identity.IdentityModule), 1)]
+[assembly: FshModule(typeof(FSH.Mod.Identity.IdentityModule), 1)]
 
-namespace FSH.Modules.Identity;
+namespace FSH.Mod.Identity;
 
 public sealed class IdentityModule : IModule
 {

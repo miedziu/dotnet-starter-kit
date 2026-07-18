@@ -1,6 +1,6 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 
-namespace FSH.Modules.Auditing.Contracts;
+namespace FSH.Mod.Audit.Spec;
 
 /// <summary>
 /// Concrete event instance ready to be published/persisted.

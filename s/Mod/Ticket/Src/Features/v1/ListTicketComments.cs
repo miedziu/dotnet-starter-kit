@@ -1,18 +1,15 @@
 using FSH.Framework.Core.Exceptions;
 using FSH.Framework.Shared.Identity.Authorization;
-using FSH.Modules.Identity.Contracts.Services;
-using FSH.Modules.Tickets.Contracts.Authorization;
-using FSH.Modules.Tickets.Contracts.v1.Dtos;
-using FSH.Modules.Tickets.Contracts.v1.Tickets;
-using FSH.Modules.Tickets.Data;
-using FSH.Modules.Tickets.Domain;
+using FSH.Mod.Identity.Spec.Services;
+using FSH.Mod.Ticket.Data;
+using FSH.Mod.Ticket.Domain;
 using Mediator;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 
-namespace FSH.Modules.Tickets.Features.v1;
+namespace FSH.Mod.Ticket.Features.v1;
 
 public static class ListTicketCommentsEndpoint
 {
@@ -23,12 +20,12 @@ public static class ListTicketCommentsEndpoint
                     Results.Ok(await mediator.Send(new ListTicketCommentsQuery(ticketId), ct)))
             .WithName("ListTicketComments")
             .WithSummary("List the comments on a ticket")
-            .RequirePermission(TicketsPermissions.Tickets.View);
+            .RequirePermission(TicketPermissions.Ticket.View);
     }
 }
 
 public sealed class ListTicketCommentsQueryHandler(
-    TicketsDbContext dbContext,
+    TicketDbContext dbContext,
     IUserProfileService userProfileService)
     : IQueryHandler<ListTicketCommentsQuery, IReadOnlyList<TicketCommentDto>>
 {

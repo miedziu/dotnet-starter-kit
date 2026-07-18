@@ -1,6 +1,6 @@
 # Eventing — domain events, integration events, Outbox/Inbox
 
-`src/BuildingBlocks/Eventing/`. Use outbox for publishing.
+`s/Lib/Eventing/`. Use outbox for publishing.
 
 ## Two tiers
 

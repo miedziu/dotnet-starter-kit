@@ -13,7 +13,7 @@ the order of operations and the **contract** that keeps the two halves in sync.
 ## Order of operations
 
 1. **Backend slice** — `add-feature` (and `add-entity` first if a new entity is needed):
-   - Command/Query + response DTO in `Modules.{X}.Contracts/v1/{Area}/` (+ `Contracts/Dtos/`).
+   - Command/Query + response DTO in `Mod.{X}.Contracts/v1/{Area}/` (+ `Contracts/Dtos/`).
    - Handler (`public sealed`, injects `{X}DbContext`), Validator, Endpoint (`internal static Map…Endpoint`, `.RequirePermission(...)`).
    - Wire in `{X}Module.MapEndpoints`.
 2. **Lock the contract** — note the final **route path**, HTTP method, request shape, and response DTO field names/casing. The React side must match these exactly.
@@ -35,9 +35,9 @@ the order of operations and the **contract** that keeps the two halves in sync.
 ## Verify end-to-end
 
 ```bash
-dotnet build src/FSH.Starter.slnx
+dotnet build s/FSH.Starter.slnx
 cd clients/{app} && npm run lint
-# optional manual check: dotnet run --project src/Host/FSH.Starter.AppHost  (brings up API + client app)
+# optional manual check: dotnet run --project s/Host/FSH.Starter.AppHost  (brings up API + client app)
 ```
 
 ## Checklist

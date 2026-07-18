@@ -1,6 +1,6 @@
 using FSH.Framework.Shared.Constants;
 
-namespace FSH.Modules.Billing.Contracts.Authorization;
+namespace FSH.Mod.Billing.Spec;
 
 public static class BillingPermissions
 {

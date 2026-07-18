@@ -1,9 +1,9 @@
-namespace FSH.Modules.Files.Contracts.v1.Dtos;
+namespace FSH.Mod.File.Spec.v1;
 
 /// <summary>
 /// Upload lifecycle state of a file asset. Serialized as its string name (global
 /// JsonStringEnumConverter), so the SPA sees "PendingUpload"/"Available"/"Quarantined".
-/// Lives in Contracts because it is part of the published wire contract (FileAssetDto).
+/// Lives in Spec because it is part of the published wire contract (FileAssetDto).
 /// </summary>
 public enum FileAssetStatus
 {

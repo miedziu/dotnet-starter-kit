@@ -1,13 +1,13 @@
 using FSH.Framework.Caching;
 using FSH.Framework.Shared.Constants;
-using FSH.Modules.Identity.Data;
-using FSH.Modules.Identity.Domain;
+using FSH.Mod.Identity.Data;
+using FSH.Mod.Identity.Domain;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 
-namespace FSH.Modules.Identity.Authorization;
+namespace FSH.Mod.Identity.Authorization;
 
 /// <summary>
 /// Adds missing permission claims to the built-in roles (<see cref="RoleConstants.Admin"/>,

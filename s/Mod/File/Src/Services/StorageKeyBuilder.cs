@@ -1,9 +1,9 @@
 using System.Text.RegularExpressions;
 
-namespace FSH.Modules.Files.Services;
+namespace FSH.Mod.File.Services;
 
 /// <summary>
-/// Builds canonical storage keys for the Files module:
+/// Builds canonical storage keys for the File module:
 ///   files/{ownerType-lower}/{yyyy}/{MM}/{fileAssetId:N}/{sanitized-filename}.
 /// </summary>
 public static partial class StorageKeyBuilder

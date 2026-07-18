@@ -8,7 +8,7 @@ namespace FSH.Framework.Web.Realtime;
 
 /// <summary>
 /// Single shared SignalR hub for app-wide realtime: chat messages, typing indicators, presence,
-/// notifications. Modules don't depend on this hub directly — they emit through
+/// notifications. Mod don't depend on this hub directly — they emit through
 /// <see cref="IHubContext{AppHub}"/> and target the well-known SignalR groups.
 ///
 /// Group naming convention:

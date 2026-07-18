@@ -2,14 +2,13 @@ using Asp.Versioning;
 using FluentValidation;
 using FSH.Framework.Persistence;
 using FSH.Framework.Shared.Constants;
-using FSH.Framework.Web.Modules;
-using FSH.Modules.Files.Authorization;
-using FSH.Modules.Files.Contracts;
-using FSH.Modules.Files.Contracts.Authorization;
-using FSH.Modules.Files.Data;
-using FSH.Modules.Files.Features.v1;
-using FSH.Modules.Files.Jobs;
-using FSH.Modules.Files.Services;
+using FSH.Framework.Web.Mod;
+using FSH.Mod.File.Authorization;
+using FSH.Mod.File.Data;
+using FSH.Mod.File.Features.v1;
+using FSH.Mod.File.Jobs;
+using FSH.Mod.File.Services;
+using FSH.Mod.File.Spec;
 using Hangfire;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -18,39 +17,39 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 
-[assembly: FshModule(typeof(FSH.Modules.Files.FilesModule), 350)]
+[assembly: FshModule(typeof(FSH.Mod.File.FileModule), 350)]
 
-namespace FSH.Modules.Files;
+namespace FSH.Mod.File;
 
 /// <summary>
-/// Files module: presigned-URL file lifecycle (upload, finalize, serve, delete) shared across the
+/// File module: presigned-URL file lifecycle (upload, finalize, serve, delete) shared across the
 /// kit's owning features (Ticket attachments, My Files, avatars.
-/// Module order 350 places it between Auditing (300) and Webhooks (400); owning modules
-/// (Tickets=700) load later and register their <see cref="IFileAccessPolicy"/>
+/// Module order 350 places it between Audit (300) and Webhook (400); owning modules
+/// (Ticket=700) load later and register their <see cref="IFileAccessPolicy"/>
 /// implementations during their own ConfigureServices.
 /// </summary>
-public sealed class FilesModule : IModule
+public sealed class FileModule : IModule
 {
     public void ConfigureServices(IHostApplicationBuilder builder)
     {
         ArgumentNullException.ThrowIfNull(builder);
 
-        PermissionConstants.Register(FilesPermissions.All);
+        PermissionConstants.Register(FilePermissions.All);
 
-        builder.Services.Configure<FilesOptions>(builder.Configuration.GetSection("Files"));
-        builder.Services.AddHeroDbContext<FilesDbContext>();
-        builder.Services.AddScoped<IDbInitializer, FilesDbInitializer>();
+        builder.Services.Configure<FileOptions>(builder.Configuration.GetSection("Files"));
+        builder.Services.AddHeroDbContext<FileDbContext>();
+        builder.Services.AddScoped<IDbInitializer, FileDbInitializer>();
 
         builder.Services.AddScoped<FileAccessPolicyRegistry>();
         builder.Services.AddSingleton<IFileScanner, NoOpFileScanner>();
-        builder.Services.AddValidatorsFromAssembly(typeof(FilesModule).Assembly);
+        builder.Services.AddValidatorsFromAssembly(typeof(FileModule).Assembly);
 
         // Default uploader-only policies for the built-in OwnerTypes. Owning modules register their
         // own policies for additional OwnerTypes via services.AddFileAccessPolicy<TPolicy>().
         builder.Services.AddScoped<IFileAccessPolicy>(_ => new DefaultUploaderOnlyPolicy("MyFiles"));
         builder.Services.AddScoped<IFileAccessPolicy>(_ => new DefaultUploaderOnlyPolicy("User"));
 
-        builder.Services.AddHealthChecks().AddDbContextCheck<FilesDbContext>(
+        builder.Services.AddHealthChecks().AddDbContextCheck<FileDbContext>(
             name: "db:files",
             failureStatus: HealthStatus.Unhealthy);
     }

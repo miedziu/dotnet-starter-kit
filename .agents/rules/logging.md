@@ -1,6 +1,6 @@
 # Logging & observability
 
-`src/BuildingBlocks/Web/Observability/`. Use structured logging only.
+`s/Lib/Web/Observability/`. Use structured logging only.
 
 ## Structured logging
 

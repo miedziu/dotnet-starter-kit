@@ -1,14 +1,13 @@
 using FluentValidation;
 using FSH.Framework.Core.Context;
 using FSH.Framework.Core.Exceptions;
-using FSH.Modules.Identity.Contracts.Services;
-using FSH.Modules.Identity.Contracts.v1.Users;
+using FSH.Mod.Identity.Spec.Services;
 using Mediator;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 
-namespace FSH.Modules.Identity.Features.v1.Users;
+namespace FSH.Mod.Identity.Features.v1.Users;
 
 public static class SetProfileImageEndpoint
 {
@@ -21,7 +20,7 @@ public static class SetProfileImageEndpoint
                 })
             .WithName("SetProfileImage")
             .WithSummary("Set the authenticated user's avatar URL")
-            .WithDescription("Persists a durable image URL on the current user's profile. Typically called after the Files module's presigned-upload flow returns a publicUrl. Pass a null/empty body to clear.")
+            .WithDescription("Persists a durable image URL on the current user's profile. Typically called after the File module's presigned-upload flow returns a publicUrl. Pass a null/empty body to clear.")
             .RequireAuthorization()
             .Produces(StatusCodes.Status204NoContent)
             .Produces(StatusCodes.Status401Unauthorized)

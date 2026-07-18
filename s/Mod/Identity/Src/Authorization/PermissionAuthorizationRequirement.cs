@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 
-namespace FSH.Modules.Identity.Authorization;
+namespace FSH.Mod.Identity.Authorization;
 
 public class PermissionAuthorizationRequirement : IAuthorizationRequirement;

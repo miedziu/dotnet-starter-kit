@@ -3,12 +3,10 @@ using FSH.Framework.Core.Context;
 using FSH.Framework.Core.Exceptions;
 using FSH.Framework.Eventing.Abstractions;
 using FSH.Framework.Storage.Services;
-using FSH.Modules.Files.Contracts.Events;
-using FSH.Modules.Files.Contracts.v1.Commands;
-using FSH.Modules.Files.Contracts.v1.Dtos;
-using FSH.Modules.Files.Data;
-using FSH.Modules.Files.Features.v1.Internal;
-using FSH.Modules.Files.Services;
+using FSH.Mod.File.Data;
+using FSH.Mod.File.Features.v1.Internal;
+using FSH.Mod.File.Services;
+using FSH.Mod.File.Spec.Events;
 using Mediator;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -17,7 +15,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 using System.Net;
 
-namespace FSH.Modules.Files.Features.v1;
+namespace FSH.Mod.File.Features.v1;
 
 public static class FinalizeUploadEndpoint
 {
@@ -39,7 +37,7 @@ public sealed class FinalizeUploadCommandValidator : AbstractValidator<FinalizeU
 }
 
 public sealed class FinalizeUploadCommandHandler(
-    FilesDbContext db,
+    FileDbContext db,
     IStorageService storage,
     IFileScanner scanner,
     IEventBus events,
@@ -102,7 +100,7 @@ public sealed class FinalizeUploadCommandHandler(
             Id: Guid.NewGuid(),
             OccurredAt: DateTime.UtcNow,
             CorrelationId: correlationId,
-            Source: "Files",
+            Source: "File",
             FileAssetId: asset.Id,
             OwnerType: asset.OwnerType,
             OwnerId: asset.OwnerId,

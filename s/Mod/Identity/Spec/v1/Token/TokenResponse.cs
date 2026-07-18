@@ -1,4 +1,4 @@
-﻿namespace FSH.Modules.Identity.Contracts.v1.Dtos;
+namespace FSH.Mod.Identity.Spec.v1.Token;
 
 public sealed record TokenResponse(
     string AccessToken,

@@ -3,10 +3,9 @@ using FluentValidation;
 using FSH.Framework.Eventing;
 using FSH.Framework.Persistence;
 using FSH.Framework.Shared.Constants;
-using FSH.Framework.Web.Modules;
-using FSH.Modules.Notifications.Contracts.Authorization;
-using FSH.Modules.Notifications.Data;
-using FSH.Modules.Notifications.Features.v1;
+using FSH.Framework.Web.Mod;
+using FSH.Mod.Notification.Data;
+using FSH.Mod.Notification.Features.v1;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
@@ -14,14 +13,14 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 
-namespace FSH.Modules.Notifications;
+namespace FSH.Mod.Notification;
 
 /// <summary>
-/// Notifications module: per-user inbox driven by integration events from other modules. Module
+/// Notification module: per-user inbox driven by integration events from other modules. Module
 /// Order 750 places it BEFORE Chat (800) so its integration-event handlers are registered
 /// before Chat starts publishing — handler registration is order-sensitive.
 /// </summary>
-public sealed class NotificationsModule : IModule
+public sealed class NotificationModule : IModule
 {
     public void ConfigureServices(IHostApplicationBuilder builder)
     {
@@ -29,14 +28,14 @@ public sealed class NotificationsModule : IModule
 
         PermissionConstants.Register(NotificationPermissions.All);
 
-        builder.Services.AddHeroDbContext<NotificationsDbContext>();
-        builder.Services.AddScoped<IDbInitializer, NotificationsDbInitializer>();
-        builder.Services.AddValidatorsFromAssembly(typeof(NotificationsModule).Assembly);
+        builder.Services.AddHeroDbContext<NotificationDbContext>();
+        builder.Services.AddScoped<IDbInitializer, NotificationDbInitializer>();
+        builder.Services.AddValidatorsFromAssembly(typeof(NotificationModule).Assembly);
 
         // Subscribe to cross-module integration events handled by this assembly.
-        builder.Services.AddIntegrationEventHandlers(typeof(NotificationsModule).Assembly);
+        builder.Services.AddIntegrationEventHandlers(typeof(NotificationModule).Assembly);
 
-        builder.Services.AddHealthChecks().AddDbContextCheck<NotificationsDbContext>(
+        builder.Services.AddHealthChecks().AddDbContextCheck<NotificationDbContext>(
             name: "db:notifications",
             failureStatus: HealthStatus.Unhealthy);
     }

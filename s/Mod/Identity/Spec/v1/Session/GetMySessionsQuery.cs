@@ -1,6 +1,5 @@
-using FSH.Modules.Identity.Contracts.v1.Dtos;
 using Mediator;
 
-namespace FSH.Modules.Identity.Contracts.v1.Sessions;
+namespace FSH.Mod.Identity.Spec.v1.Session;
 
 public sealed record GetMySessionsQuery : IQuery<List<UserSessionDto>>;

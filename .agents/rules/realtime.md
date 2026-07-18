@@ -1,6 +1,6 @@
 # Realtime — SignalR & SSE (backend)
 
-`src/BuildingBlocks/Web/Realtime/` + `Sse/`. For the frontend side see `frontend/shared.md` + `frontend/dashboard.md`.
+`s/Lib/Web/Realtime/` + `Sse/`. For the frontend side see `frontend/shared.md` + `frontend/dashboard.md`.
 
 ## SignalR (`AppHub`)
 
@@ -11,7 +11,7 @@
 - Broadcasts scoped to groups (`user:{id}`, `channel:{id}`), never `Clients.All`.
 - Redis backplane auto-added when `CachingOptions:Redis` set (prefix `fsh-signalr`).
 - Push via `IHubContext<AppHub>` to group `user:{userId}`.
-- `IPresenceTracker` (in-memory, per-host). Modules supply `IChannelMembershipChecker`/`IUserChannelLookup` adapters.
+- `IPresenceTracker` (in-memory, per-host). Mod supply `IChannelMembershipChecker`/`IUserChannelLookup` adapters.
 
 ## SSE — two-step token
 

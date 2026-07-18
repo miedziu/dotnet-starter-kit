@@ -1,6 +1,6 @@
 using FSH.Framework.Core.Domain;
 
-namespace FSH.Modules.Chat.Domain;
+namespace FSH.Mod.Chat.Domain;
 
 /// <summary>
 /// One reaction (emoji) by one user on one message. Uniqueness is enforced via a composite index

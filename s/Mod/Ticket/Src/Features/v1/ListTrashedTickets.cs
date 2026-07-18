@@ -1,19 +1,17 @@
 using FSH.Framework.Persistence;
 using FSH.Framework.Shared.Identity.Authorization;
 using FSH.Framework.Shared.Persistence;
-using FSH.Modules.Identity.Contracts.Services;
-using FSH.Modules.Tickets.Contracts.Authorization;
-using FSH.Modules.Tickets.Contracts.v1.Dtos;
-using FSH.Modules.Tickets.Contracts.v1.Tickets;
-using FSH.Modules.Tickets.Data;
-using FSH.Modules.Tickets.Domain;
+using FSH.Mod.Identity.Spec.Services;
+using FSH.Mod.Ticket.Data;
+using FSH.Mod.Ticket.Domain;
+using FSH.Mod.Ticket.Spec.v1.Ticket;
 using Mediator;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 
-namespace FSH.Modules.Tickets.Features.v1;
+namespace FSH.Mod.Ticket.Features.v1;
 
 public static class ListTrashedTicketsEndpoint
 {
@@ -25,12 +23,12 @@ public static class ListTrashedTicketsEndpoint
                         new ListTrashedTicketsQuery(pageNumber ?? 1, pageSize ?? 20), ct)))
             .WithName("ListTrashedTickets")
             .WithSummary("List soft-deleted tickets")
-            .RequirePermission(TicketsPermissions.Tickets.Restore);
+            .RequirePermission(TicketPermissions.Ticket.Restore);
     }
 }
 
 public sealed class ListTrashedTicketsQueryHandler(
-    TicketsDbContext dbContext,
+    TicketDbContext dbContext,
     IUserProfileService userProfileService)
     : IQueryHandler<ListTrashedTicketsQuery, PagedResponse<TicketDto>>
 {
@@ -42,7 +40,7 @@ public sealed class ListTrashedTicketsQueryHandler(
         int page = query.PageNumber < 1 ? 1 : query.PageNumber;
         int size = query.PageSize is < 1 or > 200 ? 20 : query.PageSize;
 
-        var q = dbContext.Tickets
+        var q = dbContext.Ticket
             .AsNoTracking()
             .IgnoreQueryFilters([QueryFilters.SoftDelete])
             .Where(t => t.DeletedAt != null)

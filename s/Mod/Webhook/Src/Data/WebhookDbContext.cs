@@ -1,8 +1,8 @@
 using FSH.Framework.Persistence.Context;
-using FSH.Modules.Webhooks.Domain;
+using FSH.Mod.Webhook.Domain;
 using Microsoft.EntityFrameworkCore;
 
-namespace FSH.Modules.Webhooks.Data;
+namespace FSH.Mod.Webhook.Data;
 
 public sealed class WebhookDbContext(DbContextOptions<WebhookDbContext> options)
     : BaseDbContext(options)

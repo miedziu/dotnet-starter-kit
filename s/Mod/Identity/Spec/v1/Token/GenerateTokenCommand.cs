@@ -1,7 +1,6 @@
-﻿using FSH.Modules.Identity.Contracts.v1.Dtos;
 using Mediator;
 
-namespace FSH.Modules.Identity.Contracts.v1.Tokens;
+namespace FSH.Mod.Identity.Spec.v1.Token;
 
 public record GenerateTokenCommand(
     string Email,

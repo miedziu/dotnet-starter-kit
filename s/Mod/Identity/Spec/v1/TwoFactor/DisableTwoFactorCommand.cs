@@ -1,6 +1,6 @@
 using Mediator;
 
-namespace FSH.Modules.Identity.Contracts.v1.TwoFactor;
+namespace FSH.Mod.Identity.Spec.v1.TwoFactor;
 
 /// <summary>
 /// Disable two-factor authentication for the current user. Requires the current password

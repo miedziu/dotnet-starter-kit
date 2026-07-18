@@ -1,8 +1,7 @@
 using FSH.Framework.Shared.Persistence;
-using FSH.Modules.Webhooks.Contracts.v1.Dtos;
 using Mediator;
 
-namespace FSH.Modules.Webhooks.Contracts.v1.Deliveries;
+namespace FSH.Mod.Webhook.Spec.v1.Delivery;
 
 public sealed record GetWebhookDeliveriesQuery(Guid SubscriptionId, int PageNumber = 1, int PageSize = 10)
     : IQuery<PagedResponse<WebhookDeliveryDto>>;

@@ -1,4 +1,4 @@
-namespace FSH.Modules.Tickets.Contracts.v1.Dtos;
+namespace FSH.Mod.Ticket.Spec.v1;
 
 public sealed record TicketCommentDto(
     Guid Id,

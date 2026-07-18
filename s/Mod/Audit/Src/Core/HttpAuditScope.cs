@@ -1,10 +1,10 @@
 using FSH.Framework.Core.Context;
-using FSH.Modules.Auditing.Contracts;
+using FSH.Mod.Audit.Spec;
 using Microsoft.AspNetCore.Http;
 using System.Diagnostics;
 using System.Security.Claims;
 
-namespace FSH.Modules.Auditing;
+namespace FSH.Mod.Audit.Core;
 
 /// <summary>
 /// Ambient-aware audit scope. Prefers HTTP context when present (the

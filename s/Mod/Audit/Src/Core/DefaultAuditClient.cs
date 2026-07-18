@@ -1,6 +1,6 @@
-using FSH.Modules.Auditing.Contracts;
+using FSH.Mod.Audit.Spec;
 
-namespace FSH.Modules.Auditing;
+namespace FSH.Mod.Audit.Core;
 
 public sealed class DefaultAuditClient : IAuditClient
 {

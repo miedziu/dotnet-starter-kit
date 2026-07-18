@@ -1,5 +1,5 @@
 using Mediator;
 
-namespace FSH.Modules.Notifications.Contracts.v1;
+namespace FSH.Mod.Notification.Spec.v1.Notification;
 
 public sealed record MarkNotificationReadCommand(Guid NotificationId) : ICommand<Unit>;

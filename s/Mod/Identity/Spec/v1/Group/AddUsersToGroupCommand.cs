@@ -1,6 +1,6 @@
 using Mediator;
 
-namespace FSH.Modules.Identity.Contracts.v1.Groups;
+namespace FSH.Mod.Identity.Spec.v1.Group;
 
 public sealed record AddUsersToGroupCommand(Guid GroupId, IReadOnlyList<string> UserIds) : ICommand<AddUsersToGroupResponse>;
 

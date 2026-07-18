@@ -1,4 +1,4 @@
-namespace FSH.Modules.Identity.Domain;
+namespace FSH.Mod.Identity.Domain;
 
 /// <summary>
 /// Server-side record of a single impersonation session. Created on Start, mutated

@@ -1,7 +1,7 @@
 using FSH.Framework.Core.Domain;
-using FSH.Modules.Identity.Domain.Events;
+using FSH.Mod.Identity.Domain.Events;
 
-namespace FSH.Modules.Identity.Domain;
+namespace FSH.Mod.Identity.Domain;
 
 public class UserSession : IHasDomainEvents
 {

@@ -1,12 +1,11 @@
 using FSH.Framework.Eventing.Abstractions;
 using FSH.Framework.Web.Realtime;
-using FSH.Modules.Chat.Contracts.Events;
-using FSH.Modules.Notifications.Data;
-using FSH.Modules.Notifications.Domain;
+using FSH.Mod.Chat.Spec.Events;
+using FSH.Mod.Notification.Data;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 
-namespace FSH.Modules.Notifications.IntegrationEventHandlers;
+namespace FSH.Mod.Notification.IntegrationEventHandlers;
 
 /// <summary>
 /// Subscribes to <see cref="MentionedInChannelIntegrationEvent"/> emitted by the Chat module's
@@ -19,7 +18,7 @@ namespace FSH.Modules.Notifications.IntegrationEventHandlers;
 /// SendMessage slow.
 /// </summary>
 public sealed class MentionedInChannelIntegrationEventHandler(
-    NotificationsDbContext db,
+    NotificationDbContext db,
     IHubContext<AppHub> hub,
     ILogger<MentionedInChannelIntegrationEventHandler> logger)
     : IIntegrationEventHandler<MentionedInChannelIntegrationEvent>

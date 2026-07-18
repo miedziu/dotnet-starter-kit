@@ -1,12 +1,12 @@
 using FSH.Framework.Shared.Constants;
 
-namespace FSH.Modules.Webhooks.Contracts.Authorization;
+namespace FSH.Mod.Webhook.Spec;
 
-public static class WebhooksPermissions
+public static class WebhookPermissions
 {
     public static class Subscriptions
     {
-        public const string Resource = "Webhooks";
+        public const string Resource = "Webhook";
         public const string View = $"Permissions.{Resource}.View";
         public const string Create = $"Permissions.{Resource}.Create";
         public const string Delete = $"Permissions.{Resource}.Delete";
@@ -15,9 +15,9 @@ public static class WebhooksPermissions
 
     public static IReadOnlyList<FshPermission> All { get; } =
     [
-        new("View Webhooks",    ActionConstants.View,   Subscriptions.Resource, IsBasic: true),
-        new("Create Webhooks",  ActionConstants.Create, Subscriptions.Resource),
-        new("Delete Webhooks",  ActionConstants.Delete, Subscriptions.Resource),
-        new("Test Webhooks",    ActionConstants.Test,   Subscriptions.Resource),
+        new("View Webhook",    ActionConstants.View,   Subscriptions.Resource, IsBasic: true),
+        new("Create Webhook",  ActionConstants.Create, Subscriptions.Resource),
+        new("Delete Webhook",  ActionConstants.Delete, Subscriptions.Resource),
+        new("Test Webhook",    ActionConstants.Test,   Subscriptions.Resource),
     ];
 }

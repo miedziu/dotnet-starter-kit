@@ -1,9 +1,9 @@
 using FSH.Framework.Web.Origin;
-using FSH.Modules.Identity.Contracts.Services;
+using FSH.Mod.Identity.Spec.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 
-namespace FSH.Modules.Identity.Services;
+namespace FSH.Mod.Identity.Services;
 
 /// <summary>
 /// Provides HTTP request context information through an abstraction.

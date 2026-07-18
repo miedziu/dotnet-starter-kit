@@ -21,7 +21,7 @@ backend↔frontend contract, and verification.
 
 ## Verify
 ```bash
-dotnet build src/FSH.Starter.slnx
+dotnet build s/FSH.Starter.slnx
 # if a UI surface: cd clients/{app} && npm run lint
 ```
 Then run the **`code-reviewer`** and **`architecture-guard`** workflows before commit.

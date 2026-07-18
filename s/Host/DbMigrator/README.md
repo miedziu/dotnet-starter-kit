@@ -22,25 +22,25 @@ runtime app starts. This project is that step.
 
 ```bash
 # Default — apply pending migrations for the catalog.
-dotnet run --project src/Host/FSH.Starter.DbMigrator -- apply
+dotnet run --project s/Host/DbMigrator -- apply
 
 # Apply only the catalog.
-dotnet run --project src/Host/FSH.Starter.DbMigrator -- apply --catalog-only
+dotnet run --project s/Host/DbMigrator -- apply --catalog-only
 
 # Preview what would run without touching the database.
-dotnet run --project src/Host/FSH.Starter.DbMigrator -- list-pending
+dotnet run --project s/Host/DbMigrator -- list-pending
 
 # Apply migrations AND run idempotent seed data.
-dotnet run --project src/Host/FSH.Starter.DbMigrator -- apply --seed
+dotnet run --project s/Host/DbMigrator -- apply --seed
 
 # Just the seed step (assumes schema is already current).
-dotnet run --project src/Host/FSH.Starter.DbMigrator -- seed
+dotnet run --project s/Host/DbMigrator -- seed
 
 # Dev only — provision the users,
 # custom roles, tickets, and chat. Hard-refuses outside
 # Development. Idempotent: safe to re-run.
 DOTNET_ENVIRONMENT=Development \
-  dotnet run --project src/Host/FSH.Starter.DbMigrator -- seed-demo
+  dotnet run --project s/Host/DbMigrator -- seed-demo
 ```
 
 Exit codes: `0` on success, `1` on any failure (see logged exception).
@@ -48,14 +48,14 @@ Exit codes: `0` on success, `1` on any failure (see logged exception).
 ## Configuration
 
 Reads from the same `appsettings.json` / `appsettings.{Environment}.json`
-as `FSH.Starter.Api` (both files are linked into the project so they
+as `Api` (both files are linked into the project so they
 stay in lock-step). Override anything via environment variables:
 
 | Variable                                  | Notes                                       |
 | ----------------------------------------- | ------------------------------------------- |
 | `DatabaseOptions__Provider`               | `POSTGRESQL` (only provider currently)      |
 | `DatabaseOptions__ConnectionString`       | Use elevated DDL credentials here           |
-| `DatabaseOptions__MigrationsAssembly`     | `FSH.Starter.Migrations.PostgreSQL`         |
+| `DatabaseOptions__MigrationsAssembly`     | `Migrations.PostgreSQL`         |
 | `CachingOptions__Redis`                   | Optional — only used by module DI graphs    |
 | `Logging__LogLevel__Default`              | `Information` is the default                |
 
@@ -68,7 +68,7 @@ migrator container image, then deploy the API only after the Job
 succeeds. The image is built via the `PublishContainer` target:
 
 ```bash
-dotnet publish src/Host/FSH.Starter.DbMigrator -c Release \
+dotnet publish s/Host/DbMigrator -c Release \
   /t:PublishContainer /p:ContainerRepository=fsh-db-migrator
 ```
 
@@ -96,7 +96,7 @@ spec:
             - name: DatabaseOptions__Provider
               value: POSTGRESQL
             - name: DatabaseOptions__MigrationsAssembly
-              value: FSH.Starter.Migrations.PostgreSQL
+              value: Migrations.PostgreSQL
 ```
 
 ### GitHub Actions / Azure Pipelines
@@ -106,11 +106,11 @@ Run as a step before the deploy step:
 ```yaml
 - name: Migrate database
   run: |
-    dotnet run --project src/Host/FSH.Starter.DbMigrator -- apply
+    dotnet run --project s/Host/DbMigrator -- apply
   env:
     DatabaseOptions__ConnectionString: ${{ secrets.DB_DDL_CONNECTION }}
     DatabaseOptions__Provider: POSTGRESQL
-    DatabaseOptions__MigrationsAssembly: FSH.Starter.Migrations.PostgreSQL
+    DatabaseOptions__MigrationsAssembly: Migrations.PostgreSQL
 ```
 
 ### Local development
@@ -119,7 +119,7 @@ There is **no** development-only auto-migration *or* auto-seed in the
 API. In every environment, the migrator is the only path that touches
 schema OR data. The two convenient ways to run it locally are:
 
-- **Aspire**: `dotnet run --project src/Host/FSH.Starter.AppHost` —
+- **Aspire**: `dotnet run --project s/Host/AppHost` —
   Aspire already chains the migrator as a `WaitForCompletion`
   dependency of the API, so the API never starts against an
   unmigrated database.
@@ -128,13 +128,13 @@ schema OR data. The two convenient ways to run it locally are:
 
   ```bash
   # Schema only (every env)
-  dotnet run --project src/Host/FSH.Starter.DbMigrator -- apply
+  dotnet run --project s/Host/DbMigrator -- apply
 
   # Dev: also provision acme + globex with rich demo content
-  dotnet run --project src/Host/FSH.Starter.DbMigrator -- seed-demo
+  dotnet run --project s/Host/DbMigrator -- seed-demo
 
   # Then start the API
-  dotnet run --project src/Host/FSH.Starter.Api
+  dotnet run --project s/Host/Api
   ```
 
 `seed-demo` is the **only** way to get the demo users / tickets / chat.

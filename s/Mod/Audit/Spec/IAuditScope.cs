@@ -1,7 +1,7 @@
-﻿namespace FSH.Modules.Auditing.Contracts;
+namespace FSH.Mod.Audit.Spec;
 
 /// <summary>
-/// Ambient context for the current operation/request. 
+/// Ambient context for the current operation/request.
 /// Implementations typically pull from HttpContext, Activity.Current.
 /// </summary>
 public interface IAuditScope

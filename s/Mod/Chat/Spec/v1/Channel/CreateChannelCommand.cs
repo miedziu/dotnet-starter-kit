@@ -1,6 +1,6 @@
 using Mediator;
 
-namespace FSH.Modules.Chat.Contracts.v1.Commands;
+namespace FSH.Mod.Chat.Spec.v1.Channel;
 
 /// <summary>
 /// Create a named channel. Creator becomes the first member with Admin role. Use <see cref="FindOrCreateDmCommand"/>

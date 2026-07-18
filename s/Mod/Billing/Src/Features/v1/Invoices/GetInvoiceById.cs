@@ -1,16 +1,13 @@
 using FSH.Framework.Core.Exceptions;
 using FSH.Framework.Shared.Identity.Authorization;
-using FSH.Modules.Billing.Contracts.Authorization;
-using FSH.Modules.Billing.Contracts.v1.Dtos;
-using FSH.Modules.Billing.Contracts.v1.Invoices;
-using FSH.Modules.Billing.Data;
+using FSH.Mod.Billing.Data;
 using Mediator;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 
-namespace FSH.Modules.Billing.Features.v1.Invoices;
+namespace FSH.Mod.Billing.Features.v1.Invoices;
 
 public static class GetInvoiceByIdEndpoint
 {

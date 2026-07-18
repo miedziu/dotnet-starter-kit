@@ -1,6 +1,6 @@
 using Mediator;
 
-namespace FSH.Modules.Billing.Contracts.v1.Invoices;
+namespace FSH.Mod.Billing.Spec.v1.Invoice;
 
 /// <summary>
 /// Admin-triggered invoice generation for a specific billing period.

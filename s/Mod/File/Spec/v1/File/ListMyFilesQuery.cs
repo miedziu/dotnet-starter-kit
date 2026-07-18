@@ -1,7 +1,6 @@
-using FSH.Modules.Files.Contracts.v1.Dtos;
 using Mediator;
 using System.Collections.ObjectModel;
 
-namespace FSH.Modules.Files.Contracts.v1.Queries;
+namespace FSH.Mod.File.Spec.v1.File;
 
 public sealed record ListMyFilesQuery(int Page = 1, int PageSize = 20) : IQuery<ReadOnlyCollection<FileAssetDto>>;

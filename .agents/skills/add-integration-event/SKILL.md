@@ -12,7 +12,7 @@ handler. Full model: `.agents/rules/eventing.md`.
 
 ## Step 1 — Define the event (source module's Contracts)
 
-`Modules.{Source}.Contracts/Events/{Event}IntegrationEvent.cs` — implement `IIntegrationEvent`:
+`Mod.{Source}.Contracts/Events/{Event}IntegrationEvent.cs` — implement `IIntegrationEvent`:
 
 ```csharp
 public sealed record {Event}IntegrationEvent(
@@ -55,7 +55,7 @@ The `OutboxDispatcherHostedService` later publishes it via `IEventBus`.
 
 ## Step 3 — Handle it (consumer module)
 
-`Modules.{Consumer}/IntegrationEventHandlers/{Event}IntegrationEventHandler.cs` — `sealed`, implement `IIntegrationEventHandler<T>`:
+`Mod.{Consumer}/IntegrationEventHandlers/{Event}IntegrationEventHandler.cs` — `sealed`, implement `IIntegrationEventHandler<T>`:
 
 ```csharp
 public sealed class {Event}IntegrationEventHandler({Consumer}DbContext db /*, IHubContext<AppHub> hub */)

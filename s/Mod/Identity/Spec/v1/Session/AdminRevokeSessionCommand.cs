@@ -1,5 +1,5 @@
 using Mediator;
 
-namespace FSH.Modules.Identity.Contracts.v1.Sessions;
+namespace FSH.Mod.Identity.Spec.v1.Session;
 
 public sealed record AdminRevokeSessionCommand(Guid UserId, Guid SessionId, string? Reason = null) : ICommand<bool>;

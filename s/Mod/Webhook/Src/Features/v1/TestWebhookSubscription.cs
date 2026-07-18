@@ -1,9 +1,8 @@
 using FSH.Framework.Core.Exceptions;
 using FSH.Framework.Shared.Identity.Authorization;
-using FSH.Modules.Webhooks.Contracts.Authorization;
-using FSH.Modules.Webhooks.Contracts.v1.Subscription;
-using FSH.Modules.Webhooks.Data;
-using FSH.Modules.Webhooks.Services;
+using FSH.Mod.Webhook.Data;
+using FSH.Mod.Webhook.Services;
+using FSH.Mod.Webhook.Spec.v1.Subscription;
 using Mediator;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -11,7 +10,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 
-namespace FSH.Modules.Webhooks.Features.v1;
+namespace FSH.Mod.Webhook.Features.v1;
 
 public static class TestWebhookSubscriptionEndpoint
 {
@@ -27,7 +26,7 @@ public static class TestWebhookSubscriptionEndpoint
         })
         .WithName("TestWebhookSubscription")
         .WithSummary("Send a test event to a webhook subscription")
-        .RequirePermission(WebhooksPermissions.Subscriptions.Test);
+        .RequirePermission(WebhookPermissions.Subscriptions.Test);
     }
 }
 

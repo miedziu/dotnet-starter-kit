@@ -1,10 +1,10 @@
 using FSH.Framework.Persistence.Context;
-using FSH.Modules.Tickets.Domain;
+using FSH.Mod.Ticket.Domain;
 using Microsoft.EntityFrameworkCore;
 
-namespace FSH.Modules.Tickets.Data;
+namespace FSH.Mod.Ticket.Data;
 
-public sealed class TicketsDbContext(DbContextOptions<TicketsDbContext> options)
+public sealed class TicketDbContext(DbContextOptions<TicketDbContext> options)
     : BaseDbContext(options)
 {
     public const string Schema = "tickets";
@@ -16,7 +16,7 @@ public sealed class TicketsDbContext(DbContextOptions<TicketsDbContext> options)
     {
         ArgumentNullException.ThrowIfNull(modelBuilder);
         modelBuilder.HasDefaultSchema(Schema);
-        modelBuilder.ApplyConfigurationsFromAssembly(typeof(TicketsDbContext).Assembly);
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(TicketDbContext).Assembly);
         // base.OnModelCreating runs LAST so BaseDbContext's auto-apply sees
         // fully-configured entities (including HasMany child types).
         base.OnModelCreating(modelBuilder);

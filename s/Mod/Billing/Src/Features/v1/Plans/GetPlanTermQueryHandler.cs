@@ -1,10 +1,9 @@
 using FSH.Framework.Core.Exceptions;
-using FSH.Modules.Billing.Contracts.v1.Plans;
-using FSH.Modules.Billing.Data;
+using FSH.Mod.Billing.Data;
 using Mediator;
 using Microsoft.EntityFrameworkCore;
 
-namespace FSH.Modules.Billing.Features.v1.Plans;
+namespace FSH.Mod.Billing.Features.v1.Plans;
 
 public sealed class GetPlanTermQueryHandler(BillingDbContext dbContext)
     : IQueryHandler<GetPlanTermQuery, PlanTermResponse>

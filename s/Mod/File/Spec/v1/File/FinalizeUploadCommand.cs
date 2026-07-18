@@ -1,6 +1,5 @@
-using FSH.Modules.Files.Contracts.v1.Dtos;
 using Mediator;
 
-namespace FSH.Modules.Files.Contracts.v1.Commands;
+namespace FSH.Mod.File.Spec.v1.File;
 
 public sealed record FinalizeUploadCommand(Guid FileAssetId) : ICommand<FileAssetDto>;

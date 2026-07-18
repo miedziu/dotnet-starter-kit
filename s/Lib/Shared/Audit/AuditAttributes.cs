@@ -1,4 +1,4 @@
-namespace FSH.Framework.Shared.Auditing;
+namespace FSH.Framework.Shared.Audit;
 
 /// <summary>Marks a property that should be excluded from audit diffs and payloads.</summary>
 [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]

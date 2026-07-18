@@ -1,16 +1,14 @@
 using FluentValidation;
 using FSH.Framework.Core.Exceptions;
 using FSH.Framework.Shared.Identity.Authorization;
-using FSH.Modules.Chat.Contracts.Authorization;
-using FSH.Modules.Chat.Contracts.v1.Commands;
-using FSH.Modules.Chat.Data;
+using FSH.Mod.Chat.Data;
 using Mediator;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 
-namespace FSH.Modules.Chat.Features.v1.Channels;
+namespace FSH.Mod.Chat.Features.v1.Channels;
 
 public static class RestoreChannelEndpoint
 {

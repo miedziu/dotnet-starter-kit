@@ -1,4 +1,4 @@
-namespace FSH.Modules.Auditing.Contracts;
+namespace FSH.Mod.Audit.Spec;
 
 /// <summary>
 /// Fallback destination for audit batches that the primary sink could not

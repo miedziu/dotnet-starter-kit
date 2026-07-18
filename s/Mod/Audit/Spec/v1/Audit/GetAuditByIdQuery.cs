@@ -1,6 +1,5 @@
-using FSH.Modules.Auditing.Contracts.v1.Dtos;
 using Mediator;
 
-namespace FSH.Modules.Auditing.Contracts.v1;
+namespace FSH.Mod.Audit.Spec.v1.Audit;
 
 public sealed record GetAuditByIdQuery(Guid Id) : IQuery<AuditDetailDto>;

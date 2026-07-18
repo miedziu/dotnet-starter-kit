@@ -1,4 +1,4 @@
-namespace FSH.Modules.Notifications.Contracts.v1.Dtos;
+namespace FSH.Mod.Notification.Spec.v1;
 
 public sealed record NotificationDto(
     Guid Id,

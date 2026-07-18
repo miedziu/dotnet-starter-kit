@@ -1,8 +1,7 @@
-using FSH.Modules.Chat.Contracts.v1.Dtos;
 using Mediator;
 using System.Collections.ObjectModel;
 
-namespace FSH.Modules.Chat.Contracts.v1.Queries;
+namespace FSH.Mod.Chat.Spec.v1.Message;
 
 /// <summary>
 /// Cursor-paged top-level messages in a channel (no replies). Reverse-chronological by

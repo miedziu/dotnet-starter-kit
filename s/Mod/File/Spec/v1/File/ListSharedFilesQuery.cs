@@ -1,8 +1,7 @@
-using FSH.Modules.Files.Contracts.v1.Dtos;
 using Mediator;
 using System.Collections.ObjectModel;
 
-namespace FSH.Modules.Files.Contracts.v1.Queries;
+namespace FSH.Mod.File.Spec.v1.File;
 
 /// <summary>
 /// List files marked Public and tagged with the built-in owner types

@@ -1,7 +1,7 @@
 using FSH.Framework.Core.Domain;
-using FSH.Modules.Billing.Contracts;
+using FSH.Mod.Billing.Spec;
 
-namespace FSH.Modules.Billing.Domain;
+namespace FSH.Mod.Billing.Domain;
 
 /// <summary>
 /// Priced side of a plan. The plan key matches the key used by quota configuration so a

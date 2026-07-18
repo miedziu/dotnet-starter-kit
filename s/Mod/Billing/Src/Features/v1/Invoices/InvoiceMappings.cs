@@ -1,7 +1,6 @@
-using FSH.Modules.Billing.Contracts.v1.Dtos;
-using FSH.Modules.Billing.Domain;
+using FSH.Mod.Billing.Domain;
 
-namespace FSH.Modules.Billing.Features.v1.Invoices;
+namespace FSH.Mod.Billing.Features.v1.Invoices;
 
 internal static class InvoiceMappings
 {

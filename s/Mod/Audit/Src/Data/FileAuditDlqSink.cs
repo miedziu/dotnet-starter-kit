@@ -1,10 +1,10 @@
-using FSH.Modules.Auditing.Contracts;
+using FSH.Mod.Audit.Spec;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System.Text;
 using System.Text.Json;
 
-namespace FSH.Modules.Auditing.Persistence;
+namespace FSH.Mod.Audit.Data;
 
 /// <summary>
 /// Writes dead-lettered audit envelopes as JSONL to a daily-rotated file

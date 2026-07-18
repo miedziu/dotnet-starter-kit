@@ -1,5 +1,5 @@
 using Mediator;
 
-namespace FSH.Modules.Tickets.Contracts.v1.TicketComments;
+namespace FSH.Mod.Ticket.Spec.v1.TicketComment;
 
 public sealed record AddTicketCommentCommand(Guid TicketId, string Body) : ICommand<Guid>;

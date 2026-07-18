@@ -23,7 +23,7 @@ public interface IStorageService
     /// <summary>
     /// Mint a short-lived presigned PUT URL the browser uses to upload bytes directly to S3-compatible storage.
     /// Returns the URL plus any headers the browser MUST include verbatim in its PUT (typically Content-Type
-    /// when the signature constrains it). Used by the Files module's <c>RequestUploadUrl</c> endpoint.
+    /// when the signature constrains it). Used by the File module's <c>RequestUploadUrl</c> endpoint.
     /// </summary>
     Task<PresignedUploadUrl> GenerateUploadUrlAsync(
         string storageKey,

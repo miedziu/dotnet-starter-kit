@@ -1,16 +1,15 @@
 using FSH.Framework.Core.Exceptions;
 using FSH.Framework.Shared.Identity.Authorization;
 using FSH.Framework.Web.Idempotency;
-using FSH.Modules.Tickets.Contracts.Authorization;
-using FSH.Modules.Tickets.Contracts.v1.Tickets;
-using FSH.Modules.Tickets.Data;
+using FSH.Mod.Ticket.Data;
+using FSH.Mod.Ticket.Spec.v1.Ticket;
 using Mediator;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 
-namespace FSH.Modules.Tickets.Features.v1;
+namespace FSH.Mod.Ticket.Features.v1;
 
 public static class ReopenTicketEndpoint
 {
@@ -21,12 +20,12 @@ public static class ReopenTicketEndpoint
                     Results.Ok(await mediator.Send(new ReopenTicketCommand(ticketId), ct)))
             .WithName("ReopenTicket")
             .WithSummary("Reopen a resolved or closed ticket")
-            .RequirePermission(TicketsPermissions.Tickets.Reopen)
+            .RequirePermission(TicketPermissions.Ticket.Reopen)
             .WithIdempotency();
     }
 }
 
-public sealed class ReopenTicketCommandHandler(TicketsDbContext dbContext)
+public sealed class ReopenTicketCommandHandler(TicketDbContext dbContext)
     : ICommandHandler<ReopenTicketCommand, Guid>
 {
     public async ValueTask<Guid> Handle(ReopenTicketCommand command, CancellationToken cancellationToken)

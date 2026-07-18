@@ -1,6 +1,6 @@
-using FSH.Modules.Billing.Domain;
+using FSH.Mod.Billing.Domain;
 
-namespace FSH.Modules.Billing.Services;
+namespace FSH.Mod.Billing.Services;
 
 /// <summary>
 /// Snapshots per-tenant usage for a billing period by reading from <c>IQuotaService</c> and resolving

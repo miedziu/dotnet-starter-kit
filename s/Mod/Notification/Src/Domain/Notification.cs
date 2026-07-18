@@ -1,10 +1,10 @@
 using FSH.Framework.Core.Domain;
 
-namespace FSH.Modules.Notifications.Domain;
+namespace FSH.Mod.Notification.Domain;
 
 /// <summary>
 /// A single inbox row for the bell-icon UI. One notification per (user, event). Source modules
-/// hand a payload to the integration event bus; <c>NotificationsModule</c> writes the row.
+/// hand a payload to the integration event bus; <c>NotificationModule</c> writes the row.
 /// Body / link are denormalized for display so the inbox doesn't have to follow back into the
 /// source module to render.
 /// </summary>

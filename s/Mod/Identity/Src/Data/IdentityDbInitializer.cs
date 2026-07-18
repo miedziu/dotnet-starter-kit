@@ -1,14 +1,14 @@
 using FSH.Framework.Persistence;
 using FSH.Framework.Shared.Constants;
 using FSH.Framework.Web.Origin;
-using FSH.Modules.Identity.Domain;
+using FSH.Mod.Identity.Domain;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace FSH.Modules.Identity.Data;
+namespace FSH.Mod.Identity.Data;
 
 internal sealed class IdentityDbInitializer(
     ILogger<IdentityDbInitializer> logger,

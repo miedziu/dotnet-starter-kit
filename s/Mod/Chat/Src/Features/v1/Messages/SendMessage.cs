@@ -5,14 +5,11 @@ using FSH.Framework.Eventing.Abstractions;
 using FSH.Framework.Shared.Identity.Authorization;
 using FSH.Framework.Web.Idempotency;
 using FSH.Framework.Web.Realtime;
-using FSH.Modules.Chat.Contracts.Authorization;
-using FSH.Modules.Chat.Contracts.Events;
-using FSH.Modules.Chat.Contracts.v1.Commands;
-using FSH.Modules.Chat.Contracts.v1.Dtos;
-using FSH.Modules.Chat.Data;
-using FSH.Modules.Chat.Domain;
-using FSH.Modules.Chat.Features.v1.Internal;
-using FSH.Modules.Chat.Services;
+using FSH.Mod.Chat.Data;
+using FSH.Mod.Chat.Domain;
+using FSH.Mod.Chat.Features.v1.Internal;
+using FSH.Mod.Chat.Services;
+using FSH.Mod.Chat.Spec.Events;
 using Mediator;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -23,7 +20,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 using System.Net;
 
-namespace FSH.Modules.Chat.Features.v1.Messages;
+namespace FSH.Mod.Chat.Features.v1.Messages;
 
 public static class SendMessageEndpoint
 {
@@ -152,7 +149,7 @@ public sealed class SendMessageCommandHandler(
             .SendAsync("ChatMessageCreated", dto, cancellationToken)
             .ConfigureAwait(false);
 
-        // One integration event per distinct mentioned user. Notifications module subscribes.
+        // One integration event per distinct mentioned user. Notification module subscribes.
         if (notifyUserIds.Count > 0)
         {
             var correlationId = Activity.Current?.TraceId.ToString() ?? Guid.NewGuid().ToString();

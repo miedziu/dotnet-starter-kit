@@ -1,15 +1,15 @@
 using FluentValidation;
 using FSH.Framework.Core.Context;
 using FSH.Framework.Core.Exceptions;
-using FSH.Modules.Identity.Contracts.v1.TwoFactor;
-using FSH.Modules.Identity.Domain;
+using FSH.Mod.Identity.Domain;
+using FSH.Mod.Identity.Spec.v1.TwoFactor;
 using Mediator;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Routing;
 
-namespace FSH.Modules.Identity.Features.v1.TwoFactor;
+namespace FSH.Mod.Identity.Features.v1.TwoFactor;
 
 public static class VerifyEnrollTwoFactorEndpoint
 {

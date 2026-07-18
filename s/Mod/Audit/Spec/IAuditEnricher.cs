@@ -1,4 +1,4 @@
-﻿namespace FSH.Modules.Auditing.Contracts;
+namespace FSH.Mod.Audit.Spec;
 
 /// <summary>
 /// Hook to augment events before they are published (e.g., add user/trace, normalize fields, enforce caps).

@@ -1,9 +1,9 @@
-namespace FSH.Modules.Files;
+namespace FSH.Mod.File;
 
 /// <summary>
-/// Configuration for the Files module. Bound from the <c>Files</c> section of appsettings.json.
+/// Configuration for the File module. Bound from the <c>Files</c> section of appsettings.json.
 /// </summary>
-public sealed class FilesOptions
+public sealed class FileOptions
 {
     /// <summary>Lifetime of a presigned PUT URL minted by <c>POST /files/upload-url</c>.</summary>
     public int UploadUrlTtlMinutes { get; set; } = 15;

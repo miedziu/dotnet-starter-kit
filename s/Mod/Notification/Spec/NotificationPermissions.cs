@@ -1,16 +1,16 @@
 using FSH.Framework.Shared.Constants;
 
-namespace FSH.Modules.Notifications.Contracts.Authorization;
+namespace FSH.Mod.Notification.Spec;
 
 /// <summary>
-/// Permission constants for the Notifications module. Permissions follow the
+/// Permission constants for the Notification module. Permissions follow the
 /// <c>Permissions.{Resource}.{Action}</c> shape per framework convention.
 /// </summary>
 public static class NotificationPermissions
 {
     public static class Inbox
     {
-        public const string Resource = "Notifications.Inbox";
+        public const string Resource = "Notification.Inbox";
         public const string View = $"Permissions.{Resource}.View";
         public const string MarkRead = $"Permissions.{Resource}.MarkRead";
     }

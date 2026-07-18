@@ -24,8 +24,8 @@ public static class RegisterUserEndpoint
 
 | Type | Location | Interface |
 |---|---|---|
-| Command/Query | Modules.{Name}.Contracts | `ICommand<T>` / `IQuery<T>` |
-| Handler | Modules.{Name}/Features/ | `ICommandHandler<T,TResponse>` / `IQueryHandler<T,TResponse>` |
+| Command/Query | Mod.{Name}.Contracts | `ICommand<T>` / `IQuery<T>` |
+| Handler | Mod.{Name}/Features/ | `ICommandHandler<T,TResponse>` / `IQueryHandler<T,TResponse>` |
 
 - Handlers: `public sealed`, `ValueTask<T>`, `.ConfigureAwait(false)`
 - Paginated queries: `IPagedQuery` + `PagedResponse<T>`
@@ -59,6 +59,6 @@ Use `Specification<T>` for composable queries. `AsNoTracking = true` by default.
 
 ## Adding a feature
 
-1. Command/Query in `Modules.{Name}.Contracts/v1/{Area}/{Feature}.cs`
-2. In order: Endpoint + Validator + Handler in `Modules.{Name}/Features/v1/{Area}/{Feature}.cs` (Single File Slice)
+1. Command/Query in `Mod.{Name}.Contracts/v1/{Area}/{Feature}.cs`
+2. In order: Endpoint + Validator + Handler in `Mod.{Name}/Features/v1/{Area}/{Feature}.cs` (Single File Slice)
 3. Wire endpoint in module's `MapEndpoints()`

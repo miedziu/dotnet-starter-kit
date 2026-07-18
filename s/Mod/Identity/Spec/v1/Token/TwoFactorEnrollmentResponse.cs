@@ -1,4 +1,4 @@
-namespace FSH.Modules.Identity.Contracts.v1.Dtos;
+namespace FSH.Mod.Identity.Spec.v1.Token;
 
 /// <summary>
 /// Returned from the enroll endpoint. <see cref="SharedKey"/> is the base32-encoded TOTP

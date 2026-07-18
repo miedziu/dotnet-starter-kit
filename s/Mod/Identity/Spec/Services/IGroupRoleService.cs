@@ -1,4 +1,4 @@
-namespace FSH.Modules.Identity.Contracts.Services;
+namespace FSH.Mod.Identity.Spec.Services;
 
 /// <summary>
 /// Service for retrieving roles derived from group memberships.

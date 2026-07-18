@@ -1,6 +1,6 @@
 using FSH.Framework.Eventing.Abstractions;
 
-namespace FSH.Modules.Identity.Contracts.Events;
+namespace FSH.Mod.Identity.Spec.Events;
 
 /// <summary>
 /// Integration event raised when a new user is registered.

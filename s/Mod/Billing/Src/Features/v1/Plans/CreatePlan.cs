@@ -1,16 +1,14 @@
 using FluentValidation;
 using FSH.Framework.Shared.Identity.Authorization;
 using FSH.Framework.Web.Idempotency;
-using FSH.Modules.Billing.Contracts.Authorization;
-using FSH.Modules.Billing.Contracts.v1.Plans;
-using FSH.Modules.Billing.Data;
-using FSH.Modules.Billing.Domain;
+using FSH.Mod.Billing.Data;
+using FSH.Mod.Billing.Domain;
 using Mediator;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 
-namespace FSH.Modules.Billing.Features.v1.Plans;
+namespace FSH.Mod.Billing.Features.v1.Plans;
 
 public static class CreatePlanEndpoint
 {

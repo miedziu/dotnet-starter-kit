@@ -1,6 +1,6 @@
 using FSH.Framework.Core.Domain;
 
-namespace FSH.Modules.Chat.Domain.Events;
+namespace FSH.Mod.Chat.Domain.Events;
 
 public sealed record MessageDeletedDomainEvent(
     Guid ChannelId,

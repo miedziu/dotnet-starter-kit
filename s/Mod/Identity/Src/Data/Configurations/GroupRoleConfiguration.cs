@@ -1,8 +1,8 @@
-using FSH.Modules.Identity.Domain;
+using FSH.Mod.Identity.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace FSH.Modules.Identity.Data.Configurations;
+namespace FSH.Mod.Identity.Data.Configurations;
 
 public class GroupRoleConfiguration : IEntityTypeConfiguration<GroupRole>
 {

@@ -1,7 +1,6 @@
-using FSH.Modules.Billing.Contracts.v1.Dtos;
 using Mediator;
 
-namespace FSH.Modules.Billing.Contracts.v1.Subscriptions;
+namespace FSH.Mod.Billing.Spec.v1.Subscription;
 
 /// <summary>
 /// Returns the current active subscription.

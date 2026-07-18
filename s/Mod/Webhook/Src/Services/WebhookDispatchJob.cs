@@ -1,5 +1,5 @@
-using FSH.Modules.Webhooks.Data;
-using FSH.Modules.Webhooks.Domain;
+using FSH.Mod.Webhook.Data;
+using FSH.Mod.Webhook.Domain;
 using Hangfire;
 using Hangfire.Server;
 using Microsoft.EntityFrameworkCore;
@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 using System.Net.Http.Headers;
 using System.Text;
 
-namespace FSH.Modules.Webhooks.Services;
+namespace FSH.Mod.Webhook.Services;
 
 /// <summary>
 /// Hangfire job that delivers a webhook payload. Throws on transient failure so Hangfire
@@ -18,7 +18,7 @@ namespace FSH.Modules.Webhooks.Services;
 /// </summary>
 public sealed class WebhookDispatchJob
 {
-    private const string HttpClientName = "Webhooks";
+    private const string HttpClientName = "Webhook";
     private const int MaxRetries = 4;
 
     private readonly IServiceScopeFactory _scopeFactory;

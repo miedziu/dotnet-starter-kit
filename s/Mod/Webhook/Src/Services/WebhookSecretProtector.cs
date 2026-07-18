@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.DataProtection;
 
-namespace FSH.Modules.Webhooks.Services;
+namespace FSH.Mod.Webhook.Services;
 
 /// <summary>
 /// Encrypts/decrypts webhook signing secrets at rest. The secret is the HMAC key used to sign
@@ -21,7 +21,7 @@ public sealed class WebhookSecretProtector : IWebhookSecretProtector
     public WebhookSecretProtector(IDataProtectionProvider provider)
     {
         ArgumentNullException.ThrowIfNull(provider);
-        _protector = provider.CreateProtector("FSH.Webhooks.SubscriptionSecret.v1");
+        _protector = provider.CreateProtector("FSH.Webhook.SubscriptionSecret.v1");
     }
 
     public string? Protect(string? plaintext) =>

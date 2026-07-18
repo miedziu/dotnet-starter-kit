@@ -1,4 +1,4 @@
-namespace FSH.Modules.Auditing.Contracts.v1.Dtos;
+namespace FSH.Mod.Audit.Spec.v1;
 
 public sealed class AuditSummaryAggregateDto
 {

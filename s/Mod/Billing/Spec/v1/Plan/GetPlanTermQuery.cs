@@ -1,6 +1,6 @@
 using Mediator;
 
-namespace FSH.Modules.Billing.Contracts.v1.Plans;
+namespace FSH.Mod.Billing.Spec.v1.Plan;
 
 /// <summary>
 /// Reads a plan's billing term so another module (Multitenancy) can compute a tenant's validity

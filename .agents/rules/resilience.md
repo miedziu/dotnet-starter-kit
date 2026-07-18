@@ -1,6 +1,6 @@
 # HTTP resilience
 
-`src/BuildingBlocks/Web/HttpResilience/`. Uses `Microsoft.Extensions.Http.Resilience` (Polly v8).
+`s/Lib/Web/HttpResilience/`. Uses `Microsoft.Extensions.Http.Resilience` (Polly v8).
 
 ## Pattern — opt-in per HttpClient
 

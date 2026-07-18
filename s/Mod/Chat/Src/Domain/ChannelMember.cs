@@ -1,7 +1,6 @@
 using FSH.Framework.Core.Domain;
-using FSH.Modules.Chat.Contracts.v1.Dtos;
 
-namespace FSH.Modules.Chat.Domain;
+namespace FSH.Mod.Chat.Domain;
 
 public sealed class ChannelMember : BaseEntity<Guid>
 {

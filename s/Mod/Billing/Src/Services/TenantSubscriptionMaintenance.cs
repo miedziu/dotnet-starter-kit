@@ -1,9 +1,9 @@
-using FSH.Modules.Billing.Contracts;
-using FSH.Modules.Billing.Data;
-using FSH.Modules.Billing.Domain;
+using FSH.Mod.Billing.Data;
+using FSH.Mod.Billing.Domain;
+using FSH.Mod.Billing.Spec;
 using Microsoft.EntityFrameworkCore;
 
-namespace FSH.Modules.Billing.Services;
+namespace FSH.Mod.Billing.Services;
 
 /// <summary>
 /// Manages the global subscription state for the billing module.

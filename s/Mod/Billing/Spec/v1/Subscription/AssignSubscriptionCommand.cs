@@ -1,6 +1,6 @@
 using Mediator;
 
-namespace FSH.Modules.Billing.Contracts.v1.Subscriptions;
+namespace FSH.Mod.Billing.Spec.v1.Subscription;
 
 /// <summary>
 /// Command to assign to a plan, starting now. If there is an existing active

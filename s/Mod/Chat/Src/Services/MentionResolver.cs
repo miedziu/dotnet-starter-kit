@@ -1,6 +1,6 @@
-using FSH.Modules.Identity.Contracts.Services;
+using FSH.Mod.Identity.Spec.Services;
 
-namespace FSH.Modules.Chat.Services;
+namespace FSH.Mod.Chat.Services;
 
 /// <summary>
 /// Default mention resolver. Pulls the full user list once and filters in memory — fine for

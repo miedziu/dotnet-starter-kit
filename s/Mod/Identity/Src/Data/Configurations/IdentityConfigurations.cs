@@ -1,9 +1,9 @@
-using FSH.Modules.Identity.Domain;
+using FSH.Mod.Identity.Domain;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace FSH.Modules.Identity.Data;
+namespace FSH.Mod.Identity.Data.Configurations;
 
 public class ApplicationUserConfig : IEntityTypeConfiguration<FshUser>
 {

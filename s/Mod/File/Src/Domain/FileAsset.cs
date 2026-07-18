@@ -1,13 +1,12 @@
 using FSH.Framework.Core.Domain;
 using FSH.Framework.Core.Exceptions;
-using FSH.Modules.Files.Contracts.v1.Dtos;
-using FSH.Modules.Files.Domain.Events;
+using FSH.Mod.File.Domain.Events;
 using System.Net;
 
-namespace FSH.Modules.Files.Domain;
+namespace FSH.Mod.File.Domain;
 
 /// <summary>
-/// A file asset tracked by the Files module. Owns a presigned upload lifecycle (PendingUpload →
+/// A file asset tracked by the File module. Owns a presigned upload lifecycle (PendingUpload →
 /// Available | Quarantined) plus soft-delete semantics consistent with Tickets entities.
 /// </summary>
 public sealed class FileAsset : AggregateRoot<Guid>, ISoftDeletable

@@ -1,17 +1,14 @@
 using FSH.Framework.Shared.Constants;
-using FSH.Framework.Web.Modules;
-using FSH.Modules.Billing.Contracts;
-using FSH.Modules.Billing.Data;
-using FSH.Modules.Billing.Domain;
-using FSH.Modules.Chat.Data;
-using FSH.Modules.Chat.Domain;
-using FSH.Modules.Identity.Contracts.Authorization;
-using FSH.Modules.Identity.Data;
-using FSH.Modules.Identity.Domain;
-using FSH.Modules.Tickets.Contracts.Authorization;
-using FSH.Modules.Tickets.Contracts.v1.Dtos;
-using FSH.Modules.Tickets.Data;
-using FSH.Modules.Tickets.Domain;
+using FSH.Framework.Web.Mod;
+using FSH.Mod.Billing.Data;
+using FSH.Mod.Billing.Domain;
+using FSH.Mod.Billing.Spec;
+using FSH.Mod.Chat.Data;
+using FSH.Mod.Chat.Domain;
+using FSH.Mod.Identity.Data;
+using FSH.Mod.Identity.Domain;
+using FSH.Mod.Ticket.Data;
+using FSH.Mod.Ticket.Domain;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -78,14 +75,14 @@ internal sealed class DemoSeeder
 
         await SeedTenantUsersAsync(ct).ConfigureAwait(false);
 
-        // Only seed tickets if Tickets module is enabled
-        if (_moduleOptions.IsModuleEnabled("Tickets"))
+        // Only seed tickets if Ticket module is enabled
+        if (_moduleOptions.IsModuleEnabled("Ticket"))
         {
             await SeedTenantTicketsAsync(ct).ConfigureAwait(false);
         }
         else if (_logger.IsEnabled(LogLevel.Information))
         {
-            _logger.LogInformation("[demo-seed] skipping tickets seeding — Tickets module disabled");
+            _logger.LogInformation("[demo-seed] skipping tickets seeding — Ticket module disabled");
         }
 
         // Only seed chat if Chat module is enabled
@@ -115,7 +112,7 @@ internal sealed class DemoSeeder
     //     var tenantDb = scope.ServiceProvider.GetRequiredService<TenantDbContext>();
 
     //     // Same per-tenant path the migrator's apply verb uses. The Identity initializer creates
-    //     // the tenant admin, while Tickets/Chat initializers are no-ops today.
+    //     // the tenant admin, while Ticket/Chat initializers are no-ops today.
     //     await tenantService.MigrateTenantAsync(existing, ct).ConfigureAwait(false);
     //     await tenantService.SeedTenantAsync(existing, ct).ConfigureAwait(false);
 
@@ -365,14 +362,14 @@ internal sealed class DemoSeeder
         }
     }
 
-    // ─── Tickets ────────────────────────────────────────────────────────
+    // ─── Ticket ────────────────────────────────────────────────────────
 
     private async Task SeedTenantTicketsAsync(CancellationToken ct)
     {
         using var scope = _services.CreateScope();
 
-        var dbContext = scope.ServiceProvider.GetRequiredService<TicketsDbContext>();
-        if (await dbContext.Tickets.AnyAsync(ct).ConfigureAwait(false))
+        var dbContext = scope.ServiceProvider.GetRequiredService<TicketDbContext>();
+        if (await dbContext.Ticket.AnyAsync(ct).ConfigureAwait(false))
         {
             return;
         }
@@ -471,7 +468,7 @@ internal sealed class DemoSeeder
             dbContext,
             creator: UserId("manager@acme.com"),
             name: "engineering",
-            description: "Eng-only. Tickets, deploys, post-mortems.",
+            description: "Eng-only. Ticket, deploys, post-mortems.",
             isPrivate: true,
             additionalMembers: [UserId("alice@acme.com"), UserId("bob@acme.com"), UserId("carol@acme.com")],
             messages:
@@ -631,10 +628,10 @@ internal sealed class DemoSeeder
                 IdentityPermissions.Sessions.View,
                 IdentityPermissions.Sessions.Revoke,
                 IdentityPermissions.Groups.View,
-                TicketsPermissions.Tickets.View,
-                TicketsPermissions.Tickets.Create,
-                TicketsPermissions.Tickets.Update,
-                TicketsPermissions.Tickets.Delete,
+                TicketPermissions.Ticket.View,
+                TicketPermissions.Ticket.Create,
+                TicketPermissions.Ticket.Update,
+                TicketPermissions.Ticket.Delete,
             ]),
 
         new(
@@ -645,9 +642,9 @@ internal sealed class DemoSeeder
                 IdentityPermissions.UserRoles.View,
                 IdentityPermissions.Sessions.View,
                 IdentityPermissions.Sessions.Revoke,
-                TicketsPermissions.Tickets.View,
-                TicketsPermissions.Tickets.Create,
-                TicketsPermissions.Tickets.Update,
+                TicketPermissions.Ticket.View,
+                TicketPermissions.Ticket.Create,
+                TicketPermissions.Ticket.Update,
             ]),
     ];
 

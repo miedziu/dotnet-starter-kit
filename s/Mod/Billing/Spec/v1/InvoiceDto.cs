@@ -1,4 +1,4 @@
-namespace FSH.Modules.Billing.Contracts.v1.Dtos;
+namespace FSH.Mod.Billing.Spec.v1;
 
 public sealed record InvoiceDto(
     Guid Id,

@@ -1,14 +1,14 @@
 using Asp.Versioning;
 using FSH.Framework.Eventing;
 using FSH.Framework.Persistence;
-using FSH.Framework.Web.Modules;
-using FSH.Modules.Billing.Data;
-using FSH.Modules.Billing.Features.v1.Invoices;
-using FSH.Modules.Billing.Features.v1.Plans;
-using FSH.Modules.Billing.Features.v1.Subscriptions;
-using FSH.Modules.Billing.Features.v1.Usage;
-using FSH.Modules.Billing.Features.v1.Wallets;
-using FSH.Modules.Billing.Services;
+using FSH.Framework.Web.Mod;
+using FSH.Mod.Billing.Data;
+using FSH.Mod.Billing.Features.v1.Invoices;
+using FSH.Mod.Billing.Features.v1.Plans;
+using FSH.Mod.Billing.Features.v1.Subscriptions;
+using FSH.Mod.Billing.Features.v1.Usage;
+using FSH.Mod.Billing.Features.v1.Wallets;
+using FSH.Mod.Billing.Services;
 using Hangfire;
 using Hangfire.Common;
 using Microsoft.AspNetCore.Builder;
@@ -18,9 +18,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 
-[assembly: FshModule(typeof(FSH.Modules.Billing.BillingModule), 500)]
+[assembly: FshModule(typeof(FSH.Mod.Billing.BillingModule), 500)]
 
-namespace FSH.Modules.Billing;
+namespace FSH.Mod.Billing;
 
 public sealed class BillingModule : IModule
 {
@@ -29,7 +29,7 @@ public sealed class BillingModule : IModule
         ArgumentNullException.ThrowIfNull(builder);
 
         FSH.Framework.Shared.Constants.PermissionConstants.Register(
-            FSH.Modules.Billing.Contracts.Authorization.BillingPermissions.All);
+            FSH.Mod.Billing.Spec.Authorization.BillingPermissions.All);
 
         builder.Services.AddHeroDbContext<BillingDbContext>();
         builder.Services.AddScoped<IDbInitializer, BillingDbInitializer>();

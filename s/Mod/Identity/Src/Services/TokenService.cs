@@ -1,6 +1,5 @@
-﻿using FSH.Modules.Identity.Authorization.Jwt;
-using FSH.Modules.Identity.Contracts.Services;
-using FSH.Modules.Identity.Contracts.v1.Dtos;
+using FSH.Mod.Identity.Authorization.Jwt;
+using FSH.Mod.Identity.Spec.Services;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -8,7 +7,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace FSH.Modules.Identity.Services;
+namespace FSH.Mod.Identity.Services;
 
 public sealed class TokenService : ITokenService
 {

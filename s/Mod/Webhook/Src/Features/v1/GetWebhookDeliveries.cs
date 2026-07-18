@@ -1,17 +1,14 @@
 using FluentValidation;
 using FSH.Framework.Shared.Identity.Authorization;
 using FSH.Framework.Shared.Persistence;
-using FSH.Modules.Webhooks.Contracts.Authorization;
-using FSH.Modules.Webhooks.Contracts.v1.Deliveries;
-using FSH.Modules.Webhooks.Contracts.v1.Dtos;
-using FSH.Modules.Webhooks.Data;
+using FSH.Mod.Webhook.Data;
 using Mediator;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 
-namespace FSH.Modules.Webhooks.Features.v1;
+namespace FSH.Mod.Webhook.Features.v1;
 
 public static class GetWebhookDeliveriesEndpoint
 {
@@ -29,7 +26,7 @@ public static class GetWebhookDeliveriesEndpoint
         })
         .WithName("GetWebhookDeliveries")
         .WithSummary("List webhook deliveries for a subscription")
-        .RequirePermission(WebhooksPermissions.Subscriptions.View);
+        .RequirePermission(WebhookPermissions.Subscriptions.View);
     }
 }
 

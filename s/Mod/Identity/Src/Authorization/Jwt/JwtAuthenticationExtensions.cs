@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
-namespace FSH.Modules.Identity.Authorization.Jwt;
+namespace FSH.Mod.Identity.Authorization.Jwt;
 
 internal static class JwtAuthenticationExtensions
 {
@@ -30,7 +30,7 @@ internal static class JwtAuthenticationExtensions
             // AND the fallback policy:
             //   - FallbackPolicy covers endpoints with no auth metadata at all.
             //   - DefaultPolicy covers endpoints that opt in via .RequireAuthorization() —
-            //     including the module route-groups (Billing/Chat/Files/…). Without
+            //     including the module route-groups (Billing/Chat/File/…). Without
             //     this, a group-level .RequireAuthorization() applied the built-in
             //     authenticated-only default, which SUPPRESSED the fallback, so
             //     .RequirePermission(...) was never evaluated and any authenticated tenant

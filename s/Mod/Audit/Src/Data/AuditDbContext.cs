@@ -1,4 +1,4 @@
-﻿using FSH.Framework.Persistence.Context;
+using FSH.Framework.Persistence.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace FSH.Modules.Auditing.Persistence;
+namespace FSH.Mod.Audit.Data;
 
 public sealed class AuditDbContext(DbContextOptions<AuditDbContext> options)
     : BaseDbContext(options)

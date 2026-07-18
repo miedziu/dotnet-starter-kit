@@ -1,12 +1,11 @@
 using FSH.Framework.Persistence;
-using FSH.Modules.Auditing.Contracts;
-using FSH.Modules.Auditing.Persistence;
+using FSH.Mod.Audit.Spec;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
-namespace FSH.Modules.Auditing;
+namespace FSH.Mod.Audit.Infrastructure.Hosting;
 
 public static class ServiceCollectionExtensions
 {

@@ -20,7 +20,7 @@ Child entity reached **only** via parent nav collection needs `Property(x => x.I
 
 ## Migrations
 
-All in `src/Host/FSH.Starter.Migrations.PostgreSQL`, per-module folders.
+All in `s/Host/FSH.Starter.Migrations.PostgreSQL`, per-module folders.
 
 **Command:**
 ```bash

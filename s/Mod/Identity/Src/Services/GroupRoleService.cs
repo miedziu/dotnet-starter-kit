@@ -1,8 +1,8 @@
-using FSH.Modules.Identity.Contracts.Services;
-using FSH.Modules.Identity.Data;
+using FSH.Mod.Identity.Data;
+using FSH.Mod.Identity.Spec.Services;
 using Microsoft.EntityFrameworkCore;
 
-namespace FSH.Modules.Identity.Services;
+namespace FSH.Mod.Identity.Services;
 
 public sealed class GroupRoleService : IGroupRoleService
 {

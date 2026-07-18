@@ -1,3 +1,5 @@
+using Aspire.Hosting.ApplicationModel;
+
 var builder = DistributedApplication.CreateBuilder(args);
 
 // Per-app prefix from the AppHost assembly name (FSH.Starter.AppHost -> fsh-starter); namespaces Docker volumes + resource names so multiple FSH apps don't clash.

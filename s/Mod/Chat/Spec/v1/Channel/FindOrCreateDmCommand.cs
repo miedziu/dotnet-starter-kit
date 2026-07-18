@@ -1,6 +1,6 @@
 using Mediator;
 
-namespace FSH.Modules.Chat.Contracts.v1.Commands;
+namespace FSH.Mod.Chat.Spec.v1.Channel;
 
 /// <summary>
 /// Find or create a DM/group DM. <paramref name="UserIds"/> contains the OTHER participants;

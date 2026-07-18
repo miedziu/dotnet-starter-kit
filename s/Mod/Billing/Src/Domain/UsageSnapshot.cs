@@ -1,6 +1,6 @@
 using FSH.Framework.Core.Domain;
 
-namespace FSH.Modules.Billing.Domain;
+namespace FSH.Mod.Billing.Domain;
 
 /// <summary>
 /// Frozen record of usage for a single resource in a billing period.

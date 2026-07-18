@@ -2,18 +2,18 @@ using FSH.Framework.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace FSH.Modules.Notifications.Data;
+namespace FSH.Mod.Notification.Data;
 
-public sealed class NotificationsDbInitializer(
-    NotificationsDbContext dbContext,
-    ILogger<NotificationsDbInitializer> logger) : IDbInitializer
+public sealed class NotificationDbInitializer(
+    NotificationDbContext dbContext,
+    ILogger<NotificationDbInitializer> logger) : IDbInitializer
 {
     public async Task MigrateAsync(CancellationToken ct)
     {
         if ((await dbContext.Database.GetPendingMigrationsAsync(ct).ConfigureAwait(false)).Any())
         {
             await dbContext.Database.MigrateAsync(ct).ConfigureAwait(false);
-            logger.LogInformation("[Notifications] applied migrations");
+            logger.LogInformation("[Notification] applied migrations");
         }
     }
 

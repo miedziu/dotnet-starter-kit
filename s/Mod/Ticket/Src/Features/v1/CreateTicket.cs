@@ -4,11 +4,9 @@ using FSH.Framework.Core.Exceptions;
 using FSH.Framework.Persistence;
 using FSH.Framework.Shared.Identity.Authorization;
 using FSH.Framework.Web.Idempotency;
-using FSH.Modules.Identity.Contracts.Services;
-using FSH.Modules.Tickets.Contracts.Authorization;
-using FSH.Modules.Tickets.Contracts.v1.Tickets;
-using FSH.Modules.Tickets.Data;
-using FSH.Modules.Tickets.Domain;
+using FSH.Mod.Identity.Spec.Services;
+using FSH.Mod.Ticket.Data;
+using FSH.Mod.Ticket.Spec.v1.Ticket;
 using Mediator;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -17,7 +15,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 using System.Net;
 
-namespace FSH.Modules.Tickets.Features.v1;
+namespace FSH.Mod.Ticket.Features.v1;
 
 public static class CreateTicketEndpoint
 {
@@ -28,7 +26,7 @@ public static class CreateTicketEndpoint
                     Results.Ok(await mediator.Send(command, ct)))
             .WithName("CreateTicket")
             .WithSummary("Create a ticket")
-            .RequirePermission(TicketsPermissions.Tickets.Create)
+            .RequirePermission(TicketPermissions.Ticket.Create)
             .WithIdempotency();
     }
 }
@@ -43,7 +41,7 @@ public sealed class CreateTicketCommandValidator : AbstractValidator<CreateTicke
 }
 
 public sealed class CreateTicketCommandHandler(
-    TicketsDbContext dbContext,
+    TicketDbContext dbContext,
     IUserProfileService userProfileService,
     ICurrentUser currentUser)
     : ICommandHandler<CreateTicketCommand, Guid>

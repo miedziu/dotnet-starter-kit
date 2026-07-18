@@ -1,8 +1,8 @@
-using FSH.Modules.Files.Domain;
+using FSH.Mod.File.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace FSH.Modules.Files.Data.Configurations;
+namespace FSH.Mod.File.Data.Configurations;
 
 public sealed class FileAssetConfiguration : IEntityTypeConfiguration<FileAsset>
 {

@@ -1,7 +1,6 @@
-using FSH.Modules.Identity.Contracts.Services;
-using FSH.Modules.Tickets.Contracts.v1.Dtos;
+using FSH.Mod.Identity.Spec.Services;
 
-namespace FSH.Modules.Tickets.Domain;
+namespace FSH.Mod.Ticket.Domain;
 
 internal static class TicketMappings
 {

@@ -1,3 +1,3 @@
-using FSH.Framework.Web.Modules;
+using FSH.Framework.Web.Mod;
 
-[assembly: FshModule(typeof(FSH.Modules.Billing.BillingModule), 300)]
+[assembly: FshModule(typeof(FSH.Mod.Billing.BillingModule), 300)]

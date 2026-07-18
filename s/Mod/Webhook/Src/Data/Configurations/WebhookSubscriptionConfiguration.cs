@@ -1,8 +1,8 @@
-using FSH.Modules.Webhooks.Domain;
+using FSH.Mod.Webhook.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace FSH.Modules.Webhooks.Data;
+namespace FSH.Mod.Webhook.Data.Configurations;
 
 public sealed class WebhookSubscriptionConfiguration : IEntityTypeConfiguration<WebhookSubscription>
 {

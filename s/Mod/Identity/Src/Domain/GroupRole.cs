@@ -1,4 +1,4 @@
-namespace FSH.Modules.Identity.Domain;
+namespace FSH.Mod.Identity.Domain;
 
 public class GroupRole
 {

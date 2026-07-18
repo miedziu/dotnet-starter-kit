@@ -1,8 +1,8 @@
-using FSH.Modules.Auditing.Contracts;
+using FSH.Mod.Audit.Spec;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
-namespace FSH.Modules.Auditing;
+namespace FSH.Mod.Audit.Infrastructure.Serialization;
 
 /// <summary>
 /// Simple masking by field-name convention or attributes.

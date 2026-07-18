@@ -1,5 +1,5 @@
 using Mediator;
 
-namespace FSH.Modules.Identity.Contracts.v1.Groups;
+namespace FSH.Mod.Identity.Spec.v1.Group;
 
 public sealed record RemoveUserFromGroupCommand(Guid GroupId, string UserId) : ICommand<Unit>;

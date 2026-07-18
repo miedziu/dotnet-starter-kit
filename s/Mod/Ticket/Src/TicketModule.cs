@@ -1,10 +1,9 @@
 using Asp.Versioning;
 using FSH.Framework.Persistence;
 using FSH.Framework.Shared.Constants;
-using FSH.Framework.Web.Modules;
-using FSH.Modules.Tickets.Contracts.Authorization;
-using FSH.Modules.Tickets.Data;
-using FSH.Modules.Tickets.Features.v1;
+using FSH.Framework.Web.Mod;
+using FSH.Mod.Ticket.Data;
+using FSH.Mod.Ticket.Features.v1;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
@@ -12,23 +11,23 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 
-[assembly: FshModule(typeof(FSH.Modules.Tickets.TicketsModule), 700)]
+[assembly: FshModule(typeof(FSH.Mod.Ticket.TicketModule), 700)]
 
-namespace FSH.Modules.Tickets;
+namespace FSH.Mod.Ticket;
 
-public sealed class TicketsModule : IModule
+public sealed class TicketModule : IModule
 {
     public void ConfigureServices(IHostApplicationBuilder builder)
     {
         ArgumentNullException.ThrowIfNull(builder);
 
-        PermissionConstants.Register(TicketsPermissions.All);
+        PermissionConstants.Register(TicketPermissions.All);
 
-        builder.Services.AddHeroDbContext<TicketsDbContext>();
-        builder.Services.AddScoped<IDbInitializer, TicketsDbInitializer>();
+        builder.Services.AddHeroDbContext<TicketDbContext>();
+        builder.Services.AddScoped<IDbInitializer, TicketDbInitializer>();
 
         builder.Services.AddHealthChecks()
-            .AddDbContextCheck<TicketsDbContext>(
+            .AddDbContextCheck<TicketDbContext>(
                 name: "db:tickets",
                 failureStatus: HealthStatus.Unhealthy);
     }

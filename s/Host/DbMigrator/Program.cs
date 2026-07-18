@@ -1,27 +1,20 @@
 using FSH.Framework.Jobs.Services;
 using FSH.Framework.Persistence;
 using FSH.Framework.Web;
-using FSH.Framework.Web.Modules;
+using FSH.Framework.Web.Mod;
 using FSH.Framework.Web.Observability.Logging.Serilog;
-using FSH.Modules.Auditing;
-using FSH.Modules.Auditing.Contracts;
-using FSH.Modules.Auditing.Persistence;
-using FSH.Modules.Billing;
-using FSH.Modules.Billing.Contracts.v1.Invoices;
-using FSH.Modules.Chat;
-using FSH.Modules.Chat.Contracts.v1.Commands;
-using FSH.Modules.Files;
-using FSH.Modules.Files.Contracts.v1.Commands;
-using FSH.Modules.Identity;
-using FSH.Modules.Identity.Contracts.v1.Tokens;
-using FSH.Modules.Identity.Data;
-using FSH.Modules.Identity.Features.v1.Tokens;
-using FSH.Modules.Notifications;
-using FSH.Modules.Notifications.Contracts.v1;
-using FSH.Modules.Tickets;
-using FSH.Modules.Tickets.Contracts.v1.Tickets;
-using FSH.Modules.Webhooks;
-using FSH.Modules.Webhooks.Contracts.v1.Subscription;
+using FSH.Mod.Audit;
+using FSH.Mod.Audit.Spec;
+using FSH.Mod.Billing;
+using FSH.Mod.Chat;
+using FSH.Mod.File;
+using FSH.Mod.Identity;
+using FSH.Mod.Identity.Data;
+using FSH.Mod.Identity.Features.v1.Tokens;
+using FSH.Mod.Notification;
+using FSH.Mod.Ticket;
+using FSH.Mod.Webhook;
+using FSH.Mod.Webhook.Spec.v1.Subscription;
 using FSH.Starter.DbMigrator;
 using FSH.Starter.DbMigrator.DemoSeed;
 using Microsoft.EntityFrameworkCore;
@@ -89,13 +82,13 @@ if (string.IsNullOrWhiteSpace(builder.Configuration["DatabaseOptions:ConnectionS
 var allModules = new[]
 {
     ("Identity", typeof(GenerateTokenCommand), typeof(IdentityModule)),
-    ("Auditing", typeof(AuditEnvelope), typeof(AuditingModule)),
+    ("Audit", typeof(AuditEnvelope), typeof(AuditModule)),
     ("Billing", typeof(GenerateInvoicesCommand), typeof(BillingModule)),
     ("Chat", typeof(CreateChannelCommand), typeof(ChatModule)),
-    ("Files", typeof(RequestUploadUrlCommand), typeof(FilesModule)),
-    ("Notifications", typeof(MarkNotificationReadCommand), typeof(NotificationsModule)),
-    ("Tickets", typeof(CreateTicketCommand), typeof(TicketsModule)),
-    ("Webhooks", typeof(CreateWebhookSubscriptionCommand), typeof(WebhooksModule)),
+    ("File", typeof(RequestUploadUrlCommand), typeof(FileModule)),
+    ("Notification", typeof(MarkNotificationReadCommand), typeof(NotificationModule)),
+    ("Ticket", typeof(CreateTicketCommand), typeof(TicketModule)),
+    ("Webhook", typeof(CreateWebhookSubscriptionCommand), typeof(WebhookModule)),
 };
 
 // Register ALL module handlers with Mediator for source generator discovery
@@ -111,15 +104,15 @@ builder.Services.AddMediator(o =>
         typeof(GenerateInvoicesCommand),
         typeof(BillingModule),
         typeof(RequestUploadUrlCommand),
-        typeof(FilesModule),
+        typeof(FileModule),
         typeof(CreateChannelCommand),
         typeof(ChatModule),
         typeof(MarkNotificationReadCommand),
-        typeof(NotificationsModule),
+        typeof(NotificationModule),
         typeof(CreateTicketCommand),
-        typeof(TicketsModule),
+        typeof(TicketModule),
         typeof(CreateWebhookSubscriptionCommand),
-        typeof(WebhooksModule),
+        typeof(WebhookModule),
     ];
 });
 

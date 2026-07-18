@@ -3,7 +3,7 @@ using FSH.Framework.Mailing.Services;
 using Microsoft.Extensions.Logging;
 using System.Collections.ObjectModel;
 
-namespace FSH.Modules.Notifications.IntegrationEventHandlers;
+namespace FSH.Mod.Notification.IntegrationEventHandlers;
 
 /// <summary>Shared best-effort send for billing emails — a delivery failure must never throw out of an
 /// integration-event handler (it would fail the originating create/renew/scan).</summary>

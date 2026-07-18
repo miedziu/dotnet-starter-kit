@@ -1,11 +1,10 @@
 using FSH.Framework.Storage.Services;
-using FSH.Modules.Files.Contracts.v1.Dtos;
-using FSH.Modules.Files.Data;
+using FSH.Mod.File.Data;
 using Hangfire;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace FSH.Modules.Files.Jobs;
+namespace FSH.Mod.File.Jobs;
 
 /// <summary>
 /// Hourly purge of FileAsset rows stuck in PendingUpload past their UploadDeadline. Best-effort
@@ -13,7 +12,7 @@ namespace FSH.Modules.Files.Jobs;
 /// debited.
 /// </summary>
 public sealed class PurgeOrphanedFilesJob(
-    FilesDbContext db,
+    FileDbContext db,
     IStorageService storage,
     ILogger<PurgeOrphanedFilesJob> logger)
 {

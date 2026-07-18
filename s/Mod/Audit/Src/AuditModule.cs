@@ -1,9 +1,8 @@
 using Asp.Versioning;
 using FSH.Framework.Persistence;
-using FSH.Framework.Web.Modules;
-using FSH.Modules.Auditing.Contracts;
-using FSH.Modules.Auditing.Features.v1;
-using FSH.Modules.Auditing.Persistence;
+using FSH.Framework.Web.Mod;
+using FSH.Mod.Audit.Features.v1;
+using FSH.Mod.Audit.Spec;
 using Hangfire;
 using Hangfire.Common;
 using Microsoft.AspNetCore.Builder;
@@ -16,20 +15,20 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 
-namespace FSH.Modules.Auditing;
+namespace FSH.Mod.Audit;
 
-public sealed class AuditingModule : IModule
+public sealed class AuditModule : IModule
 {
     public void ConfigureServices(IHostApplicationBuilder builder)
     {
         ArgumentNullException.ThrowIfNull(builder);
 
-        FSH.Framework.Shared.Constants.PermissionConstants.Register(Contracts.Authorization.AuditingPermissions.All);
+        FSH.Framework.Shared.Constants.PermissionConstants.Register(Contracts.Authorization.AuditPermissions.All);
 
-        var httpOpts = builder.Configuration.GetSection("Auditing").Get<AuditHttpOptions>() ?? new AuditHttpOptions();
+        var httpOpts = builder.Configuration.GetSection("Audit").Get<AuditHttpOptions>() ?? new AuditHttpOptions();
         builder.Services.AddSingleton(httpOpts);
 
-        var retentionOpts = builder.Configuration.GetSection("Auditing:Retention").Get<AuditRetentionOptions>() ?? new AuditRetentionOptions();
+        var retentionOpts = builder.Configuration.GetSection("Audit:Retention").Get<AuditRetentionOptions>() ?? new AuditRetentionOptions();
         builder.Services.AddSingleton(retentionOpts);
         builder.Services.AddTransient<AuditRetentionJob>();
         builder.Services.AddHttpContextAccessor();
@@ -40,18 +39,18 @@ public sealed class AuditingModule : IModule
         builder.Services.AddSingleton<IAuditSerializer, SystemTextJsonAuditSerializer>();
         builder.Services.AddHealthChecks()
             .AddDbContextCheck<AuditDbContext>(
-                name: "db:auditing",
+                name: "db:audit",
                 failureStatus: HealthStatus.Unhealthy);
 
         // Enrichers used by Audit.Configure (scoped, run on request thread)
         builder.Services.AddScoped<IAuditMaskingService, JsonMaskingService>();
-        builder.Services.AddHostedService<AuditingConfigurator>();
+        builder.Services.AddHostedService<AuditConfigurator>();
         builder.Services.AddScoped<IAuditScope, HttpAuditScope>();
 
         builder.Services.TryAddSingleton(TimeProvider.System);
         builder.Services.AddSingleton<ChannelAuditPublisher>();
         builder.Services.AddSingleton<IAuditPublisher>(sp => sp.GetRequiredService<ChannelAuditPublisher>());
-        builder.Services.AddScoped<ISaveChangesInterceptor, AuditingSaveChangesInterceptor>();
+        builder.Services.AddScoped<ISaveChangesInterceptor, AuditSaveChangesInterceptor>();
 
         builder.Services.AddSingleton<IAuditSink, SqlAuditSink>();
         builder.Services.AddSingleton<IAuditDlqSink, FileAuditDlqSink>();
@@ -92,7 +91,7 @@ public sealed class AuditingModule : IModule
         if (jobManager is not null && retentionOpts is not null)
         {
             jobManager.AddOrUpdate(
-                "auditing-retention",
+                "audit-retention",
                 Job.FromExpression<AuditRetentionJob>(j => j.RunAsync(CancellationToken.None)),
                 retentionOpts.Cron,
                 new RecurringJobOptions { TimeZone = TimeZoneInfo.Utc });

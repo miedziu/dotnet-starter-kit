@@ -6,7 +6,7 @@ argument-hint: [ModuleName] [MigrationName]
 
 # Create Migration
 
-All migrations live in **one** project — `src/Host/FSH.Starter.Migrations.PostgreSQL` — but are foldered
+All migrations live in **one** project — `s/Host/FSH.Starter.Migrations.PostgreSQL` — but are foldered
 **per module/context** (`Chat/`, `Identity/`, …), each with its own `{X}DbContextModelSnapshot`. The DB
 is **not** migrated at API startup; the `DbMigrator` host applies it.
 
@@ -23,7 +23,7 @@ the build after editing entities/config, you can generate against a stale snapsh
 `migrations remove` rewrites the snapshot — only remove the latest, and rebuild after.
 
 ```bash
-dotnet build src/FSH.Starter.slnx
+dotnet build s/FSH.Starter.slnx
 ```
 
 ## Step 2 — replace the migration
@@ -35,8 +35,8 @@ Save old names in memory.
 
 ```bash
 dotnet ef migrations add {MigrationName} \
-  --project src/Host/FSH.Starter.Migrations.PostgreSQL \
-  --startup-project src/Host/FSH.Starter.Api \
+  --project s/Host/FSH.Starter.Migrations.PostgreSQL \
+  --startup-project s/Host/FSH.Starter.Api \
   --context {X}DbContext \
   --output-dir {X}
 ```
@@ -47,8 +47,8 @@ Rename new files using saved old nams.
 
 ```bash
 dotnet ef migrations script --idempotent \
-  --project src/Host/FSH.Starter.Migrations.PostgreSQL \
-  --startup-project src/Host/FSH.Starter.Api \
+  --project s/Host/FSH.Starter.Migrations.PostgreSQL \
+  --startup-project s/Host/FSH.Starter.Api \
   --context {X}DbContext
 ```
 
@@ -60,8 +60,8 @@ table, and renames surfacing as drop+add (data loss). Adjust the model or hand-e
 Preferred (the canonical path — migrates the catalog then each module schema):
 
 ```bash
-dotnet run --project src/Host/FSH.Starter.DbMigrator -- apply
-dotnet run --project src/Host/FSH.Starter.DbMigrator -- list-pending   # to preview first
+dotnet run --project s/Host/FSH.Starter.DbMigrator -- apply
+dotnet run --project s/Host/FSH.Starter.DbMigrator -- list-pending   # to preview first
 ```
 
 (Or, single-context local dev, `dotnet ef database update --context {X}DbContext --project … --startup-project …`.)

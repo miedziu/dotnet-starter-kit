@@ -1,8 +1,8 @@
-using FSH.Modules.Billing.Domain;
+using FSH.Mod.Billing.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace FSH.Modules.Billing.Data.Configurations;
+namespace FSH.Mod.Billing.Data.Configurations;
 
 public sealed class UsageSnapshotConfiguration : IEntityTypeConfiguration<UsageSnapshot>
 {

@@ -1,10 +1,10 @@
-﻿using FluentValidation;
+using FluentValidation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Hosting;
 using System.Reflection;
 
-namespace FSH.Framework.Web.Modules;
+namespace FSH.Framework.Web.Mod;
 
 public static class ModuleLoader
 {

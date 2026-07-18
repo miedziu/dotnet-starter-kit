@@ -1,8 +1,8 @@
-using FSH.Modules.Chat.Data;
-using FSH.Modules.Files.Contracts;
+using FSH.Mod.Chat.Data;
+using FSH.Mod.File.Spec;
 using Microsoft.EntityFrameworkCore;
 
-namespace FSH.Modules.Chat.Authorization;
+namespace FSH.Mod.Chat.Authorization;
 
 /// <summary>
 /// IFileAccessPolicy for chat-channel attachments (OwnerType=ChatChannel).

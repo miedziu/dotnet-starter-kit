@@ -2,18 +2,16 @@ using FluentValidation;
 using FSH.Framework.Core.Context;
 using FSH.Framework.Core.Exceptions;
 using FSH.Framework.Shared.Identity.Authorization;
-using FSH.Modules.Files.Contracts;
-using FSH.Modules.Files.Contracts.Authorization;
-using FSH.Modules.Files.Contracts.v1.Commands;
-using FSH.Modules.Files.Data;
-using FSH.Modules.Files.Services;
+using FSH.Mod.File.Data;
+using FSH.Mod.File.Services;
+using FSH.Mod.File.Spec;
 using Mediator;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 
-namespace FSH.Modules.Files.Features.v1;
+namespace FSH.Mod.File.Features.v1;
 
 public static class DeleteFileEndpoint
 {
@@ -26,7 +24,7 @@ public static class DeleteFileEndpoint
                 })
             .WithName("DeleteFile")
             .WithSummary("Soft-delete a file; bytes purged after retention window")
-            .RequirePermission(FilesPermissions.DeleteOwn);
+            .RequirePermission(FilePermissions.DeleteOwn);
 }
 
 public sealed class DeleteFileCommandValidator : AbstractValidator<DeleteFileCommand>
@@ -38,7 +36,7 @@ public sealed class DeleteFileCommandValidator : AbstractValidator<DeleteFileCom
 }
 
 public sealed class DeleteFileCommandHandler(
-    FilesDbContext db,
+    FileDbContext db,
     FileAccessPolicyRegistry policies,
     ICurrentUser currentUser)
     : ICommandHandler<DeleteFileCommand, Unit>

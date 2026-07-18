@@ -1,8 +1,8 @@
-# Module: Files
+# Module: File
 
 Presigned-URL file lifecycle (upload → finalize → serve → delete) shared by Chat attachments, avatars. Module `Order = 350` (loads before consumer modules).
 
-**Entities:** `FileAsset` (soft-deletable): status `PendingUpload → Available | Quarantined`, `Visibility` (Public/Private), `ScanStatus`. `FilesDbContext`. Publishes `FileFinalizedIntegrationEvent`.
+**Entities:** `FileAsset` (soft-deletable): status `PendingUpload → Available | Quarantined`, `Visibility` (Public/Private), `ScanStatus`. `FileDbContext`. Publishes `FileFinalizedIntegrationEvent`.
 
 **Areas:** RequestUploadUrl, FinalizeUpload, GetFileDownloadUrl/Metadata, ChangeVisibility, Delete/Restore, ListMy/Shared/Trashed. Purge jobs (orphaned hourly, deleted daily).
 

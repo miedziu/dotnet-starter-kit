@@ -1,6 +1,6 @@
-using FSH.Modules.Files.Contracts;
+using FSH.Mod.File.Spec;
 
-namespace FSH.Modules.Files.Authorization;
+namespace FSH.Mod.File.Authorization;
 
 /// <summary>
 /// Default policy used for the built-in <c>MyFiles</c> and <c>User</c> owner types.
@@ -9,7 +9,7 @@ namespace FSH.Modules.Files.Authorization;
 /// - Delete: only the uploader.
 ///
 /// Scoping is handled by the framework's BaseDbContext, not here.
-/// Owning modules with different rules (e.g. Tickets — participants only) register their own
+/// Owning modules with different rules (e.g. Ticket — participants only) register their own
 /// <see cref="IFileAccessPolicy"/> implementation that supersedes this one.
 /// </summary>
 internal sealed class DefaultUploaderOnlyPolicy : IFileAccessPolicy

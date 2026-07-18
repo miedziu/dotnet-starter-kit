@@ -1,9 +1,9 @@
 
 using FSH.Framework.Persistence.Context;
-using FSH.Modules.Chat.Domain;
+using FSH.Mod.Chat.Domain;
 using Microsoft.EntityFrameworkCore;
 
-namespace FSH.Modules.Chat.Data;
+namespace FSH.Mod.Chat.Data;
 
 public sealed class ChatDbContext(DbContextOptions<ChatDbContext> options)
     : BaseDbContext(options)

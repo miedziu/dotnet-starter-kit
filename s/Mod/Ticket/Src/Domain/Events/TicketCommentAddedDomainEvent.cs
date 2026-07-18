@@ -1,6 +1,6 @@
 using FSH.Framework.Core.Domain;
 
-namespace FSH.Modules.Tickets.Domain.Events;
+namespace FSH.Mod.Ticket.Domain.Events;
 
 public sealed record TicketCommentAddedDomainEvent(
     Guid TicketId,
