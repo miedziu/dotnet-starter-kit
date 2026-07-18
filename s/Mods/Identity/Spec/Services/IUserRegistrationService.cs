@@ -1,0 +1,84 @@
+using FSH.Mods.Identity.Spec.v1;
+using System.Security.Claims;
+
+namespace FSH.Mods.Identity.Spec.Services;
+
+/// <summary>
+/// Service for user registration and external authentication.
+/// </summary>
+public interface IUserRegistrationService
+{
+    /// <summary>
+    /// Registers a new user with password - Step 1 of multi-step registration.
+    /// Creates user with email and password, sends confirmation email.
+    /// </summary>
+    Task<string> RegisterStep1Async(
+        string email,
+        string password,
+        string confirmPassword,
+        string origin,
+        string[]? referralUsernames = null,
+        CancellationToken ct = default);
+
+    /// <summary>
+    /// Registers a new user with full profile - legacy single-step registration.
+    /// </summary>
+    Task<string> RegisterAsync(
+        string firstName,
+        string lastName,
+        string email,
+        string userName,
+        string password,
+        string confirmPassword,
+        string phoneNumber,
+        string origin,
+        string[]? referralUsernames = null,
+        CancellationToken ct = default);
+
+    /// <summary>
+    /// Updates user address information - Step 2 of multi-step registration.
+    /// </summary>
+    Task<bool> UpdateUserAddressAsync(
+        string userId,
+        short? districtId,
+        short? communeId,
+        CancellationToken ct = default);
+
+    /// <summary>
+    /// Updates user profile information - Step 3 of multi-step registration.
+    /// </summary>
+    Task<UserDto> UpdateUserProfileAsync(
+        string userId,
+        string firstName,
+        string lastName,
+        string userName,
+        CancellationToken ct = default);
+
+    /// <summary>
+    /// Gets or creates a user from an external authentication principal.
+    /// </summary>
+    Task<string> GetOrCreateFromPrincipalAsync(ClaimsPrincipal principal, CancellationToken ct = default);
+
+    /// <summary>
+    /// Confirms a user's email address.
+    /// </summary>
+    Task<string> ConfirmEmailAsync(string userId, string code, CancellationToken ct);
+
+    /// <summary>
+    /// Administratively marks a user's email as confirmed without a confirmation token. Gated by the
+    /// <c>Permissions.Users.ConfirmEmail</c> permission at the endpoint. Idempotent.
+    /// </summary>
+    Task AdminConfirmEmailAsync(string userId, CancellationToken ct = default);
+
+    /// <summary>
+    /// Re-sends the email-confirmation link to a user who has not yet confirmed their address.
+    /// <paramref name="origin"/> is the request base URL used to build the confirmation link.
+    /// Throws if the user's email is already confirmed.
+    /// </summary>
+    Task ResendConfirmationEmailAsync(string userId, string origin, CancellationToken ct = default);
+
+    /// <summary>
+    /// Confirms a user's phone number.
+    /// </summary>
+    Task<string> ConfirmPhoneNumberAsync(string userId, string code, CancellationToken ct = default);
+}

@@ -1,0 +1,46 @@
+namespace FSH.Mods.File.Spec;
+
+/// <summary>
+/// Per-OwnerType authorization for FileAssets. Each owning module (Catalog, Ticket, ...) registers
+/// its own implementation via <c>services.AddFileAccessPolicy{TPolicy}()</c>. The File module
+/// ships a uploader-only default for the built-in <c>MyFiles</c> and <c>User</c> owner types.
+/// Policies receive a primitive <c>currentUserId</c> rather than a
+/// <c>ClaimsPrincipal</c> so the contract stays free of ASP.NET Core types — owning modules that
+/// need richer authz can inject their own dependencies.
+/// </summary>
+public interface IFileAccessPolicy
+{
+    /// <summary>The OwnerType this policy handles. Must be unique across registered policies.</summary>
+    string OwnerType { get; }
+
+    Task<bool> CanAttachAsync(Guid? ownerId, string currentUserId, CancellationToken ct);
+
+    Task<bool> CanReadAsync(FileAccessContext context, string currentUserId, CancellationToken ct);
+
+    Task<bool> CanDeleteAsync(FileAccessContext context, string currentUserId, CancellationToken ct);
+
+    /// <summary>
+    /// Whether the caller may change a file's <see cref="FileAccessContext.Visibility"/> after
+    /// upload. Defaults to the same rule as <see cref="CanDeleteAsync"/> — only the uploader.
+    /// Mods whose files are tied to a domain entity (Catalog product images, Chat attachments)
+    /// can override to disallow visibility flips entirely.
+    /// </summary>
+    Task<bool> CanChangeVisibilityAsync(FileAccessContext context, string currentUserId, CancellationToken ct)
+        => CanDeleteAsync(context, currentUserId, ct);
+}
+
+/// <summary>
+/// Minimal projection of a FileAsset passed to <see cref="IFileAccessPolicy"/> methods so owning
+/// modules can make access decisions without depending on the File module runtime.
+/// </summary>
+/// <param name="FileAssetId">FileAsset identity.</param>
+/// <param name="OwnerType">OwnerType value.</param>
+/// <param name="OwnerId">OwnerId value, or null when the file isn't bound to an owner (e.g. MyFiles).</param>
+/// <param name="CreatedByUserId">User who uploaded the file.</param>
+/// <param name="Visibility">0 = Public, 1 = Private (matches the runtime enum int).</param>
+public sealed record FileAccessContext(
+    Guid FileAssetId,
+    string OwnerType,
+    Guid? OwnerId,
+    string CreatedByUserId,
+    int Visibility);

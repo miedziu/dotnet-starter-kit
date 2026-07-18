@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<RootNamespace>FSH.Mods.Chat.Spec</RootNamespace>
+		<AssemblyName>FSH.Mods.Chat.Spec</AssemblyName>
+		<NoWarn>$(NoWarn);S2094</NoWarn>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Mediator.Abstractions" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\..\Lib\Shared\Shared.csproj" />
+		<ProjectReference Include="..\..\..\Lib\Eventing.Abstractions\Eventing.Abstractions.csproj" />
+	</ItemGroup>
+
+</Project>

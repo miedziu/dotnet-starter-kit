@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<RootNamespace>FSH.Mods.Ticket</RootNamespace>
+		<AssemblyName>FSH.Mods.Ticket</AssemblyName>
+		<NoWarn>$(NoWarn);CA1031;CA1812;CA1859;S3267</NoWarn>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\..\Lib\Persistence\Persistence.csproj" />
+		<ProjectReference Include="..\..\..\Lib\Web\Web.csproj" />
+		<ProjectReference Include="..\Spec\Ticket.Spec.csproj" />
+		<ProjectReference Include="..\..\Identity\Spec\Identity.Spec.csproj" />
+	</ItemGroup>
+
+</Project>

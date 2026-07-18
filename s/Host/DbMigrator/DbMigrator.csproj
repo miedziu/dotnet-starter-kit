@@ -32,18 +32,18 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Lib\Web\Web.csproj" />
-    <ProjectReference Include="..\..\Mod\Audit\Src\Audit.Src.csproj" />
-    <ProjectReference Include="..\..\Mod\Audit\Spec\Audit.Spec.csproj" />
-    <ProjectReference Include="..\..\Mod\Billing\Src\Billing.Src.csproj" />
-    <ProjectReference Include="..\..\Mod\Billing\Spec\Billing.Spec.csproj" />
-    <ProjectReference Include="..\..\Mod\Chat\Src\Chat.Src.csproj" />
-    <ProjectReference Include="..\..\Mod\Chat\Spec\Chat.Spec.csproj" />
-    <ProjectReference Include="..\..\Mod\File\Src\File.Src.csproj" />
-    <ProjectReference Include="..\..\Mod\File\Spec\File.Spec.csproj" />
-    <ProjectReference Include="..\..\Mod\Identity\Src\Identity.Src.csproj" />
-    <ProjectReference Include="..\..\Mod\Ticket\Src\Ticket.Src.csproj" />
-    <ProjectReference Include="..\..\Mod\Ticket\Spec\Ticket.Spec.csproj" />
-    <ProjectReference Include="..\..\Mod\Webhook\Src\Webhook.Src.csproj" />
+    <ProjectReference Include="..\..\Mods\Audit\Src\Audit.Src.csproj" />
+    <ProjectReference Include="..\..\Mods\Audit\Spec\Audit.Spec.csproj" />
+    <ProjectReference Include="..\..\Mods\Billing\Src\Billing.Src.csproj" />
+    <ProjectReference Include="..\..\Mods\Billing\Spec\Billing.Spec.csproj" />
+    <ProjectReference Include="..\..\Mods\Chat\Src\Chat.Src.csproj" />
+    <ProjectReference Include="..\..\Mods\Chat\Spec\Chat.Spec.csproj" />
+    <ProjectReference Include="..\..\Mods\File\Src\File.Src.csproj" />
+    <ProjectReference Include="..\..\Mods\File\Spec\File.Spec.csproj" />
+    <ProjectReference Include="..\..\Mods\Identity\Src\Identity.Src.csproj" />
+    <ProjectReference Include="..\..\Mods\Ticket\Src\Ticket.Src.csproj" />
+    <ProjectReference Include="..\..\Mods\Ticket\Spec\Ticket.Spec.csproj" />
+    <ProjectReference Include="..\..\Mods\Webhook\Src\Webhook.Src.csproj" />
     <ProjectReference Include="..\Migrations\Migrations.csproj" />
   </ItemGroup>
 

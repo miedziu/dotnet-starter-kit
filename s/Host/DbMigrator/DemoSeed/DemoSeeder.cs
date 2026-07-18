@@ -1,14 +1,17 @@
-using FSH.Framework.Shared.Constants;
-using FSH.Framework.Web.Mod;
-using FSH.Mod.Billing.Data;
-using FSH.Mod.Billing.Domain;
-using FSH.Mod.Billing.Spec;
-using FSH.Mod.Chat.Data;
-using FSH.Mod.Chat.Domain;
-using FSH.Mod.Identity.Data;
-using FSH.Mod.Identity.Domain;
-using FSH.Mod.Ticket.Data;
-using FSH.Mod.Ticket.Domain;
+using FSH.Framework.Shared.Identity;
+using FSH.Framework.Web.Modules;
+using FSH.Mods.Billing.Data;
+using FSH.Mods.Billing.Domain;
+using FSH.Mods.Billing.Spec;
+using FSH.Mods.Chat.Data;
+using FSH.Mods.Chat.Domain;
+using FSH.Mods.Identity.Data;
+using FSH.Mods.Identity.Domain;
+using FSH.Mods.Identity.Spec;
+using FSH.Mods.Ticket.Data;
+using FSH.Mods.Ticket.Domain;
+using FSH.Mods.Ticket.Spec;
+using FSH.Mods.Ticket.Spec.v1;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -369,7 +372,7 @@ internal sealed class DemoSeeder
         using var scope = _services.CreateScope();
 
         var dbContext = scope.ServiceProvider.GetRequiredService<TicketDbContext>();
-        if (await dbContext.Ticket.AnyAsync(ct).ConfigureAwait(false))
+        if (await dbContext.Tickets.AnyAsync(ct).ConfigureAwait(false))
         {
             return;
         }

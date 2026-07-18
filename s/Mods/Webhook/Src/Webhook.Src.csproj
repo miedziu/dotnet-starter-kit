@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>FSH.Mods.Webhook</RootNamespace>
+    <AssemblyName>FSH.Mods.Webhook</AssemblyName>
+    <NoWarn>$(NoWarn);CA1031;CA1054;CA1056;CA1308;CA1812;CA1859;S3267</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Lib\Persistence\Persistence.csproj" />
+    <ProjectReference Include="..\..\..\Lib\Web\Web.csproj" />
+    <ProjectReference Include="..\..\..\Lib\Jobs\Jobs.csproj" />
+    <ProjectReference Include="..\..\..\Lib\Eventing.Abstractions\Eventing.Abstractions.csproj" />
+    <ProjectReference Include="..\Spec\Webhook.Spec.csproj" />
+  </ItemGroup>
+</Project>

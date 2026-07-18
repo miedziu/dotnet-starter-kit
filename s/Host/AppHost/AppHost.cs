@@ -1,5 +1,3 @@
-using Aspire.Hosting.ApplicationModel;
-
 var builder = DistributedApplication.CreateBuilder(args);
 
 // Per-app prefix from the AppHost assembly name (FSH.Starter.AppHost -> fsh-starter); namespaces Docker volumes + resource names so multiple FSH apps don't clash.
@@ -85,7 +83,7 @@ var minioInit = builder.AddContainer("minio-init", "minio/mc")
 var minioApiEndpoint = minio.GetEndpoint("api");
 
 // DB migrator: applies pending migrations + seeds the root admin (admin@root.com), then exits; the API waits for its completion so it never starts against an unmigrated DB. Seed password is a dev-only default.
-var migrator = builder.AddProject<Projects.FSH_Starter_DbMigrator>($"{appPrefix}-db-migrator")
+var migrator = builder.AddProject<Projects.DbMigrator>($"{appPrefix}-db-migrator")
     .WithReference(postgres)
     .WaitFor(postgres)
     .WithEnvironment("DOTNET_ENVIRONMENT", "Development")
@@ -96,7 +94,7 @@ var migrator = builder.AddProject<Projects.FSH_Starter_DbMigrator>($"{appPrefix}
     .WithArgs("apply", "--seed");
 
 // Demo seeder (dev-only): provisions the demo-login users via seed-demo. DOTNET_ENVIRONMENT=Development is required (console host ignores ASPNETCORE_ENVIRONMENT) or seed-demo refuses to run.
-var demoSeeder = builder.AddProject<Projects.FSH_Starter_DbMigrator>($"{appPrefix}-demo-seeder")
+var demoSeeder = builder.AddProject<Projects.DbMigrator>($"{appPrefix}-demo-seeder")
     .WithReference(postgres)
     .WaitFor(postgres)
     .WaitForCompletion(migrator)
@@ -108,7 +106,7 @@ var demoSeeder = builder.AddProject<Projects.FSH_Starter_DbMigrator>($"{appPrefi
     .WithArgs("seed-demo");
 
 // API Service
-var api = builder.AddProject<Projects.FSH_Starter_Api>($"{appPrefix}-api")
+var api = builder.AddProject<Projects.Api>($"{appPrefix}-api")
     .WithReference(postgres)
     //.WithReference(redis)
     .WaitFor(postgres)

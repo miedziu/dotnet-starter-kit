@@ -1,0 +1,74 @@
+using FSH.Framework.Core.Domain;
+using FSH.Mods.Billing.Spec;
+
+namespace FSH.Mods.Billing.Domain;
+
+/// <summary>
+/// Binds to a billing plan over a time window.
+/// </summary>
+public sealed class Subscription : BaseEntity<Guid>
+{
+    public Guid PlanId { get; private set; }
+    public DateTime StartUtc { get; private set; }
+    public DateTime? EndUtc { get; private set; }
+    public SubscriptionStatus Status { get; private set; }
+    public DateTime CreatedAtUtc { get; private set; }
+    public DateTime? UpdatedAtUtc { get; private set; }
+
+    private Subscription() { }
+
+    public static Subscription Create(Guid planId, DateTime startUtc)
+        => Create(planId, startUtc, endUtc: null);
+
+    public static Subscription Create(Guid planId, DateTime startUtc, DateTime? endUtc)
+    {
+        if (planId == Guid.Empty)
+        {
+            throw new ArgumentException("PlanId is required.", nameof(planId));
+        }
+
+        return new Subscription
+        {
+            Id = Guid.CreateVersion7(),
+            PlanId = planId,
+            StartUtc = DateTime.SpecifyKind(startUtc, DateTimeKind.Utc),
+            EndUtc = endUtc is { } e ? DateTime.SpecifyKind(e, DateTimeKind.Utc) : null,
+            Status = SubscriptionStatus.Active,
+            CreatedAtUtc = DateTime.UtcNow
+        };
+    }
+
+    public void Suspend()
+    {
+        Status = SubscriptionStatus.Suspended;
+        UpdatedAtUtc = DateTime.UtcNow;
+    }
+
+    public void Reactivate()
+    {
+        Status = SubscriptionStatus.Active;
+        UpdatedAtUtc = DateTime.UtcNow;
+    }
+
+    public void Cancel(DateTime endUtc)
+    {
+        Status = SubscriptionStatus.Cancelled;
+        EndUtc = DateTime.SpecifyKind(endUtc, DateTimeKind.Utc);
+        UpdatedAtUtc = DateTime.UtcNow;
+    }
+
+    /// <summary>
+    /// Extends the active term's end. Used by a same-plan renewal to keep <see cref="EndUtc"/> in step
+    /// with the tenant's ValidUpto (a plan change replaces the subscription instead). Idempotent: only
+    /// ever moves the end forward, so a redelivered renewal event is a no-op.
+    /// </summary>
+    public void Extend(DateTime endUtc)
+    {
+        var newEnd = DateTime.SpecifyKind(endUtc, DateTimeKind.Utc);
+        if (EndUtc is null || newEnd > EndUtc)
+        {
+            EndUtc = newEnd;
+            UpdatedAtUtc = DateTime.UtcNow;
+        }
+    }
+}

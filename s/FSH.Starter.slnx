@@ -11,38 +11,38 @@
     <Project Path="Lib/Storage/Storage.csproj" />
     <Project Path="Lib/Web/Web.csproj" />
   </Folder>
-  <Folder Name="/Mod/" />
-  <Folder Name="/Mod/Audit/">
-    <Project Path="Mod/Audit/Spec/Audit.Spec.csproj" />
-    <Project Path="Mod/Audit/Src/Audit.Src.csproj" Id="2764205b-8725-43a7-b499-67b98959ad50" />
+  <Folder Name="/Mods/" />
+  <Folder Name="/Mods/Audit/">
+    <Project Path="Mods/Audit/Spec/Audit.Spec.csproj" />
+    <Project Path="Mods/Audit/Src/Audit.Src.csproj" Id="2764205b-8725-43a7-b499-67b98959ad50" />
   </Folder>
-  <Folder Name="/Mod/Billing/">
-    <Project Path="Mod/Billing/Spec/Billing.Spec.csproj" />
-    <Project Path="Mod/Billing/Src/Billing.Src.csproj" />
+  <Folder Name="/Mods/Billing/">
+    <Project Path="Mods/Billing/Spec/Billing.Spec.csproj" />
+    <Project Path="Mods/Billing/Src/Billing.Src.csproj" />
   </Folder>
-  <Folder Name="/Mod/Chat/">
-    <Project Path="Mod/Chat/Spec/Chat.Spec.csproj" />
-    <Project Path="Mod/Chat/Src/Chat.Src.csproj" />
+  <Folder Name="/Mods/Chat/">
+    <Project Path="Mods/Chat/Spec/Chat.Spec.csproj" />
+    <Project Path="Mods/Chat/Src/Chat.Src.csproj" />
   </Folder>
-  <Folder Name="/Mod/File/">
-    <Project Path="Mod/File/Spec/File.Spec.csproj" />
-    <Project Path="Mod/File/Src/File.Src.csproj" />
+  <Folder Name="/Mods/File/">
+    <Project Path="Mods/File/Spec/File.Spec.csproj" />
+    <Project Path="Mods/File/Src/File.Src.csproj" />
   </Folder>
-  <Folder Name="/Mod/Identity/">
-    <Project Path="Mod/Identity/Spec/Identity.Spec.csproj" />
-    <Project Path="Mod/Identity/Src/Identity.Src.csproj" Id="ebeb33cd-9cce-41b0-9bbc-43988dae9a46" />
+  <Folder Name="/Mods/Identity/">
+    <Project Path="Mods/Identity/Spec/Identity.Spec.csproj" />
+    <Project Path="Mods/Identity/Src/Identity.Src.csproj" Id="ebeb33cd-9cce-41b0-9bbc-43988dae9a46" />
   </Folder>
-  <Folder Name="/Mod/Notification/">
-    <Project Path="Mod/Notification/Spec/Notification.Spec.csproj" />
-    <Project Path="Mod/Notification/Src/Notification.Src.csproj" />
+  <Folder Name="/Mods/Notification/">
+    <Project Path="Mods/Notification/Spec/Notification.Spec.csproj" />
+    <Project Path="Mods/Notification/Src/Notification.Src.csproj" />
   </Folder>
-  <Folder Name="/Mod/Ticket/">
-    <Project Path="Mod/Ticket/Spec/Ticket.Spec.csproj" />
-    <Project Path="Mod/Ticket/Src/Ticket.Src.csproj" />
+  <Folder Name="/Mods/Ticket/">
+    <Project Path="Mods/Ticket/Spec/Ticket.Spec.csproj" />
+    <Project Path="Mods/Ticket/Src/Ticket.Src.csproj" />
   </Folder>
-  <Folder Name="/Mod/Webhook/">
-    <Project Path="Mod/Webhook/Spec/Webhook.Spec.csproj" />
-    <Project Path="Mod/Webhook/Src/Webhook.Src.csproj" />
+  <Folder Name="/Mods/Webhook/">
+    <Project Path="Mods/Webhook/Spec/Webhook.Spec.csproj" />
+    <Project Path="Mods/Webhook/Src/Webhook.Src.csproj" />
   </Folder>
   <Folder Name="/Host/">
     <Project Path="Host/Api/Api.csproj" Id="187ce245-0a57-469c-96c2-a88902f2d40d" />

@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<RootNamespace>FSH.Mods.File</RootNamespace>
+		<AssemblyName>FSH.Mods.File</AssemblyName>
+		<NoWarn>$(NoWarn);CA1031;CA1812;CA1859;CA1002;CA2227;S3267</NoWarn>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\..\Lib\Persistence\Persistence.csproj" />
+		<ProjectReference Include="..\..\..\Lib\Storage\Storage.csproj" />
+		<ProjectReference Include="..\..\..\Lib\Web\Web.csproj" />
+		<ProjectReference Include="..\..\..\Lib\Jobs\Jobs.csproj" />
+		<ProjectReference Include="..\Spec\File.Spec.csproj" />
+	</ItemGroup>
+
+</Project>

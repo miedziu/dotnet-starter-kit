@@ -103,7 +103,7 @@ public static class Extensions
                 metrics.AddMeter(CachingTelemetry.MeterName);
 
                 // Audit pipeline metrics (published, dropped, flush, dead-letter).
-                metrics.AddMeter("FSH.Mod.Audit");
+                metrics.AddMeter("FSH.Mods.Audit");
 
                 foreach (var meterName in options.Metrics.MeterNames ?? Array.Empty<string>())
                 {

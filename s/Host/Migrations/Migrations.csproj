@@ -4,29 +4,29 @@
 		<RootNamespace>FSH.Starter.Migrations.PostgreSQL</RootNamespace>
 		<AssemblyName>FSH.Starter.Migrations.PostgreSQL</AssemblyName>
 		<IsPackable>false</IsPackable>
-		<!-- Suppress analyzer warnings for EF Core auto-generated migration files -->
+		<!-- Suppress analyzer warnings for EF Core auto-generated migration file -->
 		<NoWarn>$(NoWarn);CA1062;CA1861</NoWarn>
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\..\BuildingBlocks\Persistence\Persistence.csproj" />
-	  <ProjectReference Include="..\..\Modules\Auditing\Modules.Auditing\Modules.Auditing.csproj" />
-	  <ProjectReference Include="..\..\Modules\Identity\Modules.Identity\Modules.Identity.csproj" />
-	  <ProjectReference Include="..\..\Modules\Webhooks\Modules.Webhooks\Modules.Webhooks.csproj" />
-	  <ProjectReference Include="..\..\Modules\Billing\Modules.Billing\Modules.Billing.csproj" />
-	  <ProjectReference Include="..\..\Modules\Tickets\Modules.Tickets\Modules.Tickets.csproj" />
-	  <ProjectReference Include="..\..\Modules\Chat\Modules.Chat\Modules.Chat.csproj" />
-	  <ProjectReference Include="..\..\Modules\Notifications\Modules.Notifications\Modules.Notifications.csproj" />
-	  <ProjectReference Include="..\..\Modules\Files\Modules.Files\Modules.Files.csproj" />
+	  <ProjectReference Include="..\..\Lib\Persistence\Persistence.csproj" />
+	  <ProjectReference Include="..\..\Mods\Audit\Src\Audit.Src.csproj" />
+	  <ProjectReference Include="..\..\Mods\Identity\Src\Identity.Src.csproj" />
+	  <ProjectReference Include="..\..\Mods\Webhook\Src\Webhook.Src.csproj" />
+	  <ProjectReference Include="..\..\Mods\Billing\Src\Billing.Src.csproj" />
+	  <ProjectReference Include="..\..\Mods\Ticket\Src\Ticket.Src.csproj" />
+	  <ProjectReference Include="..\..\Mods\Chat\Src\Chat.Src.csproj" />
+	  <ProjectReference Include="..\..\Mods\Notification\Src\Notification.Src.csproj" />
+	  <ProjectReference Include="..\..\Mods\File\Src\File.Src.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
 	  <Folder Include="Audit\" />
 	  <Folder Include="Billing\" />
-	  <Folder Include="Tickets\" />
+	  <Folder Include="Ticket\" />
 	  <Folder Include="Chat\" />
-	  <Folder Include="Notifications\" />
-	  <Folder Include="Files\" />
+	  <Folder Include="Notification\" />
+	  <Folder Include="File\" />
 	</ItemGroup>
 
 </Project>

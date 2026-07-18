@@ -1,0 +1,64 @@
+using FSH.Framework.Storage.Services;
+using FSH.Mods.File.Data;
+using FSH.Mods.File.Spec.v1;
+using Hangfire;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+
+namespace FSH.Mods.File.Jobs;
+
+/// <summary>
+/// Hourly purge of FileAsset rows stuck in PendingUpload past their UploadDeadline. Best-effort
+/// removal of any bytes that did make it to storage. No quota effect — those bytes were never
+/// debited.
+/// </summary>
+public sealed class PurgeOrphanedFilesJob(
+    FileDbContext db,
+    IStorageService storage,
+    ILogger<PurgeOrphanedFilesJob> logger)
+{
+    [AutomaticRetry(Attempts = 3, DelaysInSeconds = [30, 120, 600])]
+    public async Task RunAsync(CancellationToken ct)
+    {
+        var now = DateTimeOffset.UtcNow;
+        var orphans = await db.FileAssets
+            .IgnoreQueryFilters()
+            .Where(f => f.Status == FileAssetStatus.PendingUpload
+                        && f.UploadDeadline != null
+                        && f.UploadDeadline < now)
+            .ToListAsync(ct)
+            .ConfigureAwait(false);
+
+        if (orphans.Count == 0)
+        {
+            return;
+        }
+
+        foreach (var f in orphans)
+        {
+            try
+            {
+                await storage.RemoveAsync(f.StorageKey, ct).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                logger.LogWarning(ex, "Failed to remove orphan storage object {Key}", f.StorageKey);
+            }
+            // Hard delete (row never reached Available, so soft-delete doesn't apply). FileAsset is ISoftDeletable,
+            // so Remove() would become UPDATE IsDeleted=true — we use the bulk ExecuteDelete below to bypass the interceptor instead.
+        }
+
+        // Bulk hard delete — bypasses the soft-delete interceptor.
+        var ids = orphans.Select(f => f.Id).ToList();
+        await db.FileAssets
+            .IgnoreQueryFilters()
+            .Where(f => ids.Contains(f.Id))
+            .ExecuteDeleteAsync(ct)
+            .ConfigureAwait(false);
+
+        if (logger.IsEnabled(LogLevel.Information))
+        {
+            logger.LogInformation("Purged {Count} orphaned file assets", orphans.Count);
+        }
+    }
+}

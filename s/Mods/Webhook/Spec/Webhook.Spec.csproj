@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>FSH.Mods.Webhook.Spec</RootNamespace>
+    <AssemblyName>FSH.Mods.Webhook.Spec</AssemblyName>
+    <NoWarn>$(NoWarn);CA1054;CA1056;S2094</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Mediator.Abstractions" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Lib\Shared\Shared.csproj" />
+    <ProjectReference Include="..\..\..\Lib\Core\Core.csproj" />
+  </ItemGroup>
+</Project>

@@ -1,7 +1,6 @@
-using FSH.Framework.Persistence.Specifications;
 using System.Linq.Expressions;
 
-namespace FSH.Framework.Persistence;
+namespace FSH.Framework.Persistence.Specifications;
 
 /// <summary>
 /// Base specification that composes a query for <typeparamref name="T"/> and

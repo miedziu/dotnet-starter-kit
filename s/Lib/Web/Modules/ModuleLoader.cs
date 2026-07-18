@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Hosting;
 using System.Reflection;
 
-namespace FSH.Framework.Web.Mod;
+namespace FSH.Framework.Web.Modules;
 
 public static class ModuleLoader
 {

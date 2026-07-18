@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<RootNamespace>FSH.Mods.Audit</RootNamespace>
+		<AssemblyName>FSH.Mods.Audit</AssemblyName>
+		<NoWarn>$(NoWarn);CA1031;CA1308;CA1812;CA1859;S3267</NoWarn>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\..\..\Lib\Persistence\Persistence.csproj" />
+	  <ProjectReference Include="..\..\..\Lib\Web\Web.csproj" />
+	  <ProjectReference Include="..\Spec\Audit.Spec.csproj" />
+	  <ProjectReference Include="..\..\Identity\Spec\Identity.Spec.csproj" />
+	</ItemGroup>
+
+</Project>

@@ -1,7 +1,7 @@
 using FSH.Framework.Shared.Persistence;
 using Microsoft.EntityFrameworkCore;
 
-namespace FSH.Framework.Persistence;
+namespace FSH.Framework.Persistence.Pagination;
 
 /// <summary>
 /// Extension methods for converting IQueryable results to paginated responses.

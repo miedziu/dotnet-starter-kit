@@ -1,20 +1,27 @@
 using FSH.Framework.Jobs.Services;
 using FSH.Framework.Persistence;
 using FSH.Framework.Web;
-using FSH.Framework.Web.Mod;
+using FSH.Framework.Web.Modules;
 using FSH.Framework.Web.Observability.Logging.Serilog;
-using FSH.Mod.Audit;
-using FSH.Mod.Audit.Spec;
-using FSH.Mod.Billing;
-using FSH.Mod.Chat;
-using FSH.Mod.File;
-using FSH.Mod.Identity;
-using FSH.Mod.Identity.Data;
-using FSH.Mod.Identity.Features.v1.Tokens;
-using FSH.Mod.Notification;
-using FSH.Mod.Ticket;
-using FSH.Mod.Webhook;
-using FSH.Mod.Webhook.Spec.v1.Subscription;
+using FSH.Mods.Audit;
+using FSH.Mods.Audit.Data;
+using FSH.Mods.Audit.Spec;
+using FSH.Mods.Billing;
+using FSH.Mods.Billing.Spec.v1.Invoice;
+using FSH.Mods.Chat;
+using FSH.Mods.Chat.Spec.v1.Channel;
+using FSH.Mods.File;
+using FSH.Mods.File.Spec.v1.File;
+using FSH.Mods.Identity;
+using FSH.Mods.Identity.Data;
+using FSH.Mods.Identity.Features.v1.Tokens;
+using FSH.Mods.Identity.Spec.v1.Token;
+using FSH.Mods.Notification;
+using FSH.Mods.Notification.Spec.v1.Notifications;
+using FSH.Mods.Ticket;
+using FSH.Mods.Ticket.Spec.v1.Ticket;
+using FSH.Mods.Webhook;
+using FSH.Mods.Webhook.Spec.v1.Subscription;
 using FSH.Starter.DbMigrator;
 using FSH.Starter.DbMigrator.DemoSeed;
 using Microsoft.EntityFrameworkCore;
@@ -245,6 +252,7 @@ try
         await Console.Out.WriteLineAsync("[demo-seed] provisioning acme + globex with demo content…")
             .ConfigureAwait(false);
         using var scope = host.Services.CreateScope();
+
         var seeder = scope.ServiceProvider.GetRequiredService<DemoSeeder>();
         await seeder.RunAsync(CancellationToken.None).ConfigureAwait(false);
         await Console.Out.WriteLineAsync("[demo-seed] done").ConfigureAwait(false);

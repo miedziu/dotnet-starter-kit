@@ -1,4 +1,4 @@
-namespace FSH.Framework.Web.Mod;
+namespace FSH.Framework.Web.Modules;
 
 public interface IModuleConstants
 {
