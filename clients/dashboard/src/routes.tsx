@@ -43,6 +43,7 @@ const ConfirmEmailPage = lazyNamed(
   () => import("@/pages/auth/confirm-email"),
   "ConfirmEmailPage",
 );
+const PublicPage = lazyNamed(() => import("@/pages/public"), "PublicPage");
 const OverviewPage = lazyNamed(() => import("@/pages/overview"), "OverviewPage");
 const ActivityPage = lazyNamed(() => import("@/pages/activity"), "ActivityPage");
 const InvoicesPage = lazyNamed(() => import("@/pages/invoices"), "InvoicesPage");
@@ -141,6 +142,12 @@ function withSuspense(node: React.ReactNode) {
 }
 
 export const router = createBrowserRouter([
+  // Public routes - no authentication required
+  {
+    index: true,
+    element: withSuspense(<PublicPage />),
+    errorElement: <RouteError />,
+  },
   {
     path: "/login",
     element: withSuspense(<LoginPage />),
@@ -171,6 +178,7 @@ export const router = createBrowserRouter([
     element: withSuspense(<ConfirmEmailPage />),
     errorElement: <RouteError />,
   },
+  // Protected routes - require authentication
   {
     element: <ProtectedRoute />,
     errorElement: <RouteError />,
@@ -179,7 +187,7 @@ export const router = createBrowserRouter([
         element: <AppShell />,
         errorElement: <RouteError />,
         children: [
-          { index: true, element: withSuspense(<OverviewPage />) },
+          { path: "dashboard", element: withSuspense(<OverviewPage />) },
           { path: "activity", element: withSuspense(<ActivityPage />) },
           { path: "subscription", element: withSuspense(<SubscriptionPage />) },
           { path: "wallet", element: withSuspense(<WalletPage />) },
